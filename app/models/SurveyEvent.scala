@@ -7,12 +7,12 @@ import play.api.libs.functional.syntax._
 case class SurveyEvent (
   id: Option[Long],
   siteId: Long,
+  eventDate: Date,
   photographer: String,
   analyzer: String,
   transectDepth: Int,
   transectLength: Int,
-  data: JsValue,
-  eventDate: Date = new Date
+  data: JsValue
 )
 
 object SurveyEvent { 
@@ -26,44 +26,44 @@ object SurveyEvent {
   implicit val SurveyEventFromJson: Reads[SurveyEvent] = (
     (__ \ "id").readNullable[Long] ~
     (__ \ "siteId").read[Long] ~
+    (__ \ "eventDate").read[Date] ~
     (__ \ "photographer").read[String] ~
     (__ \ "analyzer").read[String] ~
     (__ \ "transectDepth").read[Int] ~
     (__ \ "transectLength").read[Int] ~
-    (__ \ "data").read[JsValue] ~
-    (__ \ "eventDate").read[Date]
+    (__ \ "data").read[JsValue]
   )(SurveyEvent.apply _)
 
   implicit val SurveyEventToJson: Writes[SurveyEvent] = (
     (__ \ "id").writeNullable[Long] ~
     (__ \ "siteId").write[Long] ~
+    (__ \ "eventDate").write[Date] ~
     (__ \ "photographer").write[String] ~
     (__ \ "analyzer").write[String] ~
     (__ \ "transectDepth").write[Int] ~
     (__ \ "transectLength").write[Int] ~
-    (__ \ "data").write[JsValue] ~
-    (__ \ "eventDate").write[Date]
+    (__ \ "data").write[JsValue]
   )((se: SurveyEvent) => (
     se.id,
     se.siteId,
+    se.eventDate,
     se.photographer,
     se.analyzer,
     se.transectDepth,
     se.transectLength,
-    se.data,
-    se.eventDate
+    se.data
   ))
 
   val extractor = {
-		long("ID")~
-		long("SITE_ID")~
-		str("PHOTOGRAPHER")~
-		str("ANALYZER")~
-		int("TRANSECT_DEPTH")~
-		int("TRANSECT_LENGTH")~
-		get[JsValue]("DATA")~
-		date("EVENT_DATE") map {
-	    case i~si~p~a~td~tl~d~ed => SurveyEvent(Some(i), si, p, a, td, tl, d, ed)
+		long("ID") ~
+		long("SITE_ID") ~
+		date("EVENT_DATE") ~
+		str("PHOTOGRAPHER") ~
+		str("ANALYZER") ~
+		int("TRANSECT_DEPTH") ~
+		int("TRANSECT_LENGTH") ~
+		get[JsValue]("DATA") map {
+	    case i~si~ed~p~a~td~tl~d => SurveyEvent(Some(i), si, ed, p, a, td, tl, d)
 	  }
 	}
 
@@ -76,19 +76,19 @@ object SurveyEvent {
 	  }
 	}
 
-	def findAllBySiteId(siteId: Long): List[SurveyEvent] = {
+	def findAllBySiteId(siteId: Long): Seq[SurveyEvent] = {
 		DB.withConnection { implicit c => 
 			SQL(
 				"""
 					select
 						ID,
 						SITE_ID,
+						EVENT_DATE,
 						PHOTOGRAPHER,
 						ANALYZER,
 						TRANSECT_DEPTH,
 						TRANSECT_LENGTH,
-						DATA,
-						EVENT_DATE
+						DATA
 					from
 						SURVEY_EVENT
 					where
@@ -100,19 +100,19 @@ object SurveyEvent {
 		}
  	}
 
- 	def findAllByEventDate(eventDate: Date): List[SurveyEvent] = {
+ 	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent] = {
 		DB.withConnection { implicit c => 
 			SQL(
 				"""
 					select
 						ID,
 						SITE_ID,
+						EVENT_DATE,
 						PHOTOGRAPHER,
 						ANALYZER,
 						TRANSECT_DEPTH,
 						TRANSECT_LENGTH,
-						DATA,
-						EVENT_DATE
+						DATA
 					from
 						SURVEY_EVENT
 					where
@@ -124,19 +124,19 @@ object SurveyEvent {
 		}
  	}
 
- 	def findAllByMonitoringTeamId(monitoringTeamId: Long): List[SurveyEvent] = {
+ 	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent] = {
 		DB.withConnection { implicit c => 
 			SQL(
 				"""
 					select
 						se.ID,
 						se.SITE_ID,
+						se.EVENT_DATE,
 						se.PHOTOGRAPHER,
 						se.ANALYZER,
 						se.TRANSECT_DEPTH,
 						se.TRANSECT_LENGTH,
-						se.DATA,
-						se.EVENT_DATE
+						se.DATA
 					from
 						SURVEY_EVENT se,
 						SURVEYEVENT_MONITORING_TEAM smt
@@ -151,18 +151,18 @@ object SurveyEvent {
 		}
  	}
 
- 	def save(surveyEvents: List[SurveyEvent]) = {
+ 	def save(surveyEvents: Seq[SurveyEvent]) = {
 		DB.withTransaction { implicit c => 
   	    val insertQuery = SQL(
 				"""
 					insert into SURVEY_EVENT (
 						SITE_ID,
+						EVENT_DATE,
 						PHOTOGRAPHER,
 						ANALYZER,
 						TRANSECT_DEPTH,
 						TRANSECT_LENGTH,
-						DATA,
-						EVENT_DATE)
+						DATA)
 					values (
 						{siteId}, 
 						{photographer}, 
@@ -176,9 +176,9 @@ object SurveyEvent {
 	    val batchInsert = (insertQuery.asBatch /: surveyEvents)(
 	      (s, v) => s.addBatchParams(
 	      	v.siteId, 
+	      	v.eventDate, 
 	      	v.photographer, 
 	      	v.analyzer, 
-	      	v.eventDate, 
 	      	v.transectDepth, 
 	      	v.transectLength, 
 	      	{val pgObject = new PGobject()
@@ -193,74 +193,27 @@ object SurveyEvent {
 }
 
 trait SurveyEventRepository {
-	def findAllBySiteId(siteId: Long): List[SurveyEvent]
-	def findAllByEventDate(eventDate: Date): List[SurveyEvent]
-	def findAllByMonitoringTeamId(monitoringTeamId: Long): List[SurveyEvent]
-	def save(surveyEvents: List[SurveyEvent])
+	def findAllBySiteId(siteId: Long): Seq[SurveyEvent]
+	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent]
+	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent]
+	def save(surveyEvents: Seq[SurveyEvent])
 }
 
 class AnormSurveyEventRepository extends SurveyEventRepository {
 
-	def findAllBySiteId(siteId: Long): List[SurveyEvent] = {
+	def findAllBySiteId(siteId: Long): Seq[SurveyEvent] = {
 		SurveyEvent.findAllBySiteId(siteId)
 	}
 
-	def findAllByEventDate(eventDate: Date): List[SurveyEvent] = {
+	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent] = {
 		SurveyEvent.findAllByEventDate(eventDate)
 	}
 
-	def findAllByMonitoringTeamId(monitoringTeamId: Long): List[SurveyEvent] = {
+	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent] = {
 		SurveyEvent.findAllByMonitoringTeamId(monitoringTeamId)
 	}
 
-	def save(surveyEvents: List[SurveyEvent]) = {
+	def save(surveyEvents: Seq[SurveyEvent]) = {
 		SurveyEvent.save(surveyEvents)
 	}
-}
-
-trait Service {
-	// def convertToJson(input: List[Any]) = Option[JsValue] {
-	// 	input match {
-	// 		case Nil => None
-	// 		case _ => Some(Json.toJson(input)) 
-	// 	}
-	// }
-}
-
-class SurveyEventService(repository: SurveyEventRepository) extends Service {
-	import play.api.libs.json._
-	//import models.SurveyEvent
-
-	def getJsonBySiteId(siteId: Long): Option[JsValue] = {
-		val result = repository.findAllBySiteId(siteId)
-		result match {
-			case Nil => None
-			case _ => Some(Json.toJson(result)) 
-		}
-		// result match {
-		// 	case List() => None
-		// 	case _ => Some(Json.toJson(result)) 
-		// }
-	}
-
-	def getJsonByEventDate(eventDate: Date): Option[JsValue] = {
-		val result = repository.findAllByEventDate(eventDate)
-		result match {
-			case List() => None
-			case _ => Some(Json.toJson(result))
-		}
-	}
-
-	def getJsonByMonitoringTeamId(monitoringTeamId: Long): Option[JsValue] = {
-		val result = repository.findAllByMonitoringTeamId(monitoringTeamId)
-		result match {
-			case List() => None
-			case _ => Some(Json.toJson(result))
-		}
-	}
-
-	def save(surveyEvents: List[SurveyEvent]) = {
-		repository.save(surveyEvents)
-	}
-
 }

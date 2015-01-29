@@ -35,25 +35,7 @@ object MonitoringTeam {
 		}
 	}
 
-  def findOneById(id: Long): Option[MonitoringTeam] = {
-		DB.withConnection{ implicit c => 
-			SQL(
-				"""
-					select
-						ID,
-						NAME
-					from
-						MONITORING_TEAM
-					where
-						id = {id}
-				"""
-				)
-				.on("id" -> id)
-				.as(extractor singleOpt)
-		}
-	}
-
-	def findlAll(): List[MonitoringTeam] = {
+	def findlAll(): Seq[MonitoringTeam] = {
 		DB.withConnection{ implicit c => 
 			SQL(
 				"""
@@ -88,47 +70,6 @@ object MonitoringTeam {
 }
 
 trait MonitoringTeamRepository {
-	def findOneById(id: Long): Option[MonitoringTeam]
-	def findlAll(): List[MonitoringTeam]
-	def save(monitoringTeams: List[MonitoringTeam])
-}
-
-class AnormMonitoringTeamRepository extends MonitoringTeamRepository {
-
-	def findOneById(id: Long): Option[MonitoringTeam] = {
-		MonitoringTeam.findOneById(id)
-	}
-
-	def findlAll(): List[MonitoringTeam] = {
-		MonitoringTeam.findlAll()
-	}
-
-	def save(monitoringTeams: List[MonitoringTeam]) = {
-		MonitoringTeam.save(monitoringTeams)
-	}
-}
-
-class MonitoringTeamService(repository: MonitoringTeamRepository) {
-	import play.api.libs.json._
-	//import models.MonitoringTeam
-
-	def getJsonById(id: Long): Option[JsValue] = {
-		val result = repository.findOneById(id)
-		result match {
-			case None => None
-			case _ => Some(Json.toJson(result)) 
-		}
-	}
-
-	def getJsonByEventDate(): Option[JsValue] = {
-		val result = repository.findlAll()
-		result match {
-			case Nil => None
-			case _ => Some(Json.toJson(result))
-		}
-	}
-
-	def save(monitoringTeams: List[MonitoringTeam]) = {
-		repository.save(monitoringTeams)
-	}
+	def findlAll(): Seq[MonitoringTeam]
+	def save(monitoringTeams: Seq[MonitoringTeam])
 }
