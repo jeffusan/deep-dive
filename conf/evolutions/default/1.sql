@@ -40,7 +40,8 @@ CREATE TABLE survey_event (
     transect_length smallint NOT NULL,
     photographer character varying(25) NOT NULL,
     analyzer character varying(25) NOT NULL,
-    transect_depth smallint NOT NULL
+    transect_depth smallint NOT NULL,
+    data jsonb
     );
 
 CREATE TABLE surveyevent_monitoring_team (
@@ -85,6 +86,8 @@ CREATE INDEX surveyevent_monitoring_team_monitoringteam_id ON surveyevent_monito
 CREATE INDEX surveyevent_monitoring_team_surveyevent_id ON surveyevent_monitoring_team USING btree (surveyevent_id);
 
 CREATE INDEX survey_event_site_id ON survey_event USING btree (site_id);
+
+CREATE INDEX survey_event_data ON survey_event USING GIN(data);
 
 ALTER TABLE ONLY site
     ADD CONSTRAINT site_reef_type_id_fkey FOREIGN KEY (reef_type_id) REFERENCES reef_type(id) DEFERRABLE INITIALLY DEFERRED;
@@ -170,14 +173,14 @@ insert into site (name, subregion_id, reef_type_id, latitude, longitude, map_dat
 insert into site (name, subregion_id, reef_type_id, latitude, longitude, map_datum) values ('REB-2', 1, 3, '45.421864', '140.989041', 'WGS 1984');
 insert into site (name, subregion_id, reef_type_id, latitude, longitude, map_datum) values ('REB-3', 1, 4, '45.406921', '140.988354', 'WGS 1984');
 
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (1,'2012-05-30',50,'photag','analyzer', 50);
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (2,'2012-05-30',50,'photag','analyzer', 50);
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (3,'2012-05-29',50,'photag','analyzer', 50);
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (4,'2012-05-29',50,'photag','analyzer', 50);
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (5,'2013-06-03',50,'photag','analyzer', 50);
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (6,'2013-06-03',50,'photag','analyzer', 50);
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (7,'2011-07-04',25,'photag','analyzer', 50);
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth) values (8,'2011-07-04',50,'photag','analyzer', 50);
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (1,'2012-05-30',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (2,'2012-05-30',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (3,'2012-05-29',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (4,'2012-05-29',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (5,'2013-06-03',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (6,'2013-06-03',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (7,'2011-07-04',25,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (8,'2011-07-04',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
 
 
 # --- !Downs
@@ -194,4 +197,4 @@ DROP TABLE subregion;
 
 DROP TABLE survey_event;
 
-DROP TABLE surveyevent_monitoring_team;
+DROP TABLE surveyevent_monitoring_team cascade;
