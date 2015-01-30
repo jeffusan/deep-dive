@@ -40,5 +40,5 @@ INSERT INTO dd_user_role (user_id, role_id) VALUES ((select id from dd_user wher
 # --- !Downs
 
 DROP TABLE dd_user_role;
-DROP TABLE dd_role cascade:
+DROP TABLE dd_role cascade;
 DROP TABLE dd_user cascade;
