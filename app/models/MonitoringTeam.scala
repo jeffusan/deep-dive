@@ -1,20 +1,37 @@
 package models
 
+/** This is the ScalaDoc for MonitoringTeam Model of models package. **/
+
+/** A MonitoringTeam that is doing the monitoring.
+	*
+ 	* @contructor create a new [[models.MonitoringTeam]] with id and name.
+	* @param id the team id only use in application.
+	* @param name the monitoring team's name.
+	*/
 case class MonitoringTeam (
 	id: Option[Long],
 	name: String
 )
 
+/** Factory for [[models.MonitoringTeam]] instances. */
 object MonitoringTeam {
 
 	import play.api.libs.json._
   import play.api.libs.functional.syntax._
 
+  /** Implicit serializer for converting Json into instance.
+    *
+    * @return a reading serializer that specializes in [[models.MonitoringTeam]].
+    */
   implicit val MonitoringTeamFromJson: Reads[MonitoringTeam] = (
     (__ \ "id").readNullable[Long] ~
     (__ \ "name").read[String]
   )(MonitoringTeam.apply _)
 
+  /** Implicit serializer for converting instance into Json.
+    *
+    * @return a writing serializer that specializes in [[models.MonitoringTeam]].
+    */
   implicit val MonitoringTeamToJson: Writes[MonitoringTeam] = (
     (__ \ "id").writeNullable[Long] ~
     (__ \ "name").write[String]
@@ -27,7 +44,10 @@ object MonitoringTeam {
 	import play.api.db.DB
 	import anorm.SqlParser.{scalar, long, str, flatten}
 	import play.api.Play.current
-
+	import scala.language.postfixOps
+  /** 
+  	* Extractor for generating the [[models.MonitoringTeam]] instance to retrieve data from resultset.
+    */
   val extractor = {
 		long("ID")~
 		str("NAME") map {
@@ -35,6 +55,11 @@ object MonitoringTeam {
 		}
 	}
 
+  /** 
+  	* Find all monitoring teams.
+    *
+    * @return a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
+    */
 	def findlAll(): Seq[MonitoringTeam] = {
 		DB.withConnection{ implicit c => 
 			SQL(
@@ -50,7 +75,13 @@ object MonitoringTeam {
 		}
 	}
 
-	def save(monitoringTeams: Seq[MonitoringTeam]) = {
+  /** 
+  	* Save the monitoring teams.
+    *
+   	* @param a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
+   	* @return a array instance including 0 or more [[Int]] instances.Int is a result for each query.
+    */
+	def save(monitoringTeams: Seq[MonitoringTeam]): Array[Int] = {
 		DB.withTransaction{ implicit c =>
 	    val insertQuery = SQL(
 				"""
@@ -69,7 +100,31 @@ object MonitoringTeam {
 	}
 }
 
+/** A trait for data access. */
 trait MonitoringTeamRepository {
 	def findlAll(): Seq[MonitoringTeam]
-	def save(monitoringTeams: Seq[MonitoringTeam])
+	def save(monitoringTeams: Seq[MonitoringTeam]): Array[Int]
+}
+
+/** A concrete class that extends [[models.MonitoringTeamRepository]].	*/
+class AnormMonitoringTeamRepository extends MonitoringTeamRepository {
+
+  /** 
+  	* Find all monitoring teams.
+    *
+    * @return a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
+    */
+	def findlAll(): Seq[MonitoringTeam] = {
+		MonitoringTeam.findlAll()
+	}
+
+  /** 
+  	* Save the monitoring teams.
+    *
+   	* @param a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
+   	* @return a array instance including 0 or more [[Int]] instances.Int is a result for each query.
+    */
+	def save(monitoringTeams: Seq[MonitoringTeam]) = {
+		MonitoringTeam.save(monitoringTeams)
+	}
 }
