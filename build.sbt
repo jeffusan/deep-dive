@@ -122,3 +122,7 @@ sources in (Compile,doc) := Seq.empty
 
 // All work and no play...
 emojiLogs
+
+
+// heroku
+herokuAppName in Compile := "warm-beyond-9991"
