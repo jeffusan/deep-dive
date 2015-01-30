@@ -174,7 +174,7 @@ insert into site (name, subregion_id, reef_type_id, latitude, longitude, map_dat
 insert into site (name, subregion_id, reef_type_id, latitude, longitude, map_datum) values ('REB-3', 1, 4, '45.406921', '140.988354', 'WGS 1984');
 
 insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (1,'2012-05-30',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
-insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (2,'2012-05-30',50,'photag','analyzer', 50), '{"id": "id1", "name": "name1"}';
+insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (2,'2012-05-30',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
 insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (3,'2012-05-29',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
 insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (4,'2012-05-29',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
 insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (5,'2013-06-03',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
@@ -197,4 +197,4 @@ DROP TABLE subregion;
 
 DROP TABLE survey_event;
 
-DROP TABLE surveyevent_monitoring_team;
+DROP TABLE surveyevent_monitoring_team cascade;
