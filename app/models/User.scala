@@ -64,13 +64,6 @@ object AnormUserRepository extends UserRepository {
   import play.api.db.DB
   import play.api.Play.current
 
-  val roleParser: RowParser[Role] = {
-
-    get[String]("name") map {
-      case name => Role.valueOf(name)
-    }
-  }
-
   val userParser: RowParser[User] = {
 
     long("id") ~ str("email") ~ str("name") map {

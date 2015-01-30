@@ -7,6 +7,7 @@ import org.scalatest.mock.MockitoSugar
 import models.{UserRepository, User}
 import services.UserService
 import models.Role.NormalUser
+import play.api.libs.json._
 
 
 
@@ -15,16 +16,54 @@ import models.Role.NormalUser
   */
 class UserServiceSpec extends PlaySpec with MockitoSugar {
 
-  "UserService#authenticate" should {
-    "be true when the proper credentials are provided" in {
-      val userService = new UserService(mock[UserRepository])
-      val user = new User(Some(1), "test@example.com",Some("secret"),"tester tester", "NormalUser")
-      when(userService.authenticate(any[String], any[String])) thenReturn Some(user)
+  "User#fromJson" should {
 
+    "match emails when converted from json" in {
+      val userJson: JsValue = Json.parse("""
+      {
+       "id" : 1,
+       "email" : "tester@json.com",
+       "name" : "Tester",
+       "role" : "Administrator"
+      }
+      """)
+      val user: User = (userJson).as[User]
 
-      val actual = userService.authenticate("test@example.com", "secret")
-
-      actual mustBe Some(user)
+      user.email mustBe "tester@json.com"
     }
+
+    "error when cannot be parsed" in {
+      val badUserJson: JsValue = Json.parse("""
+      {
+       "id" : 1,
+       "email" : "tester@json.com",
+       "name" : "Tester"
+      }
+      """)
+
+      try {
+        val user: User = (badUserJson).as[User]
+
+        fail()
+      } catch {
+        case jsr: JsResultException =>
+        case _: Exception => fail()
+      }
+
+    }
+  }
+
+
+  "User#toJson" should {
+    "match emails when converted to json" in {
+      val user: User = new User(Some(1), "tester@json.com", null, "tester", "Administrator")
+
+      val userJson: JsValue = Json.toJson(user)
+
+      val email: String = (userJson \ "email").as[String]
+
+      email mustBe "tester@json.com"
+    }
+
   }
 }
