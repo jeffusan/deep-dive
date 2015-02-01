@@ -1,12 +1,5 @@
-import collection.mutable.Stack
-import org.scalatest._
+import models.User
 import org.scalatestplus.play._
-import org.mockito.Mockito._
-import org.mockito.Matchers._
-import org.scalatest.mock.MockitoSugar
-import models.{UserRepository, User}
-import services.UserService
-import models.Role.NormalUser
 import play.api.libs.json._
 
 
@@ -14,11 +7,11 @@ import play.api.libs.json._
 /**
   example test
   */
-class UserServiceSpec extends PlaySpec with MockitoSugar {
+class UserSpec extends PlaySpec {
 
   "User#fromJson" should {
 
-    "match emails when converted from json" in {
+    "match emails when json is converted to a user" in {
       val userJson: JsValue = Json.parse("""
       {
        "id" : 1,
@@ -29,7 +22,10 @@ class UserServiceSpec extends PlaySpec with MockitoSugar {
       """)
       val user: User = (userJson).as[User]
 
+      user.id mustBe Some(1)
       user.email mustBe "tester@json.com"
+      user.name mustBe "Tester"
+      user.role mustBe "Administrator"
     }
 
     "error when cannot be parsed" in {
