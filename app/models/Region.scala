@@ -7,7 +7,6 @@ import play.api.libs.functional.syntax._
  * This represents a region object
  */
 
-
 /**
  * Case class for Region
  * @param id region id
@@ -24,16 +23,15 @@ case class Region(
 object Region {
 
   /**
-   * Converts Region object from Json
+   * Converts Region object from & to Json
    */
+  // Json to Object
   implicit val RegionFromJson: Reads[Region] = (
     (__ \ "id").readNullable[Long] ~
       (__ \ "name").read[String]
     )(Region.apply _)
 
-  /**
-   * Converts Region object to Json
-   */
+  // Object to Json
   implicit val RegionToJson: Writes[Region] = (
     (__ \ "id").writeNullable[Long] ~
       (__ \ "name").write[String]
@@ -46,7 +44,7 @@ object Region {
 
 
 /**
- * This trait defines functionalities which Region has to support
+ * [[RegionRepository]] trait defines functionalities supported by [[Region]] object
  */
 trait RegionRepository {
   /**
@@ -65,9 +63,11 @@ trait RegionRepository {
 
 
 /**
- * Anorm specific database implementation of RegionRepository trait
+ * Anorm specific database implementations of [[RegionRepository]] trait
  */
 object AnormRegionRepository extends RegionRepository {
+
+  // Database related dependencies
 
   import anorm._
   import anorm.SqlParser._
@@ -75,7 +75,7 @@ object AnormRegionRepository extends RegionRepository {
   import play.api.Play.current
 
   /**
-   * SQL parser for single result
+   * SQL parser
    */
   val regionParser: RowParser[Region] = {
     long("id") ~
@@ -96,11 +96,11 @@ object AnormRegionRepository extends RegionRepository {
     DB.withConnection { implicit c =>
       val mybeRegion: Option[Region] = SQL(
         """
-          |SELECT
-          |id,
-          |name
-          |FROM region
-          |WHERE id={id};
+          SELECT
+          id,
+          name
+          FROM region
+          WHERE id={id}
         """).on('id -> id).as(regionParser.singleOpt)
       mybeRegion
     }
@@ -108,16 +108,16 @@ object AnormRegionRepository extends RegionRepository {
 
   /**
    * Retrieves all available region info
-   * @return list of regions or null
+   * @return list of [[Region]] or null
    */
   override def findAllRegion: List[Region] = {
     DB.withConnection { implicit c =>
       val regionList: List[Region] = SQL(
         """
-          |SELECT
-          |id,
-          |name
-          |FROM region
+          SELECT
+          id,
+          name
+          FROM region
         """).as(regionParser.*)
 
       regionList

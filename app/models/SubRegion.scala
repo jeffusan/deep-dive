@@ -21,7 +21,9 @@ case class SubRegion(
                       code: String
                       )
 
-
+/**
+ * Companion object of case class
+ */
 object SubRegion {
   /**
    * Converts SubRegion object from & to Json
@@ -51,7 +53,7 @@ object SubRegion {
 
 
 /**
- * This trait defines functionalities supported by SubRegion object
+ * [[SubRegionRepository]] trait defines the functionalities supported by [[SubRegion]] object
  */
 trait SubRegionRepository {
 
@@ -71,16 +73,20 @@ trait SubRegionRepository {
 }
 
 
+/**
+ * Anorm specific database implementations of [[SubRegionRepository]] trait
+ */
 object AnormSubRegionRepository extends SubRegionRepository {
 
-  // anorm dependencies
-
+  // Database related dependencies
   import anorm._
   import anorm.SqlParser._
   import play.api.db.DB
   import play.api.Play.current
 
-
+  /**
+   * SQL parser
+   */
   val subRegionParser: RowParser[SubRegion] = {
     long("id") ~
       str("name") ~
@@ -96,18 +102,22 @@ object AnormSubRegionRepository extends SubRegionRepository {
   }
 
 
-  // Finds sub-region specified by ID
+  /**
+   * Retrieves sub-region specified by given ID
+   * @param id sub-region ID
+   * @return sub-region or null
+   */
   override def findOneById(id: Long): Option[SubRegion] = {
     DB.withConnection { implicit c =>
       val mybeSubRegion: Option[SubRegion] = SQL(
         """
-          |SELECT
-          |id,
-          |name,
-          |region_id,
-          |code
-          |FROM subregion
-          |WHERE id={id};
+          SELECT
+          id,
+          name,
+          region_id,
+          code
+          FROM subregion
+          WHERE id={id}
         """).on('id -> id).as(subRegionParser.singleOpt)
 
       mybeSubRegion
@@ -123,13 +133,13 @@ object AnormSubRegionRepository extends SubRegionRepository {
     DB.withConnection { implicit c =>
       val mybeSubRegionList: List[SubRegion] = SQL(
         """
-          |SELECT
-          |id,
-          |name,
-          |region_id,
-          |code
-          |FROM subregion
-          |WHERE region_id = {id}
+          SELECT
+          id,
+          name,
+          region_id,
+          code
+          FROM subregion
+          WHERE region_id = {id}
         """).on(
           'id -> regionId
         ).as(subRegionParser.*)
