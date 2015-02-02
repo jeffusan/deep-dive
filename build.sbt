@@ -54,7 +54,8 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver
   "-Ywarn-value-discard", // Warn when non-Unit expression results are unused
   "-Ywarn-inaccessible",
-  "-Ywarn-dead-code"
+  "-Ywarn-dead-code",
+  "-language:postfixOps"
 )
 
 //
