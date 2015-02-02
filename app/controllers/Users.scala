@@ -16,16 +16,6 @@ trait Users extends Controller with Security {
       Ok(Json.toJson(user))
   }
 
-  def HasAdminRole(roles: List[Role]): Boolean = {
-    var result = false
-    for( role <- roles) {
-      role.name match {
-        case "Administrator" => result = true
-      }
-    }
-    result
-  }
-
   def CanEditUser[A](userId: Long, p: BodyParser[A] = parse.anyContent)(f: User => Request[A] => Result) =
     HasToken(p) { _ => user => request =>
 

@@ -8,7 +8,7 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.cache._
 import services.UserService
-import models.{AnormUserRepository, User}
+import models.{AnormUserRepository, User, Role}
 
 /**
  * Security actions that should be used by all controllers that need to protect their actions.
@@ -37,6 +37,15 @@ trait Security { self: Controller =>
     }
   }
 
+  def HasAdminRole(roles: List[Role]): Boolean = {
+    var result = false
+    for( role <- roles) {
+      role.name match {
+        case "Administrator" => result = true
+      }
+    }
+    result
+  }
 
   /**
    * Returns the JavaScript router that the client can use for "type-safe" routes.
@@ -48,6 +57,21 @@ trait Security { self: Controller =>
       Ok(Routes.javascriptRouter(varName)(routeCache: _*)).as(JAVASCRIPT)
     }
   }
+
+  /** Checks token and admin role */
+  def HasAdminToken[A](p: BodyParser[A] = parse.anyContent)(f: String => User => Request[A] => Result): Action[A] =
+    Action(p) { implicit request =>
+      val maybeToken = request.headers.get(AuthTokenHeader).orElse(request.getQueryString(AuthTokenUrlKey))
+      maybeToken flatMap { token =>
+        Cache.getAs[User](token) map { user =>
+          if(HasAdminRole(user.roles)) {
+          f(token)(user)(request)
+          } else {
+            Unauthorized(Json.obj("err" -> "No Token"))
+          }
+        }
+      } getOrElse Unauthorized(Json.obj("err" -> "No Token"))
+    }
 
   /** Checks that a token is either in the header or in the query string */
   def HasToken[A](p: BodyParser[A] = parse.anyContent)(f: String => User => Request[A] => Result): Action[A] =
