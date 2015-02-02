@@ -34,8 +34,9 @@ case class Site(
 object Site {
 
   /**
-   * Converts Site object from Json
+   * Converts Site object from & to Json
    */
+  //Json to Object
   implicit val SiteFromJson: Reads[Site] = (
     (__ \ "id").readNullable[Long] ~
       (__ \ "subRegionId").read[Long] ~
@@ -46,9 +47,7 @@ object Site {
       (__ \ "mapDatum").read[String]
     )(Site.apply _)
 
-  /**
-   * Converts Site object to Json
-   */
+  //Object to Json
   implicit val SiteToJson: Writes[Site] = (
     (__ \ "id").writeNullable[Long] ~
       (__ \ "subRegionId").write[Long] ~
@@ -71,7 +70,7 @@ object Site {
 
 
 /**
- * This trait defines functionalities supported by Site object
+ * [[SiteRepository]] trait defines functionalities supported by [[Site]] object
  */
 trait SiteRepository {
   /**
@@ -91,10 +90,11 @@ trait SiteRepository {
 
 
 /**
- * This object implements functions defined in SiteRepository trait
+ * Anorm specific database implementations of [[SiteRepository]] trait
  */
 object AnormSiteRepository extends SiteRepository {
 
+  // Database related dependencies
   import anorm._
   import anorm.SqlParser._
   import play.api.db.DB
@@ -102,7 +102,7 @@ object AnormSiteRepository extends SiteRepository {
 
 
   /**
-   * SQL parser for single result
+   * SQL parser
    */
   val siteParser: RowParser[Site] = {
     long("id") ~
