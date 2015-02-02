@@ -20,7 +20,7 @@ trait Users extends Controller with Security {
     HasToken(p) { _ => user => request =>
 
       // either the user is editing herself or is an administrator
-      if(userId == user.id.get ||  user.role == "Administrator") {
+      if(userId == user.id.get || HasAdminRole(user.roles)) {
 
           f(user)(request)
 

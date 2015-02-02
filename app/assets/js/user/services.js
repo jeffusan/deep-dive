@@ -23,7 +23,7 @@ define([
     /* If the token is assigned, check that the token is still valid on the server */
     if (token) {
       $log.info('Restoring user from cookie...');
-      playRoutes.controllers.Users.authUser().get()
+      playRoutes.controllers.Users.user().get()
         .success(function (data) {
           $log.info('Welcome back, ' + data.name);
           user = data;
@@ -40,8 +40,8 @@ define([
       loginUser: function (credentials) {
         return playRoutes.controllers.Application.login().post(credentials).then(function (response) {
           // return promise so we can chain easily
-          token = response.data.token;
-          return playRoutes.controllers.Users.authUser().get();
+          token = response.data.authToken;
+          return response.data.user;
         }).then(function (response) {
           user = response.data;
           return user;
