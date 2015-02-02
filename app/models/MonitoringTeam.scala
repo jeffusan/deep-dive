@@ -2,6 +2,8 @@ package models
 
 /** This is the ScalaDoc for MonitoringTeam Model of models package. **/
 
+import play.api.libs.json._
+
 /** A MonitoringTeam that is doing the monitoring.
 	*
  	* @contructor create a new [[models.MonitoringTeam]] with id and name.
@@ -16,7 +18,6 @@ case class MonitoringTeam (
 /** Factory for [[models.MonitoringTeam]] instances. */
 object MonitoringTeam {
 
-	import play.api.libs.json._
   import play.api.libs.functional.syntax._
 
   /** Implicit serializer for converting Json into instance.
@@ -39,6 +40,16 @@ object MonitoringTeam {
     mt.id,
     mt.name
   ))
+}
+
+/** A trait for data access. */
+trait MonitoringTeamRepository {
+	def findlAll(): Seq[MonitoringTeam]
+	def save(monitoringTeams: Seq[MonitoringTeam]): Array[Int]
+}
+
+/** A concrete class that extends [[models.MonitoringTeamRepository]].	*/
+class AnormMonitoringTeamRepository extends MonitoringTeamRepository {
 
 	import anorm._
 	import play.api.db.DB
@@ -97,34 +108,5 @@ object MonitoringTeam {
 	    )
 	    batchInsert.execute()
 		}
-	}
-}
-
-/** A trait for data access. */
-trait MonitoringTeamRepository {
-	def findlAll(): Seq[MonitoringTeam]
-	def save(monitoringTeams: Seq[MonitoringTeam]): Array[Int]
-}
-
-/** A concrete class that extends [[models.MonitoringTeamRepository]].	*/
-class AnormMonitoringTeamRepository extends MonitoringTeamRepository {
-
-  /** 
-  	* Find all monitoring teams.
-    *
-    * @return a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
-    */
-	def findlAll(): Seq[MonitoringTeam] = {
-		MonitoringTeam.findlAll()
-	}
-
-  /** 
-  	* Save the monitoring teams.
-    *
-   	* @param a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
-   	* @return a array instance including 0 or more [[Int]] instances.Int is a result for each query.
-    */
-	def save(monitoringTeams: Seq[MonitoringTeam]) = {
-		MonitoringTeam.save(monitoringTeams)
 	}
 }

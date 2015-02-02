@@ -32,7 +32,6 @@ case class SurveyEvent (
 object SurveyEvent { 
 
 	import play.api.libs.functional.syntax._
-	import anorm.SqlParser.{long, int, str, date, get}
 
   /** Implicit serializer for converting Json into instance.
     *
@@ -72,12 +71,25 @@ object SurveyEvent {
     se.transectLength,
     se.data
   ))
+}
+
+/** A trait for data access. */
+trait SurveyEventRepository {
+	def findAllBySiteId(siteId: Long): Seq[SurveyEvent]
+	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent]
+	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent]
+	def save(surveyEvents: Seq[SurveyEvent]): Array[Int]
+}
+
+/** A concrete class that extends [[models.SurveyEventRepository]].	*/
+class AnormSurveyEventRepository extends SurveyEventRepository {
 
 	import anorm._
 	import play.api.db.DB
 	import play.api.Play.current
 	import org.postgresql.util.PGobject
 	import scala.language.postfixOps
+	import anorm.SqlParser.{long, int, str, date, get}
 
   /** 
   	* Extractor for generating the [[models.SurveyEvent]] instance to retrieve data from resultset.
@@ -108,7 +120,6 @@ object SurveyEvent {
 	          value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
 	  }
 	}
-
   /** 
   	* Find all survey events by site id.
   	* 
@@ -247,56 +258,4 @@ object SurveyEvent {
 	    batchInsert.execute()
 	  }
  	}
-}
-
-/** A trait for data access. */
-trait SurveyEventRepository {
-	def findAllBySiteId(siteId: Long): Seq[SurveyEvent]
-	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent]
-	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent]
-	def save(surveyEvents: Seq[SurveyEvent]): Array[Int]
-}
-
-/** A concrete class that extends [[models.SurveyEventRepository]].	*/
-class AnormSurveyEventRepository extends SurveyEventRepository {
-
-  /** 
-  	* Find all survey events by site id.
-  	* 
-    * @param siteId the search criteria.
-    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
-    */
-	def findAllBySiteId(siteId: Long): Seq[SurveyEvent] = {
-		SurveyEvent.findAllBySiteId(siteId)
-	}
-
-  /** 
-  	* Find all survey events by event date.
-  	* 
-    * @param eventDate the search criteria.
-    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
-    */
-	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent] = {
-		SurveyEvent.findAllByEventDate(eventDate)
-	}
-
-  /** 
-  	* Find all survey events by event date.
-  	* 
-    * @param eventDate the search criteria.
-    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
-    */
-	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent] = {
-		SurveyEvent.findAllByMonitoringTeamId(monitoringTeamId)
-	}
-
-  /** 
-  	* Save the survey events.
-    *
-   	* @param a sequence instance including 0 or more [[models.SurveyEvent]] instances.
-   	* @return a array instance including 0 or more [[Int]] instances.Int is a result for each query.
-    */
-	def save(surveyEvents: Seq[SurveyEvent]): Array[Int] = {
-		SurveyEvent.save(surveyEvents)
-	}
 }
