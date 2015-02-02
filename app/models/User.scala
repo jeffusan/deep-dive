@@ -16,7 +16,7 @@ object Role {
   )(Role.apply _)
 
   implicit val RoleToJson: Writes[Role] = (
-    (__ \ "id").writeNullabxsle[Long] ~
+    (__ \ "id").writeNullable[Long] ~
       (__ \ "name").write[String]
   )((role: Role) => (
     role.id,
@@ -83,7 +83,7 @@ object User {
       (__ \ "email").read(Reads.email) ~
       (__ \ "password").readNullable[String] ~
       (__ \ "name").read[String] ~
-      (__ \ "role").read[List[Role]]
+      (__ \ "roles").read[List[Role]]
   )(User.apply _)
 
   implicit val UserToJson: Writes[User] = (
@@ -117,7 +117,7 @@ object AnormUserRepository extends UserRepository {
   val userParser: RowParser[User] = {
 
     long("id") ~ str("email") ~ str("name") ~ str("role") map {
-      case i~e~n~r => User(id=Some(i),email=e,password=null,name=n, roles=List[new Role(null, r)])
+      case i~e~n~r => User(id=Some(i),email=e,password=null,name=n, roles=List(new Role(null, r)))
     }
   }
 
