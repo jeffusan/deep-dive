@@ -111,13 +111,13 @@ object AnormSubRegionRepository extends SubRegionRepository {
     DB.withConnection { implicit c =>
       val mybeSubRegion: Option[SubRegion] = SQL(
         """
-          |SELECT
-          |id,
-          |name,
-          |region_id,
-          |code
-          |FROM subregion
-          |WHERE id={id};
+          SELECT
+          id,
+          name,
+          region_id,
+          code
+          FROM subregion
+          WHERE id={id}
         """).on('id -> id).as(subRegionParser.singleOpt)
 
       mybeSubRegion
@@ -133,13 +133,13 @@ object AnormSubRegionRepository extends SubRegionRepository {
     DB.withConnection { implicit c =>
       val mybeSubRegionList: List[SubRegion] = SQL(
         """
-          |SELECT
-          |id,
-          |name,
-          |region_id,
-          |code
-          |FROM subregion
-          |WHERE region_id = {id}
+          SELECT
+          id,
+          name,
+          region_id,
+          code
+          FROM subregion
+          WHERE region_id = {id}
         """).on(
           'id -> regionId
         ).as(subRegionParser.*)

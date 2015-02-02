@@ -68,6 +68,7 @@ trait RegionRepository {
 object AnormRegionRepository extends RegionRepository {
 
   // Database related dependencies
+
   import anorm._
   import anorm.SqlParser._
   import play.api.db.DB
@@ -95,11 +96,11 @@ object AnormRegionRepository extends RegionRepository {
     DB.withConnection { implicit c =>
       val mybeRegion: Option[Region] = SQL(
         """
-          |SELECT
-          |id,
-          |name
-          |FROM region
-          |WHERE id={id};
+          SELECT
+          id,
+          name
+          FROM region
+          WHERE id={id}
         """).on('id -> id).as(regionParser.singleOpt)
       mybeRegion
     }
@@ -113,10 +114,10 @@ object AnormRegionRepository extends RegionRepository {
     DB.withConnection { implicit c =>
       val regionList: List[Region] = SQL(
         """
-          |SELECT
-          |id,
-          |name
-          |FROM region
+          SELECT
+          id,
+          name
+          FROM region
         """).as(regionParser.*)
 
       regionList

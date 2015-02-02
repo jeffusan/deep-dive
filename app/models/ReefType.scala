@@ -65,6 +65,7 @@ trait ReefTypeRepository {
 object AnormReefTypeRepository extends ReefTypeRepository {
 
   // Database related dependencies
+
   import anorm._
   import anorm.SqlParser._
   import play.api.db.DB
@@ -95,12 +96,12 @@ object AnormReefTypeRepository extends ReefTypeRepository {
     DB.withConnection { implicit c =>
       val mybeReefType: Option[ReefType] = SQL(
         """
-          |SELECT
-          |id,
-          |name,
-          |depth
-          |FROM reef_type
-          |WHERE id = {id};
+          SELECT
+          id,
+          name,
+          depth
+          FROM reef_type
+          WHERE id = {id}
         """).on('id -> reefTypeId).as(reefTypeParser.singleOpt)
 
       mybeReefType
@@ -108,19 +109,19 @@ object AnormReefTypeRepository extends ReefTypeRepository {
   }
 
   /**
-    * Retrieves all available reef type info
+   * Retrieves all available reef type info
    * @return list of [[ReefType]] or null
    */
   override def findAllReefTypes: List[ReefType] = {
     DB.withConnection { implicit c =>
       val reefTypeList: List[ReefType] = SQL(
-      """
-        |SELECT
-        |id,
-        |name,
-        |depth
-        |FROM reef_type
-      """).as(reefTypeParser.*)
+        """
+          SELECT
+          id,
+          name,
+          depth
+          FROM reef_type
+        """).as(reefTypeParser.*)
 
       reefTypeList
     }

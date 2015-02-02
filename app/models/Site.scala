@@ -136,16 +136,16 @@ object AnormSiteRepository extends SiteRepository {
     DB.withConnection { implicit c =>
       val mybeSiteList: List[Site] = SQL(
         """
-          |SELECT
-          |id,
-          |subregion_id,
-          |reef_type_id,
-          |name,
-          |latitude,
-          |longitude,
-          |map_datum
-          |FROM site
-          |WHERE subregion_id = {id}
+          SELECT
+          id,
+          subregion_id,
+          reef_type_id,
+          name,
+          latitude,
+          longitude,
+          map_datum
+          FROM site
+          WHERE subregion_id = {id}
         """).on(
           'id -> subRegionId
         ).as(siteParser.*)
@@ -164,16 +164,16 @@ object AnormSiteRepository extends SiteRepository {
     DB.withConnection { implicit c =>
       val mybeSite: Option[Site] = SQL(
         """
-          |SELECT
-          |id,
-          |subregion_id,
-          |reef_type_id,
-          |name,
-          |latitude,
-          |longitude,
-          |map_datum
-          |FROM site
-          |WHERE id = {id}
+          SELECT
+          id,
+          subregion_id,
+          reef_type_id,
+          name,
+          latitude,
+          longitude,
+          map_datum
+          FROM site
+          WHERE id = {id}
         """).on('id -> id).as(siteParser.singleOpt)
 
       mybeSite
