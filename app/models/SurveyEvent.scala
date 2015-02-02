@@ -1,9 +1,22 @@
 package models
 
+/** This is the ScalaDoc for SurveyEvent Model of models package. **/
+
 import java.util.Date
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
+/** A SurveyEvent including the details of survey result.
+	*
+ 	* @contructor create a new [[models.SurveyEvent]] with 8 parameters.
+	* @param id the survey event id only use in application.
+	* @param siteId the id related to Site only use in application.
+	* @param eventDate the survey event date only use in application.
+	* @param photographer the name.
+	* @param analyzer the name.
+	* @param transectDepth the depth.
+	* @param transectLength the length.
+	* @param data the details of the survey results.
+	*/
 case class SurveyEvent (
   id: Option[Long],
   siteId: Long,
@@ -15,14 +28,15 @@ case class SurveyEvent (
   data: JsValue
 )
 
+/** Factory for [[models.SurveyEvent]] instances. */
 object SurveyEvent { 
 
-	import anorm._
-	import play.api.db.DB
-	import anorm.SqlParser.{long, int, str, date, get}
-	import play.api.Play.current
-	import org.postgresql.util.PGobject
+	import play.api.libs.functional.syntax._
 
+  /** Implicit serializer for converting Json into instance.
+    *
+    * @return a reading serializer that specializes in [[models.SurveyEvent]].
+    */
   implicit val SurveyEventFromJson: Reads[SurveyEvent] = (
     (__ \ "id").readNullable[Long] ~
     (__ \ "siteId").read[Long] ~
@@ -34,6 +48,10 @@ object SurveyEvent {
     (__ \ "data").read[JsValue]
   )(SurveyEvent.apply _)
 
+  /** Implicit serializer for converting instance into Json.
+    *
+    * @return a writing serializer that specializes in [[models.SurveyEvent]].
+    */
   implicit val SurveyEventToJson: Writes[SurveyEvent] = (
     (__ \ "id").writeNullable[Long] ~
     (__ \ "siteId").write[Long] ~
@@ -53,7 +71,29 @@ object SurveyEvent {
     se.transectLength,
     se.data
   ))
+}
 
+/** A trait for data access. */
+trait SurveyEventRepository {
+	def findAllBySiteId(siteId: Long): Seq[SurveyEvent]
+	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent]
+	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent]
+	def save(surveyEvents: Seq[SurveyEvent]): Array[Int]
+}
+
+/** A concrete class that extends [[models.SurveyEventRepository]].	*/
+class AnormSurveyEventRepository extends SurveyEventRepository {
+
+	import anorm._
+	import play.api.db.DB
+	import play.api.Play.current
+	import org.postgresql.util.PGobject
+	import scala.language.postfixOps
+	import anorm.SqlParser.{long, int, str, date, get}
+
+  /** 
+  	* Extractor for generating the [[models.SurveyEvent]] instance to retrieve data from resultset.
+    */
   val extractor = {
 		long("ID") ~
 		long("SITE_ID") ~
@@ -67,6 +107,11 @@ object SurveyEvent {
 	  }
 	}
 
+  /** 
+  	* Implicit converter Json to JsValue instance.
+    *
+    * @return a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
+    */
 	implicit def rowToJsValue: Column[JsValue] = Column.nonNull { (value, meta) =>
 	    val MetaDataItem(qualified, nullable, clazz) = meta
 	    value match {
@@ -75,7 +120,12 @@ object SurveyEvent {
 	          value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
 	  }
 	}
-
+  /** 
+  	* Find all survey events by site id.
+  	* 
+    * @param siteId the search criteria.
+    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
+    */
 	def findAllBySiteId(siteId: Long): Seq[SurveyEvent] = {
 		DB.withConnection { implicit c => 
 			SQL(
@@ -100,6 +150,12 @@ object SurveyEvent {
 		}
  	}
 
+  /** 
+  	* Find all survey events by event date.
+  	* 
+    * @param eventDate the search criteria.
+    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
+    */
  	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent] = {
 		DB.withConnection { implicit c => 
 			SQL(
@@ -124,6 +180,12 @@ object SurveyEvent {
 		}
  	}
 
+  /** 
+  	* Find all survey events by monitoring team id.
+  	* 
+    * @param monitoringTeamId the search criteria.
+    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
+    */
  	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent] = {
 		DB.withConnection { implicit c => 
 			SQL(
@@ -151,7 +213,13 @@ object SurveyEvent {
 		}
  	}
 
- 	def save(surveyEvents: Seq[SurveyEvent]) = {
+  /** 
+  	* Save the survey events.
+    *
+   	* @param a sequence instance including 0 or more [[models.SurveyEvent]] instances.
+   	* @return a array instance including 0 or more [[Int]] instances.Int is a result for each query.
+    */
+ 	def save(surveyEvents: Seq[SurveyEvent]): Array[Int] = {
 		DB.withTransaction { implicit c => 
   	    val insertQuery = SQL(
 				"""
@@ -190,30 +258,4 @@ object SurveyEvent {
 	    batchInsert.execute()
 	  }
  	}
-}
-
-trait SurveyEventRepository {
-	def findAllBySiteId(siteId: Long): Seq[SurveyEvent]
-	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent]
-	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent]
-	def save(surveyEvents: Seq[SurveyEvent])
-}
-
-class AnormSurveyEventRepository extends SurveyEventRepository {
-
-	def findAllBySiteId(siteId: Long): Seq[SurveyEvent] = {
-		SurveyEvent.findAllBySiteId(siteId)
-	}
-
-	def findAllByEventDate(eventDate: Date): Seq[SurveyEvent] = {
-		SurveyEvent.findAllByEventDate(eventDate)
-	}
-
-	def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent] = {
-		SurveyEvent.findAllByMonitoringTeamId(monitoringTeamId)
-	}
-
-	def save(surveyEvents: Seq[SurveyEvent]) = {
-		SurveyEvent.save(surveyEvents)
-	}
 }

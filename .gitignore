@@ -26,4 +26,6 @@ server.pid
 *.eml
 .cache
 .ensime
+.ensime_session
 .ensime_cache/
+.ensime_lucene/
