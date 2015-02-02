@@ -133,7 +133,7 @@ trait Application extends Controller with Security {
             "authToken" -> token,
             "user" -> user
           )).withToken(token -> user)
-        } getOrElse NotFound(Json.obj("err" -> "User Not Found or Password Invalid"))
+        } getOrElse Unauthorized(Json.obj("err" -> "User Not Found or Password Invalid"))
       }
     )
   }

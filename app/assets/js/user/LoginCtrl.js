@@ -10,6 +10,12 @@ define(['user/module'], function (module) {
         $location.path('/');
       });
     };
+
+    $scope.logout = function() {
+      userService.logoutUser().then(function(/*user*/) {
+        $location.path('/login');
+      });
+    };
   }]);
 
 });
