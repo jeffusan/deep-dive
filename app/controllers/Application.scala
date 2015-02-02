@@ -9,6 +9,7 @@ import play.api.data.Forms._
 import play.api.cache._
 import services.UserService
 import models.{AnormUserRepository, User, Role}
+import play.api.Logger
 
 /**
  * Security actions that should be used by all controllers that need to protect their actions.
@@ -125,6 +126,7 @@ trait Application extends Controller with Security {
     loginForm.bind(request.body).fold( // Bind JSON body to form values
       formErrors => BadRequest(Json.obj("err" -> formErrors.errorsAsJson)),
       loginData => {
+        Logger.debug("Attempting risky calculation")
         userService.authenticate(loginData.email, loginData.password) map { user =>
           val token = java.util.UUID.randomUUID().toString
           Ok(Json.obj(

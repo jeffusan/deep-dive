@@ -2,6 +2,7 @@ package models
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.Logger
 
 case class Role(
   id: Option[Long],
@@ -116,16 +117,17 @@ object AnormUserRepository extends UserRepository {
 
   val userParser: RowParser[User] = {
 
-    long("id") ~ str("email") ~ str("name") ~ str("role") map {
-      case i~e~n~r => User(id=Some(i),email=e,password=null,name=n, roles=List(new Role(null, r)))
+    long("id") ~ str("email") ~ str("name") ~ str("role") ~ long("roleid") map {
+      case i~e~n~r~ri => User(id=Some(i),email=e,password=null,name=n, roles=List(new Role(Some(ri), r)))
     }
   }
 
   def findOneByEmailAndPassword(email: String, password: String): Option[User] = {
+    Logger.debug("Attempting risky calculation: " + email)
     DB.withConnection{ implicit c =>
       val maybeUser: Option[User] = SQL(
         """
-        select u.id as id, u.email as email, u.name as name, r.name as role
+        select u.id as id, u.email as email, u.name as name, r.name as role, r.id as roleid
         from dd_user u
         join dd_user_role ur
         on ur.user_id = u.id
@@ -138,6 +140,7 @@ object AnormUserRepository extends UserRepository {
         'password -> password
       ).as(userParser.singleOpt)
 
+      Logger.debug("Here is maybeuser: " + maybeUser)
       maybeUser
     }
   }
@@ -146,7 +149,7 @@ object AnormUserRepository extends UserRepository {
     DB.withConnection { implicit c =>
       val maybeUser: Option[User] = SQL(
         """
-        select u.id as id, u.email as email, u.name as name, r.name as role
+        select u.id as id, u.email as email, u.name as name, r.name as role, r.id as roleid
         from dd_user u
         join dd_user_role ur
         on ur.user_id = u.id
