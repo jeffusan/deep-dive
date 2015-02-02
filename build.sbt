@@ -30,6 +30,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "angular-sanitize" % "1.2.26" exclude("org.webjars", "jquery"),
   "org.webjars" % "angular-ui-bootstrap" % "0.12.0" exclude("org.webjars", "angularjs"),
   "org.webjars" % "angular-ui-router" % "0.2.13" exclude("org.webjars", "angularjs"),
+  "org.webjars" % "angular-route-segment" % "1.3.3" exclude("org.webjars", "angularjs"),
   "org.webjars" % "angular-blocks" % "0.1.8-1" exclude("org.webjars", "angularjs"),
   "org.webjars" % "font-awesome" % "4.2.0",
   "org.webjars" % "json3" % "3.3.2-1",
@@ -53,7 +54,8 @@ scalacOptions in ThisBuild ++= Seq(
   "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver
   "-Ywarn-value-discard", // Warn when non-Unit expression results are unused
   "-Ywarn-inaccessible",
-  "-Ywarn-dead-code"
+  "-Ywarn-dead-code",
+  "-language:postfixOps"
 )
 
 //
@@ -122,3 +124,7 @@ sources in (Compile,doc) := Seq.empty
 
 // All work and no play...
 emojiLogs
+
+
+// heroku
+herokuAppName in Compile := "warm-beyond-9991"

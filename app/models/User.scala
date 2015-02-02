@@ -3,19 +3,69 @@ package models
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-sealed trait Role
+case class Role(
+  id: Option[Long],
+  name: String
+)
 
 object Role {
 
-  case object Administrator extends Role
-  case object NormalUser extends Role
+  implicit val RoleFromJson: Reads[Role] = (
+    (__ \ "id").readNullable[Long] ~
+      (__ \ "name").read[String]
+  )(Role.apply _)
 
-  def valueOf(value: String): Role = value match {
-    case "Administrator" => Administrator
-    case "NormalUser"    => NormalUser
-    case _ => throw new IllegalArgumentException()
+  implicit val RoleToJson: Writes[Role] = (
+    (__ \ "id").writeNullable[Long] ~
+      (__ \ "name").write[String]
+  )((role: Role) => (
+    role.id,
+    role.name
+  ))
+}
+
+trait RoleRepository {
+
+  def findOneByName(name: String): Option[Role]
+  def findAll(): List[Role]
+}
+
+trait AnormRoleRepository extends RoleRepository {
+
+  import anorm._
+  import anorm.SqlParser._
+  import play.api.db.DB
+  import play.api.Play.current
+
+  val roleParser: RowParser[Role] = {
+
+    long("id") ~ str("name") map {
+      case i~n => Role(id=Some(i), name=n)
+    }
   }
 
+  def findOneByName(name:String): Option[Role] = {
+    DB.withConnection{ implicit c =>
+      val maybeRole: Option[Role] = SQL (
+        """
+        select id, name from role where name = {name} limit 1;
+        """
+      ).on( 'name -> name).as(roleParser.singleOpt)
+
+      maybeRole
+    }
+  }
+
+  def findAll(): List[Role] = {
+    DB.withConnection { implicit c =>
+      val results: List[Role] = SQL (
+        """
+        select * from role;
+        """
+      ).as(roleParser *)
+      results
+    }
+  }
 }
 
 case class User(
@@ -23,7 +73,7 @@ case class User(
   email: String,
   password: Option[String],
   name: String,
-  role: String
+  roles: List[Role]
 )
 
 object User {
@@ -33,7 +83,7 @@ object User {
       (__ \ "email").read(Reads.email) ~
       (__ \ "password").readNullable[String] ~
       (__ \ "name").read[String] ~
-      (__ \ "role").read[String]
+      (__ \ "roles").read[List[Role]]
   )(User.apply _)
 
   implicit val UserToJson: Writes[User] = (
@@ -41,13 +91,13 @@ object User {
       (__ \ "email").write[String] ~
       (__ \ "password").writeNullable[String] ~
       (__ \ "name").write[String] ~
-      (__ \ "role").write[String]
+      (__ \ "role").write[List[Role]]
   )((user: User) => (
     user.id,
     user.email,
     None,
     user.name,
-    user.role
+    user.roles
   ))
 }
 
@@ -66,8 +116,8 @@ object AnormUserRepository extends UserRepository {
 
   val userParser: RowParser[User] = {
 
-    long("id") ~ str("email") ~ str("name") map {
-      case i~e~n => User(id=Some(i),email=e,password=null,name=n, Role.NormalUser.toString)
+    long("id") ~ str("email") ~ str("name") ~ str("role") map {
+      case i~e~n~r => User(id=Some(i),email=e,password=null,name=n, roles=List(new Role(null, r)))
     }
   }
 

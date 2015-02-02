@@ -1,4 +1,4 @@
-import models.User
+import models.{User, Role}
 import org.scalatestplus.play._
 import play.api.libs.json._
 
@@ -17,7 +17,7 @@ class UserSpec extends PlaySpec {
        "id" : 1,
        "email" : "tester@json.com",
        "name" : "Tester",
-       "role" : "Administrator"
+       "roles" : [{"id" :1, "name": "Administrator"}]
       }
       """)
       val user: User = (userJson).as[User]
@@ -25,7 +25,8 @@ class UserSpec extends PlaySpec {
       user.id mustBe Some(1)
       user.email mustBe "tester@json.com"
       user.name mustBe "Tester"
-      user.role mustBe "Administrator"
+      val adminRole = new Role(Some(1), "Administrator")
+      user.roles must contain (adminRole)
     }
 
     "error when cannot be parsed" in {
@@ -45,14 +46,13 @@ class UserSpec extends PlaySpec {
         case jsr: JsResultException =>
         case _: Exception => fail()
       }
-
     }
-  }
 
+  }
 
   "User#toJson" should {
     "match emails when converted to json" in {
-      val user: User = new User(Some(1), "tester@json.com", null, "tester", "Administrator")
+      val user: User = new User(Some(1), "tester@json.com", null, "tester", List(new Role(Some(1), "Administrator")))
 
       val userJson: JsValue = Json.toJson(user)
 
@@ -62,4 +62,5 @@ class UserSpec extends PlaySpec {
     }
 
   }
+
 }
