@@ -1,16 +1,16 @@
 define([
   'angular',
   'angular-couch-potato',
-  'angular-ui-router'
-  //,'./services'
-  //,'common/module'
+  'angular-ui-router',
+  './services',
+  'common/module'
 ], function (angular, couchPotato) {
   'use strict';
 
   var module = angular.module('app.user', [
     'ui.router'
-    //,'user.services'
-    //,'app.common'
+    ,'user.services'
+    ,'app.common'
   ]);
 
   couchPotato.configureApp(module);
