@@ -85,13 +85,14 @@ trait SurveyEventRepository {
 }
 
 /** A concrete class that extends [[models.SurveyEventRepository]].	*/
-class AnormSurveyEventRepository extends SurveyEventRepository {
+object AnormSurveyEventRepository extends SurveyEventRepository {
 
   import anorm._
   import play.api.db.DB
   import play.api.Play.current
   import org.postgresql.util.PGobject
   import anorm.SqlParser.{ long, int, str, date, get }
+  import scala.language.postfixOps
 
   /**
    * Extractor for generating the [[models.SurveyEvent]] instance to retrieve data from resultset.

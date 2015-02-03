@@ -11,7 +11,7 @@ import play.api.libs.json._
  * @param id the team id only use in application.
  * @param name the monitoring team's name.
  */
-case class MonitoringTeam(
+case class MonitoringTeam (
   id: Option[Long],
   name: String
 )
@@ -52,12 +52,13 @@ trait MonitoringTeamRepository {
 }
 
 /** A concrete class that extends [[models.MonitoringTeamRepository]].	*/
-class AnormMonitoringTeamRepository extends MonitoringTeamRepository {
+object AnormMonitoringTeamRepository extends MonitoringTeamRepository {
 
   import anorm._
   import play.api.db.DB
   import anorm.SqlParser.{ scalar, long, str, flatten }
   import play.api.Play.current
+  import scala.language.postfixOps
 
   /**
    * Extractor for generating the [[models.MonitoringTeam]] instance to retrieve data from resultset.
