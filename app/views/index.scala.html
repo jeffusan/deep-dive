@@ -1,7 +1,7 @@
 @()
 
 <!DOCTYPE html>
-<html lang="en" id="ng-app" xmlns:ng="http://angularjs.org">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,43 +9,210 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 with AngularJS and RequireJS Seed</title>
+    <title>Deep Dive!</title>
 
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")" />
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/font-awesome/css/font-awesome.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/sb-admin-2.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/plugins/metisMenu/metisMenu.min.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/plugins/timeline.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/plugins/morris.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/animate.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.css")">
+    <link href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.min.css")" rel="stylesheet">
+    <link href="@routes.Assets.versioned("css/stylish-login.css")" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="@routes.Assets.versioned("font-awesome/css/font-awesome.min.css")" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
 
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("favicon.ico")">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-      <script src="//cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
-      <script>
-        document.createElement('ng-include');
-        document.createElement('ng-pluralize');
-        document.createElement('ng-view'); 
-        // Optionally these for CSS
-        document.createElement('ng:include');
-        document.createElement('ng:pluralize');
-        document.createElement('ng:view');
-      </script>
-    <![endif]-->
-
-    <script data-main="@routes.Assets.versioned("js/main.js")" type="text/javascript" src="@routes.Assets.versioned("lib/requirejs/require.js")"></script>
-
-    <base href="/">
+    <script src="http://fb.me/react-with-addons-0.12.2.js"></script>
+<!--    <script src="@routes.Assets.versioned("lib/react/react-with-addons.js")"></script> -->
+    <script src="@routes.Assets.versioned("lib/react-router/react-router.js")"></script>
+    <script src="@routes.Assets.versioned("lib/react/JSXTransformer.js")"></script>
+    <script src="@routes.Assets.versioned("lib/showdown/compressed/showdown.js")"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+<!--    <script src="@routes.Assets.versioned("lib/jquery/jquery.min.js")"></script> -->
   </head>
   <body>
 
-    <div ui-view="root"></div>
+    <!-- Navigation -->
+    <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
+    <nav id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
+            <li class="sidebar-brand">
+                <a href="#top">Deep Dive</a>
+            </li>
+            <li>
+                <a href="#top">Home</a>
+            </li>
+            <li>
+                <a href="#about">About</a>
+            </li>
+            <li>
+                <a href="#services">Services</a>
+            </li>
+            <li>
+                <a href="#portfolio">Portfolio</a>
+            </li>
+            <li>
+                <a href="#contact">Contact</a>
+            </li>
+        </ul>
+    </nav>
 
+    <header id="top" class="header">
+      <div class="text-vertical-center">
+        <div id="magic" class="container"></div>
+      </div>
+    </header>
+
+    <!-- About -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Deep Dive will help you manage your benthic species data!</h2>
+                    <p class="lead">Store your data in a relational database instead of MS Access.</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+    <!-- Services -->
+    <!-- The circle icons use Font Awesome's stacked icon classes. For more information, visit http://fontawesome.io/examples/ -->
+    <section id="services" class="services bg-primary">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-10 col-lg-offset-1">
+                    <h2>Our Services</h2>
+                    <hr class="small">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-cloud fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Automatic file import</strong>
+                                </h4>
+                                <p>Use our import file import formats and forget about tedious data entry.</p>
+                                <a href="#" class="btn btn-light">Learn More</a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-compass fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Raw output report generation</strong>
+                                </h4>
+                                <p>Still stuck on Excel? That's ok, we can support that too.</p>
+                                <a href="#" class="btn btn-light">Learn More</a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-flask fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Graphs This Beautiful</strong>
+                                </h4>
+                                <p>A picture is worth 1000 rows of Excel.</p>
+                                <a href="#" class="btn btn-light">Learn More</a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="service-item">
+                                <span class="fa-stack fa-4x">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-shield fa-stack-1x text-primary"></i>
+                            </span>
+                                <h4>
+                                    <strong>Deploy Now</strong>
+                                </h4>
+                                <p>Deploy to Heroku to try it out!.</p>
+                                <a href="#" class="btn btn-light">Learn More</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.col-lg-10 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+    <!-- Callout -->
+    <aside class="callout">
+        <div class="text-vertical-center">
+            <h1>This is all I've got</h1>
+        </div>
+    </aside>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1 text-center">
+                    <h4><strong>Deep Dive</strong>
+                    </h4>
+                    <p>横浜本社 〒220-0012 横浜市西区みなとみらい3-6-1<br>みなとみらいセンタービル11F</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fa fa-phone fa-fw"></i> TEL 045-650-9505</li>
+                        <li><i class="fa fa-envelope-o fa-fw"></i>  <a href="mailto:example.com">example.com</a>
+                        </li>
+                    </ul>
+                    <br>
+                    <ul class="list-inline">
+                        <li>
+                            <a href="https://www.facebook.com/atware.jp?pnref=lhc"><i class="fa fa-facebook fa-fw fa-3x"></i></a>
+                        </li>
+                    </ul>
+                    <hr class="small">
+                    <p class="text-muted">Copyright &copy; Your Website 2014</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="@routes.Assets.versioned("lib/bootstrap/js/bootstrap.min.js")"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script>
+    // Closes the sidebar menu
+    $("#menu-close").click(function(e) {
+        e.preventDefault();
+        $("#sidebar-wrapper").toggleClass("active");
+    });
+
+    // Opens the sidebar menu
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#sidebar-wrapper").toggleClass("active");
+    });
+
+    // Scrolls to the selected menu item on the page
+    $(function() {
+        $('a[href*=#]:not([href=#])').click(function() {
+            if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') || location.hostname == this.hostname) {
+
+                var target = $(this.hash);
+                target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+                if (target.length) {
+                    $('html,body').animate({
+                        scrollTop: target.offset().top
+                    }, 1000);
+                    return false;
+                }
+            }
+        });
+    });
+    </script>
+
+    <script type="text/jsx" src="@routes.Assets.versioned("js/hello.js")"></script>
   </body>
 </html>
