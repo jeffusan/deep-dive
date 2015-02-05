@@ -93,6 +93,7 @@ object AnormRegionRepository extends RegionRepository {
    * @return region or null
    */
   def findOneById(id: Long): Option[Region] = {
+
     DB.withConnection { implicit c =>
       val mybeRegion: Option[Region] = SQL(
         """
