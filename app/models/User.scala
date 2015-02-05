@@ -74,7 +74,7 @@ case class User(
   email: String,
   password: Option[String],
   name: String,
-  roles: List[Role]
+  roles: List[String]
 )
 
 object User {
@@ -84,7 +84,7 @@ object User {
       (__ \ "email").read(Reads.email) ~
       (__ \ "password").readNullable[String] ~
       (__ \ "name").read[String] ~
-      (__ \ "roles").read[List[Role]]
+      (__ \ "roles").read[List[String]]
   )(User.apply _)
 
   implicit val UserToJson: Writes[User] = (
@@ -92,7 +92,7 @@ object User {
       (__ \ "email").write[String] ~
       (__ \ "password").writeNullable[String] ~
       (__ \ "name").write[String] ~
-      (__ \ "role").write[List[Role]]
+      (__ \ "roles").write[List[String]]
   )((user: User) => (
     user.id,
     user.email,
@@ -117,8 +117,8 @@ object AnormUserRepository extends UserRepository {
 
   val userParser: RowParser[User] = {
 
-    long("id") ~ str("email") ~ str("name") ~ str("role") ~ long("roleid") map {
-      case i~e~n~r~ri => User(id=Some(i),email=e,password=null,name=n, roles=List(new Role(Some(ri), r)))
+    long("id") ~ str("email") ~ str("name") ~ str("role") map {
+      case i~e~n~r => User(id=Some(i),email=e,password=null,name=n, roles=List(r))
     }
   }
 
@@ -127,7 +127,7 @@ object AnormUserRepository extends UserRepository {
     DB.withConnection{ implicit c =>
       val maybeUser: Option[User] = SQL(
         """
-        select u.id as id, u.email as email, u.name as name, r.name as role, r.id as roleid
+        select u.id as id, u.email as email, u.name as name, r.name as role
         from dd_user u
         join dd_user_role ur
         on ur.user_id = u.id
@@ -149,7 +149,7 @@ object AnormUserRepository extends UserRepository {
     DB.withConnection { implicit c =>
       val maybeUser: Option[User] = SQL(
         """
-        select u.id as id, u.email as email, u.name as name, r.name as role, r.id as roleid
+        select u.id as id, u.email as email, u.name as name, r.name as role
         from dd_user u
         join dd_user_role ur
         on ur.user_id = u.id

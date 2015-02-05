@@ -38,11 +38,11 @@ trait Security { self: Controller =>
     }
   }
 
-  def HasAdminRole(roles: List[Role]): Boolean = {
+  def HasAdminRole(roles: List[String]): Boolean = {
     var result = false
     for( role <- roles) {
-      role.name match {
-        case "Administrator" => result = true
+      role match {
+        case "administrator" => result = true
       }
     }
     result

@@ -2,8 +2,6 @@ var Router = ReactRouter;
 var Route = Router.Route, DefaultRoute = Router.DefaultRoute,
   Link=Router.Link, RouteHandler = Router.RouteHandler;
 
-//var { Route, RouteHandler, Link } = Router;
-
 var App = React.createClass({
   getInitialState: function () {
     return {
@@ -11,9 +9,10 @@ var App = React.createClass({
     };
   },
 
-  setStateOnAuth: function (loggedIn) {
+  setStateOnAuth: function (data) {
     this.setState({
-      loggedIn: loggedIn
+      loggedIn: data.isLoggedIn,
+      admin: data.isAdmin
     });
   },
 
@@ -27,12 +26,23 @@ var App = React.createClass({
           <Link to="logout">Log out</Link> :
           <Link to="login">Sign in</Link>;
 
+    function roleOrNot(state) {
+      if(state.loggedIn) {
+        if(state.admin) {
+          return <li><Link to="dashboard">Dashboard</Link></li>;
+        } else {
+          return <li><Link to="user">User</Link></li>;
+        }
+      } else {
+        return "";
+      }
+    };
     return (
       <div className="dd-well">
         <ul>
-          <li>{loginOrOut}</li>
-          <li><Link to="about">About</Link></li>
-          <li><Link to="dashboard">Dashboard</Link> (authenticated)</li>
+        <li>{loginOrOut}</li>
+        {roleOrNot(this.state)}
+        <li><Link to="about">About</Link></li>
         </ul>
         <RouteHandler/>
       </div>
@@ -63,6 +73,23 @@ var Dashboard = React.createClass({
         <p>{token}</p>
       </div>
     );
+  }
+});
+
+var User = React.createClass({
+  mixins: [Authentication],
+
+  render: function() {
+    var token = auth.getToken();
+
+    return (
+      <div class="dd-well">
+        <h1>User page</h1>
+        <p>You made it!</p>
+        <p>{token}</p>
+      </div>
+    );
+
   }
 });
 
@@ -101,8 +128,8 @@ var Login = React.createClass({
     var errors = this.state.error ? <p>Bad login information</p> : '';
     return (
       <form onSubmit={this.handleSubmit}>
-        <label><input ref="email" placeholder="email" defaultValue="joe@example.com"/></label>
-        <label><input ref="pass" placeholder="password"/></label> (hint: password1)<br/>
+        <label><input ref="email" placeholder="email" defaultValue="bigman@atware.jp"/></label>
+        <label><input ref="pass" placeholder="password"/></label> (hint: secret)<br/>
         <button type="submit">login</button>
         {errors}
       </form>
@@ -133,18 +160,28 @@ var auth = {
     cb = arguments[arguments.length - 1];
     if (localStorage.token) {
       if (cb) cb(true);
-      this.onChange(true);
+      this.onChange({
+        isLoggedIn: true,
+        isAdmin: this.isAdmin()
+      });
       return;
     }
     if(email !== undefined && pass !== undefined) {
       makeRequest(email, pass, function (res) {
         if (res.authenticated) {
           localStorage.token = res.token;
+          localStorage.user = res.user;
           if (cb) cb(true);
-          this.onChange(true);
+          this.onChange({
+            isLoggedIn: true,
+            isAdmin: $.inArray("administrator", res.user.roles) > -1
+          });
         } else {
           if (cb) cb(false);
-          this.onChange(false);
+          this.onChange({
+            isLoggedIn: false,
+            isAdmin: false
+          });
         }
       }.bind(this));
     }
@@ -156,12 +193,24 @@ var auth = {
 
   logout: function (cb) {
     delete localStorage.token;
+    delete localStorage.user;
     if (cb) cb();
-    this.onChange(false);
+    this.onChange({
+      isLoggedIn: false,
+      isAdmin: false
+    });
   },
 
   loggedIn: function () {
     return !!localStorage.token;
+  },
+
+  isAdmin: function() {
+    return $.inArray("administrator", localStorage.user.roles) > -1;
+  },
+
+  getUser: function() {
+    return localStorage.user;
   },
 
   onChange: function () {}
@@ -197,6 +246,7 @@ var routes = (
     <Route name="logout" handler={Logout}/>
     <Route name="about" handler={About}/>
     <Route name="dashboard" handler={Dashboard}/>
+    <Route name="user" handler={User}/>
   </Route>
 );
 
