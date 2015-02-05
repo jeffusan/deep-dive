@@ -22,30 +22,22 @@ var App = React.createClass({
   },
 
   render: function () {
-    var loginOrOut = this.state.loggedIn ?
-          <Link to="logout">Log out</Link> :
-          <Link to="login">Sign in</Link>;
 
-    function roleOrNot(state) {
+    function showPage(state) {
+
       if(state.loggedIn) {
         if(state.admin) {
-          return <li><Link to="dashboard">Dashboard</Link></li>;
+          return <Dashboard/>;
         } else {
-          return <li><Link to="user">User</Link></li>;
+          return <User/>;
         }
       } else {
-        return "";
+        return <Login/>;
       }
-    };
+    }
+
     return (
-      <div className="dd-well">
-        <ul>
-        <li>{loginOrOut}</li>
-        {roleOrNot(this.state)}
-        <li><Link to="about">About</Link></li>
-        </ul>
-        <RouteHandler/>
-      </div>
+        <p>{showPage(this.state)}</p>
     );
   }
 });
@@ -127,12 +119,36 @@ var Login = React.createClass({
   render: function () {
     var errors = this.state.error ? <p>Bad login information</p> : '';
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label><input ref="email" placeholder="email" defaultValue="bigman@atware.jp"/></label>
-        <label><input ref="pass" placeholder="password"/></label> (hint: secret)<br/>
-        <button type="submit">login</button>
-        {errors}
-      </form>
+        <div id="loginModal" className="modal show" tabIndex="-1" role="dialog" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h1 className="text-center">Login</h1>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={this.handleSubmit} className="form col-md-12 center-block">
+                  <div className="form-group">
+                    <input ref="email" className="form-control input-lg" placeholder="email" defaultValue="bigman@atware.jp"/>
+                  </div>
+                  <div className="form-group">
+                    <input ref="pass" className="form-control input-lg" placeholder="Password"/>
+                  </div>
+                  <div className="form-group">
+                    <button className="btn btn-primary btn-lg btn-block">Sign In</button>
+                    <span className="pull-right"><a href="#">Register</a></span><span><a href="#">Need help?</a></span>
+                  </div>
+                 {errors}
+               </form>
+              </div>
+              <div className="modal-footer">
+                <div className="col-md-12">
+                  <button className="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
     );
   }
 });
@@ -206,7 +222,12 @@ var auth = {
   },
 
   isAdmin: function() {
-    return $.inArray("administrator", localStorage.user.roles) > -1;
+    if(localStorage.user !== undefined && localStorage.user.roles !== undefined) {
+      return $.inArray("administrator", localStorage.user.roles) > -1;
+    } else {
+      return false;
+    }
+
   },
 
   getUser: function() {
