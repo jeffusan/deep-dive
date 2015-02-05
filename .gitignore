@@ -29,3 +29,4 @@ server.pid
 .ensime_session
 .ensime_cache/
 .ensime_lucene/
+.DS_Store
