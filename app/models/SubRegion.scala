@@ -60,9 +60,9 @@ trait SubRegionRepository {
   /**
    * Finds list of sub-regions based on given region id
    * @param regionId region id
-   * @return list of subiregions or null
+   * @return list of sub-regions
    */
-  def findAllByRegionId(regionId: Long): List[SubRegion]
+  def findAllSubRegionByRegionId(regionId: Long): List[SubRegion]
 
   /**
    * Finds a sub-region based on given sub-region id
@@ -70,6 +70,12 @@ trait SubRegionRepository {
    * @return sub-region or null
    */
   def findOneById(subRegionId: Long): Option[SubRegion]
+
+  /**
+   * Retrieves all available sub-regions
+   * @return list of sub-regions
+   */
+  def findAllSubRegion: List[SubRegion]
 }
 
 
@@ -79,6 +85,7 @@ trait SubRegionRepository {
 object AnormSubRegionRepository extends SubRegionRepository {
 
   // Database related dependencies
+
   import anorm._
   import anorm.SqlParser._
   import play.api.db.DB
@@ -129,7 +136,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
    * @param regionId region id
    * @return list of sub-regions or null
    */
-  override def findAllByRegionId(regionId: Long): List[SubRegion] = {
+  override def findAllSubRegionByRegionId(regionId: Long): List[SubRegion] = {
     DB.withConnection { implicit c =>
       val mybeSubRegionList: List[SubRegion] = SQL(
         """
@@ -147,4 +154,27 @@ object AnormSubRegionRepository extends SubRegionRepository {
       mybeSubRegionList
     }
   }
+
+  /**
+   * Retrieves all available sub-regions
+   * @return list of sub-regions
+   */
+  override def findAllSubRegion: List[SubRegion] = {
+    DB.withConnection { implicit c =>
+    val subRegionList: List[SubRegion] = SQL(
+      """
+        SELECT
+        id,
+        name,
+        region_id,
+        code
+        FROM subregion
+        WHERE region_id = {id}
+      """).as(subRegionParser.*)
+
+      subRegionList
+   }
+
+  }
+
 }

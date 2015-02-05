@@ -5,12 +5,9 @@ import play.api.libs.json.{Json, JsValue}
 
 /**
  * Services for [[models.Site]] object
- */
-/**
- * Services for [[models.Site]] object
  * @param repository repository of supported functions by [[models.Site]]
  */
-class SiteService (repository: SiteRepository) {
+class SiteService(repository: SiteRepository) {
 
   /**
    * Retrieves list of available sites based on given sub-region ID
@@ -18,9 +15,14 @@ class SiteService (repository: SiteRepository) {
    * @return json converted list of sites or null
    */
   def findAllBySubRegionId(subRegionId: Long): Option[JsValue] = {
+    // validation of input
+    require(subRegionId >= 1, "invalid sub-region id")
+
     repository.findAllBySubRegionId(subRegionId) match {
+      // in case of empty list, do nothing
       case List() => None
-      case lists  => Some(Json.toJson(lists))
+      // in case of list is return, convert to json
+      case lists => Some(Json.toJson(lists))
     }
 
   }
@@ -31,7 +33,10 @@ class SiteService (repository: SiteRepository) {
    * @return json converted site or null
    */
   def findOneById(siteId: Long): Option[JsValue] = {
+    // validation of input
+    require(siteId >= 1, "invalid site id")
 
+    // returns converted json result
     Some(Json.toJson(repository.findOneById(siteId)))
 
   }

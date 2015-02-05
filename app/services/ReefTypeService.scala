@@ -15,7 +15,9 @@ class ReefTypeService(repository: ReefTypeRepository) {
    */
   def findAllReefTypes: Option[JsValue] = {
     repository.findAllReefTypes match {
+      // in case of empty list, do nothing
       case List() => None
+      // returns converted json result
       case lists => Some(Json.toJson(lists))
     }
   }
@@ -27,6 +29,9 @@ class ReefTypeService(repository: ReefTypeRepository) {
    * @return json converted reef info or null
    */
   def findReefById(reefId: Long): Option[JsValue] = {
+    // invalid of input
+    require(reefId >= 1, "invalid reef id")
+
     // returns converted json result
     Some(Json.toJson(repository.findReefTypeById(reefId)))
 
