@@ -17,7 +17,7 @@ class UserSpec extends PlaySpec {
        "id" : 1,
        "email" : "tester@json.com",
        "name" : "Tester",
-       "roles" : [{"id" :1, "name": "Administrator"}]
+       "roles" : ["Administrator"]
       }
       """)
       val user: User = (userJson).as[User]
@@ -25,8 +25,7 @@ class UserSpec extends PlaySpec {
       user.id mustBe Some(1)
       user.email mustBe "tester@json.com"
       user.name mustBe "Tester"
-      val adminRole = new Role(Some(1), "Administrator")
-      user.roles must contain (adminRole)
+      user.roles must contain ("Administrator")
     }
 
     "error when cannot be parsed" in {
@@ -52,7 +51,7 @@ class UserSpec extends PlaySpec {
 
   "User#toJson" should {
     "match emails when converted to json" in {
-      val user: User = new User(Some(1), "tester@json.com", null, "tester", List(new Role(Some(1), "Administrator")))
+      val user: User = new User(Some(1), "tester@json.com", null, "tester", List("Administrator"))
 
       val userJson: JsValue = Json.toJson(user)
 
