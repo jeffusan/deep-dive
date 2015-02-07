@@ -1,15 +1,13 @@
 package controllers
 
-import java.util.UUID
-import play.api.libs.json._
-import play.api._
-import play.api.mvc._
-import play.api.data._
-import play.api.data.Forms._
-import play.api.cache._
-import services.UserService
-import models.{AnormUserRepository, User, Role}
+import models.{AnormUserRepository, User}
 import play.api.Logger
+import play.api.cache._
+import play.api.data.Forms._
+import play.api.data._
+import play.api.libs.json._
+import play.api.mvc._
+import services.UserService
 
 /**
  * Security actions that should be used by all controllers that need to protect their actions.
@@ -48,16 +46,6 @@ trait Security { self: Controller =>
     result
   }
 
-  /**
-   * Returns the JavaScript router that the client can use for "type-safe" routes.
-   * Uses browser caching; set duration (in seconds) according to your release cycle.
-   * @param varName The name of the global variable, defaults to `jsRoutes`
-   */
-  def jsRoutes(varName: String = "jsRoutes") = Cached(_ => "jsRoutes", duration = 86400) {
-    Action { implicit request =>
-      Ok(Routes.javascriptRouter(varName)(routeCache: _*)).as(JAVASCRIPT)
-    }
-  }
 
   /** Checks token and admin role */
   def HasAdminToken[A](p: BodyParser[A] = parse.anyContent)(f: String => User => Request[A] => Result): Action[A] =
