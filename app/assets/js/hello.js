@@ -59,11 +59,94 @@ var Dashboard = React.createClass({
   render: function () {
     var token = auth.getToken();
     return (
-      <div class="dd-well">
-        <h1>Dashboard</h1>
-        <p>You made it!</p>
-        <p>{token}</p>
-      </div>
+       <div class="row">
+            <div class="col-md-3">
+                <p class="lead">Shop Name</p>
+                <div class="list-group">
+                    <a href="#" class="list-group-item active">Category 1</a>
+                    <a href="#" class="list-group-item">Category 2</a>
+                    <a href="#" class="list-group-item">Category 3</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="thumbnail">
+                    <img class="img-responsive" src="http://placehold.it/800x300" alt=""/>
+                    <div class="caption-full">
+                        <h4 class="pull-right">$24.99</h4>
+                        <h4><a href="#">Product Name</a>
+                        </h4>
+                        <p>See more snippets like these online store reviews at <a target="_blank" href="http://bootsnipp.com">Bootsnipp - http://bootsnipp.com</a>.</p>
+                        <p>Want to make these reviews work? Check out
+                            <strong><a href="http://maxoffsky.com/code-blog/laravel-shop-tutorial-1-building-a-review-system/">this building a review system tutorial</a>
+                            </strong>over at maxoffsky.com!</p>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+                    </div>
+                    <div class="ratings">
+                        <p class="pull-right">3 reviews</p>
+                        <p>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star-empty"></span>
+                            4.0 stars
+                        </p>
+                    </div>
+                </div>
+
+                <div class="well">
+
+                    <div class="text-right">
+                        <a class="btn btn-success">Leave a Review</a>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star-empty"></span>
+                            Anonymous
+                            <span class="pull-right">10 days ago</span>
+                            <p>This product was great in terms of quality. I would definitely buy another!</p>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star-empty"></span>
+                            Anonymous
+                            <span class="pull-right">12 days ago</span>
+                            <p>I've alredy ordered another one!</p>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star-empty"></span>
+                            Anonymous
+                            <span class="pull-right">15 days ago</span>
+                            <p>I've seen some better than this, but not at this price. I definitely recommend this item.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
   }
 });
@@ -73,13 +156,174 @@ var User = React.createClass({
 
   render: function() {
     var token = auth.getToken();
+    $("#top").attr('class', 'userpage_bg');
 
     return (
-      <div class="dd-well">
-        <h1>User page</h1>
-        <p>You made it!</p>
-        <p>{token}</p>
-      </div>
+        <div className="row userpage">
+
+            <div className="col-md-3">
+                <p className="lead">Deep Dive User</p>
+                <div className="list-group">
+                    <a href="#" className="list-group-item">My Stuff</a>
+                    <a href="#" className="list-group-item">Category 2</a>
+                    <a href="#" className="list-group-item">Login/Out</a>
+                </div>
+            </div>
+
+            <div className="col-md-9">
+
+                <div className="row carousel-holder">
+
+                    <div className="col-md-12">
+                        <div id="carousel-example-generic" className="carousel slide" data-ride="carousel">
+                            <ol className="carousel-indicators">
+                                <li data-target="#carousel-example-generic" data-slide-to="0" className="active"></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                            </ol>
+                            <div className="carousel-inner">
+                                <div className="item active">
+                                    <img className="slide-image" src="http://placehold.it/800x300" alt=""/>
+                                </div>
+                                <div className="item">
+                                    <img className="slide-image" src="http://placehold.it/800x300" alt=""/>
+                                </div>
+                                <div className="item">
+                                    <img className="slide-image" src="http://placehold.it/800x300" alt=""/>
+                                </div>
+                            </div>
+                            <a className="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                                <span className="glyphicon glyphicon-chevron-left"></span>
+                            </a>
+                            <a className="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                                <span className="glyphicon glyphicon-chevron-right"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div className="row">
+
+                    <div className="col-sm-4 col-lg-4 col-md-4">
+                        <div className="thumbnail">
+                            <img src="http://placehold.it/320x150" alt=""/>
+                            <div className="caption">
+                                <h4 className="pull-right">$24.99</h4>
+                                <h4><a href="#">First Product</a>
+                                </h4>
+                                <p>See more snippets like this online store item at <a target="_blank" href="http://www.bootsnipp.com">Bootsnipp - http://bootsnipp.com</a>.</p>
+                            </div>
+                            <div className="ratings">
+                                <p className="pull-right">15 reviews</p>
+                                <p>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-sm-4 col-lg-4 col-md-4">
+                        <div className="thumbnail">
+                            <img src="http://placehold.it/320x150" alt=""/>
+                            <div className="caption">
+                                <h4 className="pull-right">$64.99</h4>
+                                <h4><a href="#">Second Product</a>
+                                </h4>
+                                <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            </div>
+                            <div className="ratings">
+                                <p className="pull-right">12 reviews</p>
+                                <p>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star-empty"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-sm-4 col-lg-4 col-md-4">
+                        <div className="thumbnail">
+                            <img src="http://placehold.it/320x150" alt=""/>
+                            <div className="caption">
+                                <h4 className="pull-right">$74.99</h4>
+                                <h4><a href="#">Third Product</a>
+                                </h4>
+                                <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            </div>
+                            <div className="ratings">
+                                <p className="pull-right">31 reviews</p>
+                                <p>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star-empty"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-sm-4 col-lg-4 col-md-4">
+                        <div className="thumbnail">
+                            <img src="http://placehold.it/320x150" alt=""/>
+                            <div className="caption">
+                                <h4 className="pull-right">$84.99</h4>
+                                <h4><a href="#">Fourth Product</a>
+                                </h4>
+                                <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            </div>
+                            <div className="ratings">
+                                <p className="pull-right">6 reviews</p>
+                                <p>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star-empty"></span>
+                                    <span className="glyphicon glyphicon-star-empty"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-sm-4 col-lg-4 col-md-4">
+                        <div className="thumbnail">
+                            <img src="http://placehold.it/320x150" alt=""/>
+                            <div className="caption">
+                                <h4 className="pull-right">$94.99</h4>
+                                <h4><a href="#">Fifth Product</a>
+                                </h4>
+                                <p>This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                            </div>
+                            <div className="ratings">
+                                <p className="pull-right">18 reviews</p>
+                                <p>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star"></span>
+                                    <span className="glyphicon glyphicon-star-empty"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-sm-4 col-lg-4 col-md-4">
+                        <h4><a href="#">Like this template?</a>
+                        </h4>
+                        <p>If you like this template, then check out <a target="_blank" href="http://maxoffsky.com/code-blog/laravel-shop-tutorial-1-building-a-review-system/">this tutorial</a> on how to build a working review system for your online store!</p>
+                        <a className="btn btn-primary" target="_blank" href="http://maxoffsky.com/code-blog/laravel-shop-tutorial-1-building-a-review-system/">View Tutorial</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 
   }

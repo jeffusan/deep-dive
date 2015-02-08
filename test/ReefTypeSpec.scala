@@ -46,7 +46,7 @@ class ReefTypeSpec extends PlaySpec with MockitoSugar {
 
   "Retrieve all available reef types" should {
 
-    "can return JsonValue with no object in it" in {
+    "return List with no object in it" in {
       val reefs = List()
       val repo = mock[ReefTypeRepository]
       when(repo.findAllReefTypes) thenReturn reefs
@@ -54,10 +54,10 @@ class ReefTypeSpec extends PlaySpec with MockitoSugar {
       val service = new ReefTypeService(repo)
       val actual = service.findAllReefTypes
 
-      actual mustBe None
+      actual.size mustBe 0
     }
 
-    "can return JsonValue with one object in it" in {
+    "return List with one object in it" in {
       val reefs = List(
         new ReefType(Some(1), "Inner", "3-5m")
       )
@@ -68,18 +68,14 @@ class ReefTypeSpec extends PlaySpec with MockitoSugar {
       val actual = service.findAllReefTypes
 
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe reefs.size
+      actual.size mustBe reefs.size
 
-      var index = 0
-      reefs.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        (actual.get(index) \ "depth").as[String] mustBe e.depth
-        index += 1
-      })
+      val reef1 = actual(0)
+      reef1.id.get mustBe 1
+      reef1.name mustBe "Inner"
     }
 
-    "can return JsonValue with two objects in it" in {
+    "return JsonValue with two objects in it" in {
       val reefs = List(
         new ReefType(Some(1), "Inner", "3-5m"),
         new ReefType(Some(2), "Channel", "7-9m")
@@ -91,15 +87,16 @@ class ReefTypeSpec extends PlaySpec with MockitoSugar {
       val actual = service.findAllReefTypes
 
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe reefs.size
+      actual.size mustBe reefs.size
 
-      var index = 0
-      reefs.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        (actual.get(index) \ "depth").as[String] mustBe e.depth
-        index += 1
-      })
+      val reef1 = actual(0)
+      val reef2 = actual(1)
+
+      reef1.id.get mustBe 1
+      reef1.name mustBe "Inner"
+
+      reef2.id.get mustBe 2
+      reef2.name mustBe "Channel"
     }
 
   }

@@ -78,9 +78,9 @@ object SurveyEvent {
 
 /** A trait for data access. */
 trait SurveyEventRepository {
-  def findAllBySiteId(siteId: Long): Seq[SurveyEvent]
-  def findAllByEventDate(eventDate: Date): Seq[SurveyEvent]
-  def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent]
+  def findBySiteId(siteId: Long): Seq[SurveyEvent]
+  def findByEventDate(eventDate: Date): Seq[SurveyEvent]
+  def findByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent]
   def save(surveyEvents: Seq[SurveyEvent]): Array[Int]
 }
 
@@ -129,24 +129,24 @@ object AnormSurveyEventRepository extends SurveyEventRepository {
    * @param siteId the search criteria.
    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
    */
-  def findAllBySiteId(siteId: Long): Seq[SurveyEvent] = {
+  def findBySiteId(siteId: Long): Seq[SurveyEvent] = {
     DB.withConnection { implicit c =>
       SQL(
         """
-					select
-						ID,
-						SITE_ID,
-						EVENT_DATE,
-						PHOTOGRAPHER,
-						ANALYZER,
-						TRANSECT_DEPTH,
-						TRANSECT_LENGTH,
-						DATA
-					from
-						SURVEY_EVENT
-					where
-						SITE_ID = {siteId}
-				"""
+	select
+	ID,
+	SITE_ID,
+	EVENT_DATE,
+	PHOTOGRAPHER,
+	ANALYZER,
+	TRANSECT_DEPTH,
+	TRANSECT_LENGTH,
+	DATA
+	from
+	SURVEY_EVENT
+	where
+	SITE_ID = {siteId}
+	"""
       )
         .on('siteId -> siteId)
         .as(extractor *)
@@ -159,24 +159,24 @@ object AnormSurveyEventRepository extends SurveyEventRepository {
    * @param eventDate the search criteria.
    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
    */
-  def findAllByEventDate(eventDate: Date): Seq[SurveyEvent] = {
+  def findByEventDate(eventDate: Date): Seq[SurveyEvent] = {
     DB.withConnection { implicit c =>
       SQL(
         """
-					select
-						ID,
-						SITE_ID,
-						EVENT_DATE,
-						PHOTOGRAPHER,
-						ANALYZER,
-						TRANSECT_DEPTH,
-						TRANSECT_LENGTH,
-						DATA
-					from
-						SURVEY_EVENT
-					where
-						EVENT_DATE = {eventDate}
-				"""
+	select
+	ID,
+	SITE_ID,
+	EVENT_DATE,
+	PHOTOGRAPHER,
+	ANALYZER,
+	TRANSECT_DEPTH,
+	TRANSECT_LENGTH,
+	DATA
+	from
+	SURVEY_EVENT
+	where
+	EVENT_DATE = {eventDate}
+	"""
       )
         .on('eventDate -> eventDate)
         .as(extractor *)
@@ -189,27 +189,27 @@ object AnormSurveyEventRepository extends SurveyEventRepository {
    * @param monitoringTeamId the search criteria.
    * @return a sequence instance including 0 or more [[models.SurveyEvent]] instances.
    */
-  def findAllByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent] = {
+  def findByMonitoringTeamId(monitoringTeamId: Long): Seq[SurveyEvent] = {
     DB.withConnection { implicit c =>
       SQL(
         """
-					select
-						se.ID,
-						se.SITE_ID,
-						se.EVENT_DATE,
-						se.PHOTOGRAPHER,
-						se.ANALYZER,
-						se.TRANSECT_DEPTH,
-						se.TRANSECT_LENGTH,
-						se.DATA
-					from
-						SURVEY_EVENT se,
-						SURVEYEVENT_MONITORING_TEAM smt
-					where
-						se.ID = smt.SURVEYEVENT_ID
-					and
-						smt.MONITORINGTEAM_ID = {monitoringTeamId}
-				"""
+	select
+	se.ID,
+        se.SITE_ID,
+	se.EVENT_DATE,
+	se.PHOTOGRAPHER,
+	se.ANALYZER,
+	se.TRANSECT_DEPTH,
+	se.TRANSECT_LENGTH,
+	se.DATA
+	from
+	SURVEY_EVENT se,
+	SURVEYEVENT_MONITORING_TEAM smt
+	where
+	se.ID = smt.SURVEYEVENT_ID
+	and
+	smt.MONITORINGTEAM_ID = {monitoringTeamId}
+        """
       )
         .on('monitoringTeamId -> monitoringTeamId)
         .as(extractor *)
@@ -226,23 +226,23 @@ object AnormSurveyEventRepository extends SurveyEventRepository {
     DB.withTransaction { implicit c =>
       val insertQuery = SQL(
         """
-					insert into SURVEY_EVENT (
-						SITE_ID,
-						EVENT_DATE,
-						PHOTOGRAPHER,
-						ANALYZER,
-						TRANSECT_DEPTH,
-						TRANSECT_LENGTH,
-						DATA)
-					values (
-						{siteId}, 
-						{photographer}, 
-						{analyzer}, 
-						{eventDate}, 
-						{transectDepth}, 
-						{transectLength},
-						{data})
-				"""
+	insert into SURVEY_EVENT (
+	SITE_ID,
+	EVENT_DATE,
+	PHOTOGRAPHER,
+	ANALYZER,
+	TRANSECT_DEPTH,
+	TRANSECT_LENGTH,
+	DATA)
+	values (
+	{siteId},
+	{photographer},
+	{analyzer},
+	{eventDate},
+	{transectDepth},
+	{transectLength},
+	{data})
+	"""
       )
 
       val batchInsert = (insertQuery.asBatch /: surveyEvents)(

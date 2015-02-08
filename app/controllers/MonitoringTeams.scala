@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.Logger
 import services.MonitoringTeamService
-import models.AnormMonitoringTeamRepository
+import models.{AnormMonitoringTeamRepository, MonitoringTeam}
 
 trait MonitoringTeams extends Controller with Security {
 
@@ -19,11 +19,8 @@ trait MonitoringTeams extends Controller with Security {
   def create() = HasToken() { token => userId => implicit request =>
     val body = request.body.asJson.get
     val name = (body \ "name").as[String]
-    if (service.insert(name)) {
-      Ok(messageOk)
-    } else {
-      BadRequest(messageError("faild to create"))
-    }
+    service.save(List(new MonitoringTeam(null, name)))
+    Ok(Json.obj("ok" -> "positive response"))
   }
 
   /** Modify name of a monitoring team. */
@@ -31,11 +28,8 @@ trait MonitoringTeams extends Controller with Security {
     val body = request.body.asJson.get
     val id = (body \ "id").as[Long]
     val name = (body \ "name").as[String]
-    if (service.update(id, name)) {
-      Ok(messageOk)
-    } else {
-      BadRequest(messageError("faild to create"))
-    }
+    service.save(List(new MonitoringTeam(Some(id), name)))
+    Ok(Json.obj("ok" -> "positive response"))
   }
 
 }
