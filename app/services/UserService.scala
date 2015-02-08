@@ -1,7 +1,6 @@
 package services
 
-import models.User
-import models.UserRepository
+import models.{User, UserRepository}
 import play.api.Logger
 
 class UserService(userRepository: UserRepository) {

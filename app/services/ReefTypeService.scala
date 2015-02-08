@@ -1,7 +1,6 @@
 package services
 
-import models.ReefTypeRepository
-import play.api.libs.json.{Json, JsValue}
+import models.{ReefTypeRepository, ReefType}
 
 /**
  * Services for [[models.ReefType]] object
@@ -13,13 +12,8 @@ class ReefTypeService(repository: ReefTypeRepository) {
    * Retrieves all available reef types
    * @return json converted list of reefs or null
    */
-  def findAllReefTypes: Option[JsValue] = {
-    repository.findAllReefTypes match {
-      // in case of empty list, do nothing
-      case List() => None
-      // returns converted json result
-      case lists => Some(Json.toJson(lists))
-    }
+  def findAllReefTypes: List[ReefType] = {
+    repository.findAllReefTypes
   }
 
 
@@ -28,13 +22,11 @@ class ReefTypeService(repository: ReefTypeRepository) {
    * @param reefId reef ID
    * @return json converted reef info or null
    */
-  def findReefById(reefId: Long): Option[JsValue] = {
+  def findReefById(reefId: Long): Option[ReefType] = {
     // invalid of input
     require(reefId >= 1, "invalid reef id")
 
-    // returns converted json result
-    Some(Json.toJson(repository.findReefTypeById(reefId)))
-
+    repository.findReefTypeById(reefId)
   }
 
 

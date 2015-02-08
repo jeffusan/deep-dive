@@ -13,30 +13,28 @@ class MonitoringTeamSpec extends PlaySpec with MockitoSugar {
     "find no JsonValue" in {
       val events = List()
       val repo = mock[MonitoringTeamRepository]
-      when(repo.findlAll()) thenReturn events
+      when(repo.findAll()) thenReturn events
 
       val service = new MonitoringTeamService(repo)
       val actual = service.findAll()
-      actual mustBe None
+      actual.size mustBe 0
     }
 
     "find JsonValue including all data" in {
-      val events = List(new MonitoringTeam(id = Some(1), name = "team 1"),
-      									new MonitoringTeam(id = Some(2), name = "team 2"))
+      val events = List(
+        new MonitoringTeam(id = Some(1), name = "team 1"),
+        new MonitoringTeam(id = Some(2), name = "team 2")
+      )
+
       val repo = mock[MonitoringTeamRepository]
-      when(repo.findlAll()) thenReturn events
+      when(repo.findAll()) thenReturn events
 
       val service = new MonitoringTeamService(repo)
       val actual = service.findAll()
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe events.size
-      var idx = 0
-      for (event <- events) {
-        (actual.get(idx) \ "id").as[Int] mustBe (event.id.get)
-        (actual.get(idx) \ "name").as[String] mustBe (event.name)
-        idx = idx + 1
-    	}
-  	}
+      actual.size mustBe events.size
+
+    }
   }
 
 }

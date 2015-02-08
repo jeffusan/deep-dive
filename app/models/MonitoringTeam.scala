@@ -47,8 +47,11 @@ object MonitoringTeam {
 
 /** A trait for data access. */
 trait MonitoringTeamRepository {
-  def findlAll(): Seq[MonitoringTeam]
+
+  def findAll(): Seq[MonitoringTeam]
+
   def save(monitoringTeams: Seq[MonitoringTeam]): Array[Int]
+
 }
 
 /** A concrete class that extends [[models.MonitoringTeamRepository]].	*/
@@ -58,16 +61,16 @@ object AnormMonitoringTeamRepository extends MonitoringTeamRepository {
   import play.api.db.DB
   import anorm.SqlParser.{ scalar, long, str, flatten }
   import play.api.Play.current
-  import scala.language.postfixOps
+
 
   /**
    * Extractor for generating the [[models.MonitoringTeam]] instance to retrieve data from resultset.
    */
-  val extractor = {
+  val extractor: RowParser[MonitoringTeam] = {
     long("ID") ~
-      str("NAME") map {
-        case id ~ name => MonitoringTeam(Some(id), name)
-      }
+    str("NAME") map {
+      case id ~ name => MonitoringTeam(id=Some(id), name=name)
+    }
   }
 
   /**
@@ -75,18 +78,17 @@ object AnormMonitoringTeamRepository extends MonitoringTeamRepository {
    *
    * @return a sequence instance including 0 or more [[models.MonitoringTeam]] instances.
    */
-  def findlAll(): Seq[MonitoringTeam] = {
+  def findAll(): Seq[MonitoringTeam] = {
     DB.withConnection { implicit c =>
       SQL(
         """
-					select
-						ID,
-						NAME
-					from
-						MONITORING_TEAM
-				"""
-      )
-        .as(extractor *)
+	select
+        ID,
+	NAME
+	from
+	MONITORING_TEAM
+	"""
+      ).as(extractor *)
     }
   }
 
@@ -100,11 +102,8 @@ object AnormMonitoringTeamRepository extends MonitoringTeamRepository {
     DB.withTransaction { implicit c =>
       val insertQuery = SQL(
         """
-					insert into MONITORING_TEAM (
-						NAME)
-					values (
-						{name})
-				"""
+	insert into MONITORING_TEAM (NAME) values ({name})
+	"""
       )
 
       val batchInsert = (insertQuery.asBatch /: monitoringTeams)(
