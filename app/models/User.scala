@@ -2,7 +2,6 @@ package models
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-import play.api.Logger
 
 case class Role(
   id: Option[Long],
@@ -123,7 +122,6 @@ object AnormUserRepository extends UserRepository {
   }
 
   def findOneByEmailAndPassword(email: String, password: String): Option[User] = {
-    Logger.debug("Attempting risky calculation: " + email)
     DB.withConnection{ implicit c =>
       val maybeUser: Option[User] = SQL(
         """
@@ -140,7 +138,6 @@ object AnormUserRepository extends UserRepository {
         'password -> password
       ).as(userParser.singleOpt)
 
-      Logger.debug("Here is maybeuser: " + maybeUser)
       maybeUser
     }
   }

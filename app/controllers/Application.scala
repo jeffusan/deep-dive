@@ -21,21 +21,6 @@ trait Security { self: Controller =>
   val AuthTokenCookieKey = "XSRF-TOKEN"
   val AuthTokenUrlKey = "auth"
 
-  /**
-   * Retrieves all routes via reflection.
-   * http://stackoverflow.com/questions/12012703/less-verbose-way-of-generating-play-2s-javascript-router
-   * @todo If you have controllers in multiple packages, you need to add each package here.
-   */
-  val routeCache = {
-    val jsRoutesClass = classOf[routes.javascript]
-    val controllers = jsRoutesClass.getFields.map(_.get(null))
-    controllers.flatMap { controller =>
-      controller.getClass.getDeclaredMethods.map { action =>
-        action.invoke(controller).asInstanceOf[play.core.Router.JavascriptReverseRoute]
-      }
-    }
-  }
-
   def HasAdminRole(roles: List[String]): Boolean = {
     var result = false
     for( role <- roles) {
@@ -45,7 +30,6 @@ trait Security { self: Controller =>
     }
     result
   }
-
 
   /** Checks token and admin role */
   def HasAdminToken[A](p: BodyParser[A] = parse.anyContent)(f: String => User => Request[A] => Result): Action[A] =
@@ -88,6 +72,8 @@ trait Security { self: Controller =>
 
 }
 
+case class Login(email: String, password: String)
+
 /** General Application actions, mainly session management */
 trait Application extends Controller with Security {
 
@@ -96,19 +82,39 @@ trait Application extends Controller with Security {
 
   lazy val userService = new UserService(AnormUserRepository)
 
-  /** Returns the index page */
-  def index = Action {
-    Ok(views.html.index())
-  }
-
-  case class Login(email: String, password: String)
-
   val loginForm = Form(
     mapping(
       "email" -> email,
       "password" -> nonEmptyText
     )(Login.apply)(Login.unapply)
   )
+
+  /** Returns the index page */
+  def index = Action {
+    Ok(views.html.index())
+  }
+
+  def login = Action(parse.json) { implicit request =>
+
+    loginForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(Json.obj("err" -> "Bad Credentials")),
+      userData => {
+        userService.authenticate(userData.email, userData.password).fold {
+          BadRequest(Json.obj("status" -> "KO", "message" -> "User not registered"))
+        } { userData =>
+          /* TODO:
+           * > The token must be unique for each user and must be verifiable by the server (to
+           * > prevent the JavaScript from making up its own tokens). We recommend that the token is
+           * > a digest of your site's authentication cookie with a salt) for added security.
+           *
+           */
+          val token = java.util.UUID.randomUUID.toString
+          Cache.set(token, userData)
+          Ok(Json.obj("token" -> token, "user" -> userData))
+        }
+      }
+    )
+  }
 
   implicit class ResultWithToken(result: Result) {
     def withToken(token: (String, User)): Result = {
@@ -120,32 +126,6 @@ trait Application extends Controller with Security {
       Cache.remove(token)
       result.discardingCookies(DiscardingCookie(name = AuthTokenCookieKey))
     }
-  }
-
-  /** Check credentials, generate token and serve it back as auth token in a Cookie */
-  def login = Action(parse.json) { implicit request =>
-    loginForm.bind(request.body).fold( // Bind JSON body to form values
-      formErrors => BadRequest(Json.obj("err" -> formErrors.errorsAsJson)),
-      loginData => {
-        Logger.debug("Attempting risky calculation")
-        userService.authenticate(loginData.email, loginData.password) map { user =>
-          val token = java.util.UUID.randomUUID().toString
-          Ok(Json.obj(
-            "authToken" -> token,
-            "user" -> user
-          )).withToken(token -> user)
-        } getOrElse Unauthorized(Json.obj("err" -> "User Not Found or Password Invalid"))
-      }
-    )
-  }
-
-  def comments = Action {
-    Ok(Json.parse("""
-    [
-     {"author" : "Peter Hunt",
-      "text" : "This is one comment"},
-     {"author": "Jordon Walke", "text": "This is another comment"}]
-    """))
   }
 
   /** Invalidate the token in the Cache and discard the cookie */
@@ -165,34 +145,6 @@ trait Application extends Controller with Security {
   def ping() = HasToken() { token => user => implicit request =>
       Ok(Json.obj("userId" -> user.id.get)).withToken(token -> user)
   }
-
-  /** Example for token protected access */
-  def myAccountInfo() = HasToken() { _ => user => implicit request =>
-      Ok(Json.toJson(user))
-  }
-
-  def user(id: Long) = CanEditUser(id) { user => _ =>
-    Ok(Json.toJson(user))
-  }
-
-  /** Creates a user from the given JSON */
-  def createUser() = HasToken(parse.json) { token => userId => implicit request =>
-    // TODO Implement User creation, typically via request.body.validate[User]
-    NotImplemented
-  }
-
-  /** Updates the user for the given id from the JSON body */
-  def updateUser(id: Long) = HasToken(parse.json) { token => userId => implicit request =>
-    // TODO Implement User creation, typically via request.body.validate[User]
-    NotImplemented
-  }
-
-  /** Deletes a user for the given id */
-  def deleteUser(id: Long) = HasToken(parse.empty) { token => userId => implicit request =>
-    // TODO Implement User creation, typically via request.body.validate[User]
-    NotImplemented
-  }
-
 
 }
 
