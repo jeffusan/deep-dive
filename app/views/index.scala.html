@@ -12,8 +12,8 @@
     <title>Deep Dive!</title>
 
     <link href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.min.css")" rel="stylesheet">
-    <link href="@routes.Assets.versioned("css/stylish-login.css")" rel="stylesheet">
-    <link href="@routes.Assets.versioned("css/user_page.css")" rel="stylesheet">
+    <link href="@routes.Assets.versioned("css/login.css")" rel="stylesheet">
+    <link href="@routes.Assets.versioned("css/admin_page.css")" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="@routes.Assets.versioned("font-awesome/css/font-awesome.min.css")" rel="stylesheet" type="text/css">
@@ -25,13 +25,27 @@
     <script src="@routes.Assets.versioned("lib/react-router/react-router.js")"></script>
     <script src="@routes.Assets.versioned("lib/react/JSXTransformer.js")"></script>
     <script src="@routes.Assets.versioned("lib/showdown/compressed/showdown.js")"></script>
-    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
-<!--    <script src="@routes.Assets.versioned("lib/jquery/jquery.min.js")"></script> -->
+
+    <!--    <script src="@routes.Assets.versioned("lib/jquery/jquery.min.js")"></script> -->
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
   </head>
   <body>
 
-    <div id="magic" class="container"></div>
+    <div id="magic"></div>
 
-    <script type="text/jsx" src="@routes.Assets.versioned("js/hello.js")"></script>
+    <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+    <script src="@routes.Assets.versioned("lib/bootstrap/js/bootstrap.min.js")"></script>
+    <script type="text/jsx" src="@routes.Assets.versioned("js/auth.js")"></script>
+    <script type="text/jsx" src="@routes.Assets.versioned("js/logout.js")"></script>
+    <script type="text/jsx" src="@routes.Assets.versioned("js/login.js")"></script>
+    <script type="text/jsx" src="@routes.Assets.versioned("js/user.js")"></script>
+    <script type="text/jsx" src="@routes.Assets.versioned("js/app.js")"></script>
+    <script type="text/jsx" src="@routes.Assets.versioned("js/routes.js")"></script>
   </body>
 </html>
