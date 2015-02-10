@@ -93,7 +93,7 @@ var Dashboard = React.createClass({
                 <li>
                   <a href="#">Dropdown Item</a>
                 </li>
-              </ul>
+               </ul>
             </li>
           </ul>
         </div>

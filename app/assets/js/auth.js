@@ -43,6 +43,10 @@ var auth = {
     }
   },
 
+  getUserName() {
+    return localStorage.username;
+  },
+
   getToken: function () {
     return localStorage.token;
   },
