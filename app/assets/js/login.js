@@ -24,8 +24,16 @@ var Login = React.createClass({
         Login.attemptedTransition = null;
         transition.retry();
       } else {
-        console.log("oops!");
-        this.replaceWith('/');
+        if(auth.isAdmin()) {
+          console.log("Looks like an admin");
+          this.replaceWith('/dashboard');
+        } else if(auth.loggedIn()) {
+          console.log("Looks logged in");
+          this.replaceWith('/user');
+        } else {
+          console.log("Ooops");
+          this.replaceWith('/login');
+        }
       }
     }.bind(this));
   },

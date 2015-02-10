@@ -25,7 +25,8 @@ var auth = {
       makeRequest(email, pass, function (res) {
         if (res.authenticated) {
           localStorage.token = res.token;
-          localStorage.user = res.user;
+          localStorage.username = res.user.name;
+          localStorage.roles = res.user.roles;
           if (cb) cb(true);
           this.onChange({
             isLoggedIn: true,
@@ -42,13 +43,18 @@ var auth = {
     }
   },
 
+  getUserName() {
+    return localStorage.username;
+  },
+
   getToken: function () {
     return localStorage.token;
   },
 
   logout: function (cb) {
     delete localStorage.token;
-    delete localStorage.user;
+    delete localStorage.username;
+    delete localStorage.roles;
     if (cb) cb();
     this.onChange({
       isLoggedIn: false,
@@ -61,11 +67,7 @@ var auth = {
   },
 
   isAdmin: function() {
-    return $.inArray("administrator", localStorage.user.roles) > -1;
-  },
-
-  getUser: function() {
-    return localStorage.user;
+    return $.inArray("administrator", [localStorage.roles]) > -1;
   },
 
   onChange: function () {}

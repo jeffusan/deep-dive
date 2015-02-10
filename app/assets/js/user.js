@@ -3,9 +3,10 @@ var User = React.createClass({
 
   render: function() {
     var token = auth.getToken();
-
+    console.log("remove");
+    $( "#wrapper" ).remove();
     return (
-      <div class="dd-well">
+      <div className="dd-well">
         <h1>User page</h1>
         <p>You made it!</p>
         <p>{token}</p>
