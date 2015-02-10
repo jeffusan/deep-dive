@@ -1,6 +1,7 @@
 var Router = ReactRouter;
 var Route = Router.Route, DefaultRoute = Router.DefaultRoute,
-  Link=Router.Link, RouteHandler = Router.RouteHandler;
+    Link=Router.Link, RouteHandler = Router.RouteHandler,
+    Redirect=Router.Redirect;
 
 var App = React.createClass({
   getInitialState: function () {
@@ -22,20 +23,12 @@ var App = React.createClass({
   },
 
   render: function () {
+    var loginOrOut = this.state.loggedIn ?
+          <div></div> :
+          <Login/>;
 
-    function roleOrNot(state) {
-      if(state.loggedIn) {
-        if(state.admin) {
-          return <Dashboard/>;
-        } else {
-          return <User/>;
-        }
-      } else {
-        return <Login/>;
-      }
-    };
     return (
-        <div>{roleOrNot(this.state)}
+        <div>{loginOrOut}
         <RouteHandler/>
         </div>
     );
@@ -46,8 +39,9 @@ var Dashboard = React.createClass({
   mixins: [ Authentication ],
 
   render: function () {
-    var token = auth.getToken();
-    return (
+
+    var makeTheSausage = function(token) {
+      return (
         <div id="wrapper">
            <nav className="navbar navbar-inverse navbar-fixed-top" role="navigation">
                <div className="navbar-header">
@@ -61,7 +55,7 @@ var Dashboard = React.createClass({
             </div>
            <ul className="nav navbar-right top-nav">
           <li className="dropdown">
-            <a href="#" className="dropdown-toggle" data-toggle="dropdown"><i className="fa fa-user"></i> John Smith <b className="caret"></b></a>
+        <a href="#" className="dropdown-toggle" data-toggle="dropdown"><i className="fa fa-user"></i> {auth.getUserName()} <b className="caret"></b></a>
             <ul className="dropdown-menu">
               <li>
                 <a href="#"><i className="fa fa-fw fa-user"></i> Profile</a>
@@ -119,6 +113,16 @@ var Dashboard = React.createClass({
             </div>
         </div>
       </div>
+      );};
+
+    var isAdmin = auth.isAdmin() ?
+          makeTheSausage(auth.getToken()) :
+          <Redirect from="*" to="/user"/>;
+
+    return (
+        <div>{isAdmin}
+        <RouteHandler/>
+        </div>
     );
   }
 });
