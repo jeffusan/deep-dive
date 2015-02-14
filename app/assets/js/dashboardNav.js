@@ -1,8 +1,12 @@
+/*jshint strict:false */
+/*global React:false */
+/*global Authentication:false */
 var DashboardNav = React.createClass({
   mixins: [Authentication],
 
   render: function() {
     return (
+              /* jshint ignore:start */
            <nav className="navbar navbar-inverse navbar-fixed-top" role="navigation">
                <div className="navbar-header">
                 <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -55,7 +59,8 @@ var DashboardNav = React.createClass({
             </li>
           </ul>
         </div>
-          </nav>
+        </nav>
+        /* jshint ignore:end */
     );
   }
 });

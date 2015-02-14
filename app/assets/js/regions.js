@@ -1,7 +1,10 @@
+/*jshint strict:false */
+/*global React:false */
 var Regions = React.createClass({
 
   render: function() {
     return (
+      /* jshint ignore:start */
         <div id="page-wrapper">
             <div className="container-fluid">
                 <div className="row">
@@ -22,6 +25,7 @@ var Regions = React.createClass({
                 </div>
             </div>
         </div>
+        /* jshint ignore:end */
     );
   }
 });
