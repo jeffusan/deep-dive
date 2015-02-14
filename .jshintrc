@@ -2,14 +2,9 @@
   "curly": true,
   "devel": true,
   "eqeqeq": true,
-  "strict": true,
+  "strict": false,
   "undef": true,
   "unused": false,
   "browser": true,
-  "laxcomma": true,
-  "predef": {
-    "requirejs": true,
-    "require": true,
-    "define": true
-  }
+  "laxcomma": true
 }
