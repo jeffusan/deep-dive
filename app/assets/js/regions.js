@@ -2,11 +2,15 @@
 /*global React:false */
 /*global auth:false */
 /*global $:false */
+/*global Reactable:false */
+
+var Table = Reactable.Table;
 var Regions = React.createClass({
+
 
   getInitialState: function() {
     return {
-      something: {},
+      data: [],
       mess: ''
     };
   },
@@ -24,7 +28,7 @@ var Regions = React.createClass({
       'success' : function(data) {
         if(this.isMounted()) {
           this.setState({
-            something: data,
+            data: data,
             message: 'Roger that'
           });
         }
@@ -32,7 +36,7 @@ var Regions = React.createClass({
       'error': function(data) {
         if(this.isMounted()) {
           this.setState({
-            something: {},
+            data: {},
             mess: 'Big Error'
           });
         }
@@ -44,19 +48,20 @@ var Regions = React.createClass({
   render: function() {
     return (
       /* jshint ignore:start */
-        <div id="page-wrapper">
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <h1 className="page-header">
-                            Regions
-                        </h1>
-                        <h3 id='errors'>{this.state.mess}</h3>
-                    </div>
-                </div>
+      <div id="page-wrapper">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-lg-12">
+              <h1 className="page-header">
+              Regions
+              </h1>
+              <h3 id='errors'>{this.state.mess}</h3>
+              <Table className="table table-bordered table-hover" data={this.state.data} itemsPerPage={4} sortable={true}/>
             </div>
+          </div>
         </div>
-        /* jshint ignore:end */
+      </div>
+      /* jshint ignore:end */
     );
   }
 });
