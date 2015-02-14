@@ -1,6 +1,45 @@
 /*jshint strict:false */
 /*global React:false */
+/*global auth:false */
+/*global $:false */
 var Regions = React.createClass({
+
+  getInitialState: function() {
+    return {
+      something: {},
+      mess: ''
+    };
+  },
+
+  componentDidMount: function() {
+
+    $.ajax({
+      'type': 'GET',
+      'url': '/regions',
+      'contentType': 'application/json',
+      'async': 'false',
+      'headers': {
+        'X-XSRF-TOKEN': auth.getToken()
+      },
+      'success' : function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            something: data,
+            message: 'Roger that'
+          });
+        }
+      }.bind(this),
+      'error': function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            something: {},
+            mess: 'Big Error'
+          });
+        }
+      }.bind(this)
+    });
+    console.log("finished call!");
+  },
 
   render: function() {
     return (
@@ -10,17 +49,9 @@ var Regions = React.createClass({
                 <div className="row">
                     <div className="col-lg-12">
                         <h1 className="page-header">
-                            Region Page
-                            <small>Subheading</small>
+                            Regions
                         </h1>
-                        <ol className="breadcrumb">
-                            <li>
-                                <i className="fa fa-dashboard"></i>  <a href="index.html">Regions</a>
-                            </li>
-                            <li className="active">
-                                <i className="fa fa-file"></i> Regions Page
-                            </li>
-                        </ol>
+                        <h3 id='errors'>{this.state.mess}</h3>
                     </div>
                 </div>
             </div>

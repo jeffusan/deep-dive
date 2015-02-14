@@ -12,6 +12,7 @@ POST         /login                controllers.Application.login()
 # Invalidate token
 POST         /logout               controllers.Application.logout()
 
+GET          /regions              controllers.Regions.show()
 
 
 # Static
