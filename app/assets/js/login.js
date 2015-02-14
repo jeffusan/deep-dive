@@ -1,3 +1,7 @@
+/*jshint strict:false */
+/*global React:false */
+/*global ReactRouter:false */
+/*global auth:false */
 var Login = React.createClass({
   mixins: [ ReactRouter.Navigation ],
 
@@ -16,8 +20,9 @@ var Login = React.createClass({
     var email = this.refs.email.getDOMNode().value;
     var pass = this.refs.pass.getDOMNode().value;
     auth.login(email, pass, function (loggedIn) {
-      if (!loggedIn)
+      if (!loggedIn) {
         return this.setState({ error: true });
+      }
 
       if (Login.attemptedTransition) {
         var transition = Login.attemptedTransition;
@@ -39,8 +44,10 @@ var Login = React.createClass({
   },
 
   render: function () {
+    /* jshint ignore:start */
     var errors = this.state.error ? <p>Bad login information</p> : '';
     return (
+
         <div className="container">
         <div className="row">
         <div className="col-md-offset-5 col-md-3">
@@ -60,6 +67,8 @@ var Login = React.createClass({
         </div>
         </div>
         </div>
+
     );
+    /* jshint ignore:end */
   }
 });

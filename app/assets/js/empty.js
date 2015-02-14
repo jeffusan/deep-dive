@@ -1,3 +1,6 @@
+/*jshint strict:false */
+/*global React:false */
+/*global ReactRouter:false */
 var Router = ReactRouter;
 
 var Empty = React.createClass({
@@ -6,6 +9,7 @@ var Empty = React.createClass({
 
   render: function() {
     return (
+      /* jshint ignore:start */
         <div id="page-wrapper">
             <div className="container-fluid">
                 <div className="row">
@@ -27,6 +31,7 @@ var Empty = React.createClass({
                 </div>
             </div>
         </div>
+        /* jshint ignore:end */
     );
   }
 });
