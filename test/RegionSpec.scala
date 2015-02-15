@@ -46,10 +46,10 @@ class RegionSpec extends PlaySpec with MockitoSugar {
     "can return JsonValue with no object in it" in {
       val regions = List()
       val repo = mock[RegionRepository]
-      when(repo.findAllRegion) thenReturn regions
+      when(repo.findAll) thenReturn regions
 
       val service = new RegionService(repo)
-      val actual = service.findAllRegions
+      val actual = service.findAll
 
       actual mustBe None
 
@@ -59,10 +59,10 @@ class RegionSpec extends PlaySpec with MockitoSugar {
 
       val regions = List(new Region(Some(1), "Tokyo Prefecture"))
       val repo = mock[RegionRepository]
-      when(repo.findAllRegion) thenReturn regions
+      when(repo.findAll) thenReturn regions
 
       val service = new RegionService(repo)
-      val actual = service.findAllRegions
+      val actual = service.findAll
       actual must not be empty
       actual.get.as[JsArray].value.size mustBe regions.size
 
@@ -85,10 +85,10 @@ class RegionSpec extends PlaySpec with MockitoSugar {
       )
 
       val repo = mock[RegionRepository]
-      when(repo.findAllRegion) thenReturn regions
+      when(repo.findAll) thenReturn regions
 
       val service = new RegionService(repo)
-      val actual = service.findAllRegions
+      val actual = service.findAll
       actual must not be empty
       actual.get.as[JsArray].value.size mustBe regions.size
 

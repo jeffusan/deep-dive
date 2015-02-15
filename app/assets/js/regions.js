@@ -29,8 +29,45 @@ var CreateRegion = React.createClass({
   }
 });
 
-var Regions = React.createClass({
+var Region = React.createClass({
+  render: function() {
+    return (
+      /* jshint ignore:start */
+      <div>
+      <div className="col-xs-8 col-sm-6" id={this.props.id}>
+        {this.props.name}
+      </div>
+      <div className="col-xs-4 col-sm-6">
+        <span className="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+        <span className="glyphicon glyphicon-minus" aria-hidden="true"></span>
+      </div>
+      </div>
+      /* jshint ignore:end */
+    );
+  }
+});
 
+
+var RegionList = React.createClass({
+
+  render: function() {
+    var regionNodes = this.props.data.map(function (region) {
+      return (
+        /* jshint ignore:start */
+          <Region id={region.id} name={region.name}/>
+        /* jshint ignore:end */
+      );
+    });
+    return (
+        <div className="row bg-success">
+        {regionNodes}
+        </div>
+    );
+  }
+});
+
+
+var Regions = React.createClass({
 
   getInitialState: function() {
     return {
@@ -73,15 +110,17 @@ var Regions = React.createClass({
 
     return (
       /* jshint ignore:start */
-        <div id="page-wrapper">
+      <div id="page-wrapper">
         <div className="container-fluid">
           <div className="row">
-            <div className="col-lg-12">
-              <h1 className="page-header">
-              Regions
-              </h1>
-              <h3 id='errors'>{this.state.mess}</h3>
-            </div>
+            <h3 id='errors'>{this.state.mess}</h3>
+             <div className="col-lg-9 page-header">
+               <h2>Regions <button type="button" className="btn btn-default" aria-label="Left Align">
+                <span className="glyphicon glyphicon-plus" aria-hidden="true"></span></button></h2>
+        <hr/>
+        <RegionList data={this.state.data} />
+
+             </div>
           </div>
         </div>
       </div>

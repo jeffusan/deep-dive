@@ -45,7 +45,7 @@ var Dashboard = React.createClass({
         <div id="wrapper">
           <DashboardNav/>
           {makeTheSausage(this.getParams().selection)}
-      </div>
+        </div>
         /* jshint ignore:end */
       );
   }
