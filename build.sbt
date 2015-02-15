@@ -1,14 +1,12 @@
-import play.PlayScala
-
 name := """Deep Dive"""
 
 version := "0.0.3"
 
+scalaVersion := "2.11.5"
+
 organization in ThisBuild := "atWare, inc"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
-scalaVersion := "2.11.5"
+enablePlugins(PlayScala)
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -21,7 +19,7 @@ libraryDependencies ++= Seq(
 )
 
 // Scala Compiler Options
-scalacOptions in ThisBuild ++= Seq(
+scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-encoding", "UTF-8",
   "-deprecation", // warning and locaation for usages of deprecated APIs
@@ -36,4 +34,8 @@ scalacOptions in ThisBuild ++= Seq(
 )
 
 // heroku
+enablePlugins(HerokuPlugin)
+
 herokuAppName in Compile := "warm-beyond-9991"
+
+herokuJdkVersion in Compile := "1.8"
