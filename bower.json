@@ -1,0 +1,29 @@
+{
+  "name": "deep-dive",
+  "version": "0.0.3",
+  "homepage": "https://github.com/atware/deep-dive",
+  "authors": [
+    "Jeff Hemminger <jeff@atware.co.jp>",
+    "Alisher Akber <alisher@atware.co.jp>",
+    "Kujime <kujime@atware.co.jp>"
+  ],
+  "keywords": [
+    "react",
+    "play"
+  ],
+  "license": "Apache",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.12.2",
+    "bootstrap": "~3.3.2",
+    "font-awesome": "~4.3.0",
+    "react-router": "~0.12.0"
+  }
+}

@@ -28,8 +28,8 @@ class RegionService(repository: RegionRepository) {
    * Retrieves all available regions
    * @return json converted list of regions or null
    */
-  def findAllRegions: Option[JsValue] = {
-    repository.findAllRegion match {
+  def findAll: Option[JsValue] = {
+    repository.findAll match {
       // in case of empty list, do nothing
       case List() => None
       // in case of list is return, convert to json

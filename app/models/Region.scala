@@ -51,7 +51,7 @@ trait RegionRepository {
    * Finds all regions available
    * @return list of regions or null
    */
-  def findAllRegion: List[Region]
+  def findAll: List[Region]
 
   /**
    * Finds a region based on given region id
@@ -111,7 +111,7 @@ object AnormRegionRepository extends RegionRepository {
    * Retrieves all available region info
    * @return list of [[Region]] or null
    */
-  override def findAllRegion: List[Region] = {
+  override def findAll: List[Region] = {
     DB.withConnection { implicit c =>
       val regionList: List[Region] = SQL(
         """

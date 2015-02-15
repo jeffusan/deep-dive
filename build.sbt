@@ -1,14 +1,12 @@
-import play.PlayScala
-
 name := """Deep Dive"""
 
-version := "0.0.2"
+version := "0.0.3"
+
+scalaVersion := "2.11.5"
 
 organization in ThisBuild := "atWare, inc"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
-
-scalaVersion := "2.11.1"
+enablePlugins(PlayScala)
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -17,18 +15,12 @@ libraryDependencies ++= Seq(
   filters,
   ws,
   "org.postgresql" % "postgresql" % "9.3-1102-jdbc41",
-  "org.scalatestplus" %% "play" % "1.2.0" % "test",
-  "org.webjars" %% "webjars-play" % "2.3.0-2",
-  "org.webjars" % "bootstrap" % "3.3.1",
-  "org.webjars" % "react" % "0.12.2",
-  "org.webjars" % "react-router" % "0.11.6",
-  "org.webjars" % "showdown" % "0.3.1",
-  "org.webjars" % "jquery" % "1.10.2-1"
+  "org.scalatestplus" %% "play" % "1.2.0" % "test"
 )
 
 // Scala Compiler Options
-scalacOptions in ThisBuild ++= Seq(
-  "-target:jvm-1.7",
+scalacOptions ++= Seq(
+  "-target:jvm-1.8",
   "-encoding", "UTF-8",
   "-deprecation", // warning and locaation for usages of deprecated APIs
   "-feature", // warning and location for usages of features that should be imported explicitly
@@ -41,30 +33,9 @@ scalacOptions in ThisBuild ++= Seq(
   "-language:postfixOps"
 )
 
-// Asset hashing with sbt-digest (https://github.com/sbt/sbt-digest)
-// ~~~
-// md5 | sha1
-//DigestKeys.algorithms := "md5"
-//includeFilter in digest := "..."
-//excludeFilter in digest := "..."
-
-// HTTP compression with sbt-gzip (https://github.com/sbt/sbt-gzip)
-// ~~~
-//includeFilter in GzipKeys.compress := "*.html" || "*.css" || "*.js"
-//excludeFilter in GzipKeys.compress := "..."
-
-
-// Disable generation of scaladoc in dist task
-publishArtifact in (Compile, packageDoc) := false
-
-publishArtifact in packageDoc := false
-
-sources in (Compile,doc) := Seq.empty
-
-
-// All work and no play...
-emojiLogs
-
-
 // heroku
+enablePlugins(HerokuPlugin)
+
 herokuAppName in Compile := "warm-beyond-9991"
+
+herokuJdkVersion in Compile := "1.8"
