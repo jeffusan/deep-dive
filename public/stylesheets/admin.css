@@ -6,6 +6,11 @@
 
 /* Global Styles */
 
+#edit-delete-badge {
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
 .selectable {
     cursor: pointer;
 }
