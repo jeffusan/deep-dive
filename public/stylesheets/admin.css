@@ -6,6 +6,10 @@
 
 /* Global Styles */
 
+.selectable {
+    cursor: pointer;
+}
+
 .header-dashboard {
     background: #333;
 }
