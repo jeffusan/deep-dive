@@ -7,19 +7,19 @@ var CreateRegion = React.createClass({
   render: function() {
     return (
             /* jshint ignore:start */
-<div class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Modal title</h4>
+<div className="modal fade">
+  <div className="modal-dialog">
+    <div className="modal-content">
+      <div className="modal-header">
+        <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 className="modal-title">Modal title</h4>
       </div>
-      <div class="modal-body">
+      <div className="modal-body">
         <p>One fine body&hellip;</p>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" className="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -33,15 +33,11 @@ var Region = React.createClass({
   render: function() {
     return (
       /* jshint ignore:start */
-      <div>
-      <div className="col-xs-8 col-sm-6" id={this.props.id}>
-        {this.props.name}
-      </div>
-      <div className="col-xs-4 col-sm-6">
-        <span className="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-        <span className="glyphicon glyphicon-minus" aria-hidden="true"></span>
-      </div>
-      </div>
+
+        <li className="list-group-item" id={this.props.id}>
+        <span className="badge selectable">Delete</span>
+        <span className="badge selectable">Edit</span>
+        {this.props.name}</li>
       /* jshint ignore:end */
     );
   }
@@ -59,15 +55,19 @@ var RegionList = React.createClass({
       );
     });
     return (
-        <div className="row bg-success">
-        {regionNodes}
-        </div>
+        <ul className="list-group">
+                {regionNodes}
+        </ul>
     );
   }
 });
 
 
 var Regions = React.createClass({
+
+  handleClick: function(event) {
+    
+  },
 
   getInitialState: function() {
     return {
@@ -115,7 +115,7 @@ var Regions = React.createClass({
           <div className="row">
             <h3 id='errors'>{this.state.mess}</h3>
              <div className="col-lg-9 page-header">
-               <h2>Regions <button type="button" className="btn btn-default" aria-label="Left Align">
+        <h2>Regions <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
                 <span className="glyphicon glyphicon-plus" aria-hidden="true"></span></button></h2>
         <hr/>
         <RegionList data={this.state.data} />

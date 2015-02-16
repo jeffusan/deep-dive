@@ -6,6 +6,13 @@
 
 /* Global Styles */
 
+.selectable {
+    cursor: pointer;
+}
+
+.header-dashboard {
+    background: #333;
+}
 
 #wrapper {
     padding-left: 0;
