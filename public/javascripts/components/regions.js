@@ -11,6 +11,22 @@ var Modal = ReactBootstrap.Modal;
 var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Button = ReactBootstrap.Button;
 
+var EditRegion = React.createClass({
+  render: function() {
+    return (
+        <Modal {...this.props} title="Edit A Region" animation={true}>
+          <div className="modal-body">
+            <h4>Add the form here...</h4>
+            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+
+          <div className="modal-footer">
+            <Button onClick={this.props.onRequestHide}>Close</Button>
+          </div>
+        </div>
+        </Modal>
+    );
+  }
+});
 
 var CreateRegion = React.createClass({
     render: function() {
@@ -42,6 +58,17 @@ var CreateRegionTrigger = React.createClass({
   }
 });
 
+var EditRegionTrigger = React.createClass({
+  render: function() {
+    return (
+      /* jshint ignore:start */
+        <ModalTrigger modal={<EditRegion />}>
+        <Badge id="edit-delete-badge" className="selectable" bsStyle="primary">Edit</Badge>
+        </ModalTrigger>
+      /* jshint ignore:end */
+    );
+  }
+});
 
 var Region = React.createClass({
   render: function() {
@@ -49,7 +76,7 @@ var Region = React.createClass({
       /* jshint ignore:start */
         <ListGroupItem id={this.props.id} bsStyle="info"><h4>{this.props.name}
           <span className="pull-right">
-            <Badge id="edit-delete-badge" className="selectable" bsStyle="primary">Edit</Badge>
+            <EditRegionTrigger/>
             <Badge id="edit-delete-badge" className="selectable" bsStyle="danger">Delete</Badge>
           </span></h4>
         </ListGroupItem>
