@@ -7,6 +7,7 @@ var Logout = React.createClass({
   },
 
   render: function () {
+    $("#top").removeClass('header-dashboard').addClass('header');
     /* jshint ignore:start */
     return <p>You are now logged out</p>;
     /* jshint ignore:end */

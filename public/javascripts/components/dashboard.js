@@ -2,6 +2,7 @@
 /*global React:false */
 /*global auth:false */
 /*global Login:false */
+/*global $:false */
 var Router = ReactRouter;
 
 var Authentication = {
@@ -40,8 +41,11 @@ var Dashboard = React.createClass({
       /* jshint ignore:end */
       };
 
+    $("#top").removeClass('header')
+    $("body").addClass('header-dashboard');
     return (
       /* jshint ignore:start */
+
         <div id="wrapper">
           <DashboardNav/>
           {makeTheSausage(this.getParams().selection)}
