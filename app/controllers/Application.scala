@@ -143,7 +143,7 @@ trait Application extends Controller with Security {
    * This action can be used by the route service.
    */
   def ping() = HasToken() { token => user => implicit request =>
-      Ok(Json.obj("userId" -> user.id.get)).withToken(token -> user)
+    Ok(Json.obj("token" -> token, "user" -> user)).withToken(token -> user)
   }
 
 }

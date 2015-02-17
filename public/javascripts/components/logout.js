@@ -1,9 +1,15 @@
 /*jshint strict:false */
 /*global auth:false */
 /*global React:false */
+/*global ReactRouter:false*/
+/*global $:false*/
 var Logout = React.createClass({
+
+  mixins: [ReactRouter.Navigation],
+
   componentDidMount: function () {
     auth.logout();
+    $.setTimeout(this.replaceWith('/login'), 4000);
   },
 
   render: function () {
