@@ -10,40 +10,28 @@ var Badge = ReactBootstrap.Label;
 var Modal = ReactBootstrap.Modal;
 var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Button = ReactBootstrap.Button;
+var Input = ReactBootstrap.Input;
 
 var EditRegion = React.createClass({
+  /* jshint ignore:start */
   render: function() {
     return (
-        <Modal {...this.props} title="Edit A Region" animation={true}>
+        <Modal title="Edit A Region" animation={true}>
           <div className="modal-body">
-            <h4>Add the form here...</h4>
-            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+        <h4>Add the form here...</h4>
+        <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+
 
           <div className="modal-footer">
             <Button onClick={this.props.onRequestHide}>Close</Button>
           </div>
         </div>
         </Modal>
-    );
-  }
+        );
+      }
+      /* jshint ignore:end */
 });
 
-var CreateRegion = React.createClass({
-    render: function() {
-    return (
-        <Modal {...this.props} title="Add A Region" animation={true}>
-          <div className="modal-body">
-            <h4>Add the form here...</h4>
-            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-
-          <div className="modal-footer">
-            <Button onClick={this.props.onRequestHide}>Close</Button>
-          </div>
-        </div>
-        </Modal>
-    );
-    }
-});
 
 var CreateRegionTrigger = React.createClass({
   render: function() {
@@ -108,7 +96,7 @@ var RegionList = React.createClass({
 var Regions = React.createClass({
 
   handleClick: function(event) {
-    
+
   },
 
   getInitialState: function() {
