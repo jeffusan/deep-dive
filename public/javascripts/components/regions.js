@@ -10,46 +10,39 @@ var Badge = ReactBootstrap.Label;
 var Modal = ReactBootstrap.Modal;
 var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Button = ReactBootstrap.Button;
+var Input = ReactBootstrap.Input;
 
 var EditRegion = React.createClass({
+  /* jshint ignore:start */
   render: function() {
     return (
-        <Modal {...this.props} title="Edit A Region" animation={true}>
+        <Modal title="Edit A Region" animation={true}>
           <div className="modal-body">
-            <h4>Add the form here...</h4>
-            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+        <h4>Add the form here...</h4>
+        <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+
 
           <div className="modal-footer">
             <Button onClick={this.props.onRequestHide}>Close</Button>
           </div>
         </div>
         </Modal>
-    );
-  }
+        );
+      }
+      /* jshint ignore:end */
 });
 
-var CreateRegion = React.createClass({
-    render: function() {
-    return (
-        <Modal {...this.props} title="Add A Region" animation={true}>
-          <div className="modal-body">
-            <h4>Add the form here...</h4>
-            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-
-          <div className="modal-footer">
-            <Button onClick={this.props.onRequestHide}>Close</Button>
-          </div>
-        </div>
-        </Modal>
-    );
-    }
-});
 
 var CreateRegionTrigger = React.createClass({
+
+  handleDataSubmit: function(value) {
+    this.props.onHandlingData({name: value.name});
+  },
+
   render: function() {
     return (
       /* jshint ignore:start */
-        <ModalTrigger modal={<CreateRegion />}>
+        <ModalTrigger modal={<CreateRegion onCreateRegionSubmit={this.handleDataSubmit}/>}>
         <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
                 <span className="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
         </ModalTrigger>
@@ -108,7 +101,7 @@ var RegionList = React.createClass({
 var Regions = React.createClass({
 
   handleClick: function(event) {
-    
+
   },
 
   getInitialState: function() {
@@ -116,6 +109,39 @@ var Regions = React.createClass({
       data: [],
       mess: ''
     };
+  },
+
+  handleCreate: function(value) {
+    console.log("create name: " + value.name);
+
+    $.ajax({
+      'type': 'PUT',
+      'url': '/regions',
+      'contentType': 'application/json',
+      'data': JSON.stringify({'name': value.name}),
+      'dataType': 'json',
+      'async': false,
+      'headers': {
+        'X-XSRF-TOKEN': auth.getToken()
+      },
+      'success' : function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            data: data,
+            message: 'Roger that'
+          });
+        }
+      }.bind(this),
+      'error': function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            data: {},
+            mess: 'Big Error'
+          });
+        }
+      }.bind(this)
+    });
+    console.log("putted");
   },
 
   componentDidMount: function() {
@@ -157,7 +183,7 @@ var Regions = React.createClass({
           <div className="row">
             <h3 id='errors'>{this.state.mess}</h3>
              <div className="col-lg-9 page-header">
-        <h2>Regions         <CreateRegionTrigger/></h2>
+        <h2>Regions         <CreateRegionTrigger onHandlingData={this.handleCreate}/></h2>
         <hr/>
         <RegionList data={this.state.data} />
 

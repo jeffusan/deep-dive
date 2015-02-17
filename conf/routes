@@ -13,6 +13,7 @@ POST         /login                controllers.Application.login()
 POST         /logout               controllers.Application.logout()
 
 GET          /regions              controllers.Regions.show()
+PUT          /regions              controllers.Regions.create()
 
 # Static
 # ~~~~~~

@@ -1,6 +1,6 @@
 package services
 
-import models.RegionRepository
+import models.{RegionRepository, Region}
 import play.api.libs.json.{JsValue, Json}
 
 
@@ -9,6 +9,11 @@ import play.api.libs.json.{JsValue, Json}
  * @param repository repository of supported functions by [[models.Region]]
  */
 class RegionService(repository: RegionRepository) {
+
+  /** Create a new Region */
+  def add(name: String): Option[Region] = {
+    repository.add(name)
+  }
 
   /**
    * Retrieves region based on specified region ID

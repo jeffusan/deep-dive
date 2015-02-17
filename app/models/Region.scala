@@ -59,6 +59,11 @@ trait RegionRepository {
    * @return region or null
    */
   def findOneById(regionId: Long): Option[Region]
+
+  /**
+    * Add a region
+    */
+  def add(name: String): Option[Region]
 }
 
 
@@ -83,6 +88,20 @@ object AnormRegionRepository extends RegionRepository {
       case i ~ n => Region(
         id = Some(i),
         name = n)
+    }
+  }
+
+  /**
+    *  Adds a region based on name and returns it with it's new id
+    */
+  def add(name: String): Option[Region] = {
+    DB.withConnection { implicit c =>
+      val maybeInsert: Option[Region] = SQL(
+        """
+        insert into region (id, name) values (DEFAULT, {name}) returning id, name;
+        """
+      ).on('name -> name).as(regionParser.singleOpt)
+      maybeInsert
     }
   }
 
