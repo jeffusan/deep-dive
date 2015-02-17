@@ -191,9 +191,6 @@ var App = React.createClass({
 
   render: function () {
     /* jshint ignore:start */
-    console.log("We are logged in: "+ auth.loggedIn());
-    console.log("We are admin: " + auth.isAdmin());
-
     return (
         <div>
         <RouteHandler/>
@@ -204,7 +201,7 @@ var App = React.createClass({
 });
   /* jshint ignore:start */
 var routes = (
-  <Route handler={App}>
+  <Route path="/" handler={App}>
     <Route name="login" handler={Login}/>
     <Route name="logout" handler={Logout}/>
     <Route name="dashboard" path="dashboard/?:selection?" handler={Dashboard}/>
