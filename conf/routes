@@ -14,7 +14,6 @@ POST         /logout               controllers.Application.logout()
 
 GET          /regions              controllers.Regions.show()
 
-
 # Static
 # ~~~~~~
 

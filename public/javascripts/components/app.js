@@ -12,16 +12,35 @@ var Route = Router.Route, DefaultRoute = Router.DefaultRoute,
     Redirect=Router.Redirect;
 
 var auth = {
+
+  ping: function(cb) {
+    cb = arguments[arguments.length - 1];
+    makePingRequest( function(res) {
+
+      if(res.authenticated) {
+          localStorage.token = res.token;
+          localStorage.username = res.user.name;
+          localStorage.roles = res.user.roles;
+          if (cb) {cb(true);}
+          this.onChange({
+            isLoggedIn: true,
+            isAdmin: $.inArray("administrator", res.user.roles) > -1
+          });
+      } else {
+          if (cb) {
+            cb(false);
+          }
+          this.onChange({
+            isLoggedIn: false,
+            isAdmin: false
+          });
+      }
+
+    }.bind(this));
+  },
+
   login: function (email, pass, cb) {
     cb = arguments[arguments.length - 1];
-    if (localStorage.token) {
-      if (cb) {cb(true);}
-      this.onChange({
-        isLoggedIn: true,
-        isAdmin: this.isAdmin()
-      });
-      return;
-    }
     if(email !== undefined && pass !== undefined) {
       makeRequest(email, pass, function (res) {
         if (res.authenticated) {
@@ -54,6 +73,10 @@ var auth = {
     return localStorage.token;
   },
 
+  hasToken: function() {
+    return !!localStorage.token;
+  },
+
   logout: function (cb) {
     delete localStorage.token;
     delete localStorage.username;
@@ -75,6 +98,39 @@ var auth = {
 
   onChange: function () {}
 };
+
+function makePingRequest(cb) {
+
+  $.ajax({
+    'type': 'GET',
+    'url': '/authuser',
+    'contentType': 'application/json',
+    'async': false,
+    'headers': {
+      'X-XSRF-TOKEN': auth.getToken()
+    },
+    statusCode: {
+      401:function(data) {
+        console.log("I got this one");
+        cb({
+          authenticated: false
+        });
+      }
+    },
+    'success': function(data) {
+      cb({
+        authenticated: true,
+        token: data.token,
+        user: data.user
+      });
+    },
+    'error': function(data) {
+      cb({
+        authenticated: false
+      });
+    }
+  });
+}
 
 function makeRequest(email, pass, cb) {
 
@@ -101,6 +157,9 @@ function makeRequest(email, pass, cb) {
 }
 
 var App = React.createClass({
+
+  mixins: [ReactRouter.Navigation],
+
   getInitialState: function () {
     return {
       loggedIn: auth.loggedIn()
@@ -116,16 +175,27 @@ var App = React.createClass({
 
   componentWillMount: function () {
     auth.onChange = this.setStateOnAuth;
-    auth.login();
+    if(auth.hasToken()) {
+      auth.ping(function (loggedIn) {
+        if(!loggedIn) {
+          console.log("Not logged in!");
+          auth.logout();
+          this.replaceWith('/login');
+        }
+
+      }.bind(this));
+    } else {
+      this.replaceWith('/login');
+    }
   },
 
   render: function () {
     /* jshint ignore:start */
-    var loginOrOut = this.state.loggedIn ?
-          <div></div> :
-          <Login/>;
+    console.log("We are logged in: "+ auth.loggedIn());
+    console.log("We are admin: " + auth.isAdmin());
+
     return (
-        <div>{loginOrOut}
+        <div>
         <RouteHandler/>
         </div>
     );
@@ -139,7 +209,7 @@ var routes = (
     <Route name="logout" handler={Logout}/>
     <Route name="dashboard" path="dashboard/?:selection?" handler={Dashboard}/>
     <Route name="user" path="user/:selection" handler={User}/>
-    </Route>
+  </Route>
 );
 
 Router.run(routes, function (Handler, state) {
