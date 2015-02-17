@@ -64,7 +64,7 @@ var CreateRegion = React.createClass({
   handleSubmit: function(event) {
     event.preventDefault();
     var name = this.state.value.name;
-    console.log("Name: " + name);
+    this.props.onCreateRegionSubmit({name: name});
   },
 
   render: function() {

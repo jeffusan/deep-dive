@@ -34,10 +34,15 @@ var EditRegion = React.createClass({
 
 
 var CreateRegionTrigger = React.createClass({
+
+  handleDataSubmit: function(value) {
+    this.props.onHandlingData({name: value.name});
+  },
+
   render: function() {
     return (
       /* jshint ignore:start */
-        <ModalTrigger modal={<CreateRegion />}>
+        <ModalTrigger modal={<CreateRegion onCreateRegionSubmit={this.handleDataSubmit}/>}>
         <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
                 <span className="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
         </ModalTrigger>
@@ -106,6 +111,39 @@ var Regions = React.createClass({
     };
   },
 
+  handleCreate: function(value) {
+    console.log("create name: " + value.name);
+
+    $.ajax({
+      'type': 'PUT',
+      'url': '/regions',
+      'contentType': 'application/json',
+      'data': JSON.stringify({'name': value.name}),
+      'dataType': 'json',
+      'async': false,
+      'headers': {
+        'X-XSRF-TOKEN': auth.getToken()
+      },
+      'success' : function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            data: data,
+            message: 'Roger that'
+          });
+        }
+      }.bind(this),
+      'error': function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            data: {},
+            mess: 'Big Error'
+          });
+        }
+      }.bind(this)
+    });
+    console.log("putted");
+  },
+
   componentDidMount: function() {
 
     $.ajax({
@@ -145,7 +183,7 @@ var Regions = React.createClass({
           <div className="row">
             <h3 id='errors'>{this.state.mess}</h3>
              <div className="col-lg-9 page-header">
-        <h2>Regions         <CreateRegionTrigger/></h2>
+        <h2>Regions         <CreateRegionTrigger onHandlingData={this.handleCreate}/></h2>
         <hr/>
         <RegionList data={this.state.data} />
 
