@@ -12,6 +12,45 @@ var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 
+
+
+var DeleteModal = React.createClass({
+
+  delete: function(event) {
+    event.preventDefault();
+    var id = this.props.container.props.id;
+    this.props.container.props.onDelete({id: id});
+    this.props.onRequestHide();
+  },
+
+  render: function() {
+    return (
+      <Modal title='Are You Sure???' animation>
+        <div className="modal-body">
+        Deleting a region will delete all of that region's data too.
+        </div>
+        <div className="modal-footer">
+          <Button bsStyle="danger" onClick={this.delete}>Danger Zone</Button>
+          <Button onClick={this.props.onRequestHide}>Cancel</Button>
+        </div>
+      </Modal>
+    );
+  }
+});
+
+var DeleteTrigger = React.createClass({
+
+  render: function() {
+    return (
+      <div >
+        <ModalTrigger modal={<DeleteModal container={this} />} container={this}>
+          <Badge regionId={this.props.id} id="edit-delete-badge" className="selectable" bsStyle="danger">Delete</Badge>
+        </ModalTrigger>
+      </div>
+    );
+  }
+});
+
 var CreateRegionTrigger = React.createClass({
 
   handleDataSubmit: function(value) {
@@ -31,12 +70,16 @@ var CreateRegionTrigger = React.createClass({
 });
 
 var Region = React.createClass({
+  onRegionDelete: function(value) {
+      this.props.container.props.onRegionListDelete({id: value.id});
+  },
+
   render: function() {
     return (
-      /* jshint ignore:start */
-        <ListGroupItem id={this.props.id} bsStyle="info"><h4>{this.props.name}
-          <span className="pull-right">
-            <Badge id="edit-delete-badge" className="selectable" bsStyle="danger">Delete</Badge>
+        <ListGroupItem bsStyle="info">
+        <h4>{this.props.name}
+        <span className="pull-right">
+            <DeleteTrigger container={this} id={this.props.id}/>
           </span></h4>
         </ListGroupItem>
       /* jshint ignore:end */
@@ -45,6 +88,9 @@ var Region = React.createClass({
 });
 
 var RegionList = React.createClass({
+  onRegionListDelete: function(value) {
+      this.props.onDelete({id: value.id});
+  },
 
   render: function() {
 
@@ -71,6 +117,44 @@ var Regions = React.createClass({
       message: '',
       hasMessage: false
     };
+  },
+
+  handleDelete: function() {
+    console.log("ID is: " + this.props.id);
+    $.ajax({
+      'type': 'DELETE',
+      'url': '/regions',
+      'contentType': 'application/json',
+      'data': JSON.stringify({'id': this.props.id}),
+      'dataType': 'json',
+      'async': false,
+      'headers': {
+        'X-XSRF-TOKEN': auth.getToken()
+      },
+      'success' : function(data) {
+        if(this.isMounted()) {
+          var regions = this.state.data;
+          var remainingRegions = someArray
+               .filter(function (reg) {
+                 return reg.id !== this.props.id;
+               });
+          this.setState({
+            data: remainingRegions,
+            message: 'Gone!',
+            hasMessage: true
+          });
+        }
+      }.bind(this),
+      'error': function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            data: {},
+            message: 'Um, yeah. About those regions you wanted canceled...',
+            hasMessage: true
+          });
+        }
+      }.bind(this)
+    });
   },
 
   handleCreate: function(value) {
@@ -157,7 +241,7 @@ var Regions = React.createClass({
                <h2>Regions         <CreateRegionTrigger onHandlingData={this.handleCreate}/></h2>
                <hr/>
                {maybeMessage}
-               <RegionList data={this.state.data} />
+               <RegionList onDelete={this.handleDelete} data={this.state.data} />
              </div>
           </div>
         </div>
