@@ -12,27 +12,6 @@ var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 
-var EditRegion = React.createClass({
-  /* jshint ignore:start */
-  render: function() {
-    return (
-        <Modal title="Edit A Region" animation={true}>
-          <div className="modal-body">
-        <h4>Add the form here...</h4>
-        <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-
-
-          <div className="modal-footer">
-            <Button onClick={this.props.onRequestHide}>Close</Button>
-          </div>
-        </div>
-        </Modal>
-        );
-      }
-      /* jshint ignore:end */
-});
-
-
 var CreateRegionTrigger = React.createClass({
 
   handleDataSubmit: function(value) {
@@ -51,25 +30,12 @@ var CreateRegionTrigger = React.createClass({
   }
 });
 
-var EditRegionTrigger = React.createClass({
-  render: function() {
-    return (
-      /* jshint ignore:start */
-        <ModalTrigger modal={<EditRegion />}>
-        <Badge id="edit-delete-badge" className="selectable" bsStyle="primary">Edit</Badge>
-        </ModalTrigger>
-      /* jshint ignore:end */
-    );
-  }
-});
-
 var Region = React.createClass({
   render: function() {
     return (
       /* jshint ignore:start */
         <ListGroupItem id={this.props.id} bsStyle="info"><h4>{this.props.name}
           <span className="pull-right">
-            <EditRegionTrigger/>
             <Badge id="edit-delete-badge" className="selectable" bsStyle="danger">Delete</Badge>
           </span></h4>
         </ListGroupItem>
@@ -78,17 +44,16 @@ var Region = React.createClass({
   }
 });
 
-
 var RegionList = React.createClass({
 
   render: function() {
+
     var regionNodes = this.props.data.map(function (region) {
       return (
-        /* jshint ignore:start */
           <Region id={region.id} name={region.name}/>
-        /* jshint ignore:end */
       );
     });
+
     return (
       <ListGroup>
                 {regionNodes}
@@ -99,10 +64,6 @@ var RegionList = React.createClass({
 
 
 var Regions = React.createClass({
-
-  handleClick: function(event) {
-
-  },
 
   getInitialState: function() {
     return {
