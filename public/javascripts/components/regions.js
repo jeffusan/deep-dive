@@ -107,7 +107,8 @@ var Regions = React.createClass({
   getInitialState: function() {
     return {
       data: [],
-      mess: ''
+      message: '',
+      hasMessage: false
     };
   },
 
@@ -126,9 +127,12 @@ var Regions = React.createClass({
       },
       'success' : function(data) {
         if(this.isMounted()) {
+          var regions = this.state.data;
+          var newRegions = regions.concat([data]);
           this.setState({
-            data: data,
-            message: 'Roger that'
+            data: newRegions,
+            message: 'Roger that',
+            hasMessage: true
           });
         }
       }.bind(this),
@@ -136,12 +140,12 @@ var Regions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: {},
-            mess: 'Big Error'
+            message: 'Um, yeah. About those regions...',
+            hasMessage: true
           });
         }
       }.bind(this)
     });
-    console.log("putted");
   },
 
   componentDidMount: function() {
@@ -158,7 +162,8 @@ var Regions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: data,
-            message: 'Roger that'
+            message: '',
+            hasMessage: false
           });
         }
       }.bind(this),
@@ -166,7 +171,8 @@ var Regions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: {},
-            mess: 'Big Error'
+            message: 'Big Error',
+            hasMessage: true
           });
         }
       }.bind(this)
@@ -176,6 +182,10 @@ var Regions = React.createClass({
 
   render: function() {
 
+    var maybeMessage = this.state.hasMessage ?
+          <Expire visible={true} delay={4000}>{this.state.message}</Expire> :
+          <span />;
+
     return (
       /* jshint ignore:start */
       <div id="page-wrapper">
@@ -183,10 +193,10 @@ var Regions = React.createClass({
           <div className="row">
             <h3 id='errors'>{this.state.mess}</h3>
              <div className="col-lg-9 page-header">
-        <h2>Regions         <CreateRegionTrigger onHandlingData={this.handleCreate}/></h2>
-        <hr/>
-        <RegionList data={this.state.data} />
-
+               <h2>Regions         <CreateRegionTrigger onHandlingData={this.handleCreate}/></h2>
+               <hr/>
+               {maybeMessage}
+               <RegionList data={this.state.data} />
              </div>
           </div>
         </div>
