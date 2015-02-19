@@ -101,7 +101,7 @@ object AnormRegionRepository extends RegionRepository {
     * Removes a region based on id
     */
   def remove(id: Long) {
-    Logger.info("Hello Region Repository Remover")
+
     DB.withConnection { implicit c =>
       SQL("""
       delete from region where id={id}

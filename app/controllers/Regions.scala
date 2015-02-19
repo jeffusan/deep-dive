@@ -16,7 +16,7 @@ trait Regions extends Controller with Security {
 
   /** Delete a region */
   def remove(id: Long) =HasAdminToken() { token => userId => implicit request =>
-    Logger.info("Hello delete!")
+
     try {
       service.remove(id)
       Ok(Json.obj("status" -> "Ok", "message" -> "Great Success!"))

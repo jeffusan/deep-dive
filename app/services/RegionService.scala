@@ -13,7 +13,7 @@ class RegionService(repository: RegionRepository) {
 
   /** Remove a Region */
   def remove(id: Long) {
-    Logger.info("Hello removal service")
+
     repository.remove(id)
   }
 
