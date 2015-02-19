@@ -2,6 +2,7 @@ package models
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.Logger
 
 /**
  * This represents a region object
@@ -64,6 +65,11 @@ trait RegionRepository {
     * Add a region
     */
   def add(name: String): Option[Region]
+
+  /**
+    * Delete a region and return nothing
+    */
+  def remove(id: Long)
 }
 
 
@@ -90,6 +96,18 @@ object AnormRegionRepository extends RegionRepository {
         name = n)
     }
   }
+
+  /**
+    * Removes a region based on id
+    */
+  def remove(id: Long) {
+    Logger.info("Hello Region Repository Remover")
+    DB.withConnection { implicit c =>
+      SQL("""
+      delete from region where id={id}
+      """
+      ).on('id -> id).execute()
+  }}
 
   /**
     *  Adds a region based on name and returns it with it's new id

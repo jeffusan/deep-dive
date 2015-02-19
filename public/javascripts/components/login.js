@@ -2,6 +2,10 @@
 /*global React:false */
 /*global ReactRouter:false */
 /*global auth:false */
+/*global ReactBootstrap:false */
+
+var Input = ReactBootstrap.Input;
+
 var Login = React.createClass({
   mixins: [ ReactRouter.Navigation ],
 
@@ -53,13 +57,13 @@ var Login = React.createClass({
         <div className="col-md-offset-5 col-md-3">
         <div className="form-login">
         <h4>Welcome back.</h4>
-        <input ref="email" type="email" className="form-control input-sm chat-input" placeholder="email" defaultValue="bigman@atware.jp"/>
+        <input type="email" ref="email" className="form-control input-sm chat-input" placeholder="email" defaultValue="bigman@atware.jp"/>
          <br />
         <input ref="pass" type="password" className="form-control input-sm chat-input" placeholder="password" />
         <br />
         <div className="wrapper">
           <span className="group-btn">
-          <a href="#" onClick={this.handleSubmit} className="btn btn-primary btn-md">login <i className="fa fa-sign-in"></i></a>
+          <Button type="button" onClick={this.handleSubmit} bsStyle="primary" className="btn btn-primary btn-md">login <i className="fa fa-sign-in"></i></Button>
           </span>
            {errors}
           </div>

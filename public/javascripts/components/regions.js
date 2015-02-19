@@ -12,26 +12,47 @@ var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 
-var EditRegion = React.createClass({
-  /* jshint ignore:start */
+
+var DeleteModal = React.createClass({
+
+  delete: function(event) {
+    event.preventDefault();
+    var id = this.props.container.props.id;
+    this.props.container.props.onDelete({id: id});
+    this.props.onRequestHide();
+  },
+
   render: function() {
     return (
-        <Modal title="Edit A Region" animation={true}>
-          <div className="modal-body">
-        <h4>Add the form here...</h4>
-        <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-
-
-          <div className="modal-footer">
-            <Button onClick={this.props.onRequestHide}>Close</Button>
-          </div>
+      <Modal title='Are You Sure???' animation>
+        <div className="modal-body">
+        Deleting a region will delete all of that region's data too.
         </div>
-        </Modal>
-        );
-      }
-      /* jshint ignore:end */
+        <div className="modal-footer">
+          <Button bsStyle="danger" onClick={this.delete}>Danger Zone</Button>
+          <Button onClick={this.props.onRequestHide}>Cancel</Button>
+        </div>
+      </Modal>
+    );
+  }
+
 });
 
+var DeleteTrigger = React.createClass({
+
+  render: function() {
+    return (
+      /* jshint ignore:start */
+      <div >
+        <ModalTrigger modal={<DeleteModal container={this} />} container={this}>
+          <Badge regionId={this.props.id} id="edit-delete-badge" className="selectable" bsStyle="danger">Delete</Badge>
+        </ModalTrigger>
+      </div>
+      /* jshint ignore:end */
+    );
+  }
+
+});
 
 var CreateRegionTrigger = React.createClass({
 
@@ -41,54 +62,47 @@ var CreateRegionTrigger = React.createClass({
 
   render: function() {
     return (
-      /* jshint ignore:start */
         <ModalTrigger modal={<CreateRegion onCreateRegionSubmit={this.handleDataSubmit}/>}>
-        <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
-                <span className="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+          <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
+            <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
+          </button>
         </ModalTrigger>
-      /* jshint ignore:end */
-    );
-  }
-});
-
-var EditRegionTrigger = React.createClass({
-  render: function() {
-    return (
-      /* jshint ignore:start */
-        <ModalTrigger modal={<EditRegion />}>
-        <Badge id="edit-delete-badge" className="selectable" bsStyle="primary">Edit</Badge>
-        </ModalTrigger>
-      /* jshint ignore:end */
     );
   }
 });
 
 var Region = React.createClass({
+
+  onRegionDelete: function(value) {
+      this.props.onRegionDelete({id: value.id});
+  },
+
   render: function() {
     return (
-      /* jshint ignore:start */
-        <ListGroupItem id={this.props.id} bsStyle="info"><h4>{this.props.name}
-          <span className="pull-right">
-            <EditRegionTrigger/>
-            <Badge id="edit-delete-badge" className="selectable" bsStyle="danger">Delete</Badge>
+        <ListGroupItem bsStyle="info">
+        <h4>{this.props.name}
+        <span className="pull-right">
+            <DeleteTrigger onDelete={this.onRegionDelete} id={this.props.id}/>
           </span></h4>
         </ListGroupItem>
-      /* jshint ignore:end */
     );
   }
 });
 
-
 var RegionList = React.createClass({
 
+  onDelete: function(value) {
+      this.props.onDelete({id: value.id});
+    },
+
   render: function() {
+
     var regionNodes = this.props.data.map(function (region) {
       return (
-        /* jshint ignore:start */
-          <Region id={region.id} name={region.name}/>
-        /* jshint ignore:end */
+          <Region onRegionDelete={this.onDelete} id={region.id} name={region.name}/>
       );
-    });
+    }.bind(this));
+
     return (
       <ListGroup>
                 {regionNodes}
@@ -97,12 +111,7 @@ var RegionList = React.createClass({
   }
 });
 
-
 var Regions = React.createClass({
-
-  handleClick: function(event) {
-
-  },
 
   getInitialState: function() {
     return {
@@ -110,6 +119,44 @@ var Regions = React.createClass({
       message: '',
       hasMessage: false
     };
+  },
+
+  handleDelete: function(value) {
+    console.log("ID is: " + value.id);
+    $.ajax({
+      'type': 'DELETE',
+      'url': '/regions/' + value.id,
+      'contentType': 'application/json',
+      'data': JSON.stringify({'id': value.id}),
+      'dataType': 'json',
+      'async': false,
+      'headers': {
+        'X-XSRF-TOKEN': auth.getToken()
+      },
+      'success' : function(data) {
+        if(this.isMounted()) {
+          var regions = this.state.data;
+          var remainingRegions = regions
+               .filter(function (reg) {
+                 return reg.id !== value.id;
+               });
+          this.setState({
+            data: remainingRegions,
+            message: 'Gone!',
+            hasMessage: true
+          });
+        }
+      }.bind(this),
+      'error': function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            data: {},
+            message: 'Um, yeah. About those regions you wanted canceled...',
+            hasMessage: true
+          });
+        }
+      }.bind(this)
+    });
   },
 
   handleCreate: function(value) {
@@ -196,7 +243,7 @@ var Regions = React.createClass({
                <h2>Regions         <CreateRegionTrigger onHandlingData={this.handleCreate}/></h2>
                <hr/>
                {maybeMessage}
-               <RegionList data={this.state.data} />
+               <RegionList onDelete={this.handleDelete} data={this.state.data} />
              </div>
           </div>
         </div>
