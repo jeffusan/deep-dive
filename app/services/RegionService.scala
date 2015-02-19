@@ -1,5 +1,6 @@
 package services
 
+import play.api.Logger
 import models.{RegionRepository, Region}
 import play.api.libs.json.{JsValue, Json}
 
@@ -9,6 +10,12 @@ import play.api.libs.json.{JsValue, Json}
  * @param repository repository of supported functions by [[models.Region]]
  */
 class RegionService(repository: RegionRepository) {
+
+  /** Remove a Region */
+  def remove(id: Long) {
+    Logger.info("Hello removal service")
+    repository.remove(id)
+  }
 
   /** Create a new Region */
   def add(name: String): Option[Region] = {

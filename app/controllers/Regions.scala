@@ -14,6 +14,18 @@ trait Regions extends Controller with Security {
 
   lazy val service = new RegionService(AnormRegionRepository)
 
+  /** Delete a region */
+  def remove(id: Long) =HasAdminToken() { token => userId => implicit request =>
+    Logger.info("Hello delete!")
+    try {
+      service.remove(id)
+      Ok(Json.obj("status" -> "Ok", "message" -> "Great Success!"))
+    } catch {
+      case e: Exception => BadRequest(Json.obj("status" -> "KO", "message" -> "Something terrible this way comes"))
+    }
+
+  }
+
   /** Find all the regions */
   def show() = HasAdminToken() { token => userId => implicit request =>
     service.findAll.fold {

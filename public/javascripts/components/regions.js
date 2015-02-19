@@ -13,7 +13,6 @@ var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 
 
-
 var DeleteModal = React.createClass({
 
   delete: function(event) {
@@ -36,19 +35,23 @@ var DeleteModal = React.createClass({
       </Modal>
     );
   }
+
 });
 
 var DeleteTrigger = React.createClass({
 
   render: function() {
     return (
+      /* jshint ignore:start */
       <div >
         <ModalTrigger modal={<DeleteModal container={this} />} container={this}>
           <Badge regionId={this.props.id} id="edit-delete-badge" className="selectable" bsStyle="danger">Delete</Badge>
         </ModalTrigger>
       </div>
+      /* jshint ignore:end */
     );
   }
+
 });
 
 var CreateRegionTrigger = React.createClass({
@@ -59,19 +62,19 @@ var CreateRegionTrigger = React.createClass({
 
   render: function() {
     return (
-      /* jshint ignore:start */
         <ModalTrigger modal={<CreateRegion onCreateRegionSubmit={this.handleDataSubmit}/>}>
-        <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
-                <span className="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+          <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
+            <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
+          </button>
         </ModalTrigger>
-      /* jshint ignore:end */
     );
   }
 });
 
 var Region = React.createClass({
+
   onRegionDelete: function(value) {
-      this.props.container.props.onRegionListDelete({id: value.id});
+      this.props.onRegionDelete({id: value.id});
   },
 
   render: function() {
@@ -79,26 +82,26 @@ var Region = React.createClass({
         <ListGroupItem bsStyle="info">
         <h4>{this.props.name}
         <span className="pull-right">
-            <DeleteTrigger container={this} id={this.props.id}/>
+            <DeleteTrigger onDelete={this.onRegionDelete} id={this.props.id}/>
           </span></h4>
         </ListGroupItem>
-      /* jshint ignore:end */
     );
   }
 });
 
 var RegionList = React.createClass({
-  onRegionListDelete: function(value) {
+
+  onDelete: function(value) {
       this.props.onDelete({id: value.id});
-  },
+    },
 
   render: function() {
 
     var regionNodes = this.props.data.map(function (region) {
       return (
-          <Region id={region.id} name={region.name}/>
+          <Region onRegionDelete={this.onDelete} id={region.id} name={region.name}/>
       );
-    });
+    }.bind(this));
 
     return (
       <ListGroup>
@@ -107,7 +110,6 @@ var RegionList = React.createClass({
     );
   }
 });
-
 
 var Regions = React.createClass({
 
@@ -119,13 +121,13 @@ var Regions = React.createClass({
     };
   },
 
-  handleDelete: function() {
-    console.log("ID is: " + this.props.id);
+  handleDelete: function(value) {
+    console.log("ID is: " + value.id);
     $.ajax({
       'type': 'DELETE',
-      'url': '/regions',
+      'url': '/regions/' + value.id,
       'contentType': 'application/json',
-      'data': JSON.stringify({'id': this.props.id}),
+      'data': JSON.stringify({'id': value.id}),
       'dataType': 'json',
       'async': false,
       'headers': {
@@ -134,9 +136,9 @@ var Regions = React.createClass({
       'success' : function(data) {
         if(this.isMounted()) {
           var regions = this.state.data;
-          var remainingRegions = someArray
+          var remainingRegions = regions
                .filter(function (reg) {
-                 return reg.id !== this.props.id;
+                 return reg.id !== value.id;
                });
           this.setState({
             data: remainingRegions,
