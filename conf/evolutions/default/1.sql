@@ -1,41 +1,41 @@
 # --- !Ups
 
 CREATE TABLE monitoring_team (
-    id serial,
+    id serial primary key,
     name character varying(200) NOT NULL
     );
 
 CREATE TABLE reef_type (
-    id serial,
+    id serial primary key,
     name character varying(200) NOT NULL,
     depth character varying (20) NOT NULL
     );
 
 CREATE TABLE region (
-    id serial,
+    id serial primary key,
     name character varying(200) NOT NULL
     );
 
+CREATE TABLE subregion (
+    id serial primary key,
+    name character varying(200) NOT NULL,
+    region_id integer references region(id) ON DELETE CASCADE,
+    code character varying(10) NOT NULL
+    );
+
 CREATE TABLE site (
-    id serial,
-    subregion_id integer NOT NULL,
-    reef_type_id integer NOT NULL,
+    id serial primary key,
+    subregion_id integer references subregion(id) ON DELETE CASCADE,
+    reef_type_id integer references reef_type(id),
     name character varying(200),
     latitude numeric(21,10) NOT NULL,
     longitude numeric(21,10) NOT NULL,
     map_datum character varying(200) NOT NULL
     );
 
-CREATE TABLE subregion (
-    id serial,
-    name character varying(200) NOT NULL,
-    region_id integer NOT NULL,
-    code character varying(10) NOT NULL
-    );
-
 CREATE TABLE survey_event (
-    id serial,
-    site_id integer NOT NULL,
+    id serial primary key,
+    site_id integer references site(id) on delete cascade,
     event_date date NOT NULL,
     transect_length smallint NOT NULL,
     photographer character varying(25) NOT NULL,
@@ -45,35 +45,31 @@ CREATE TABLE survey_event (
     );
 
 CREATE TABLE surveyevent_monitoring_team (
-    id serial,
-    surveyevent_id integer NOT NULL,
-    monitoringteam_id integer NOT NULL
+    id serial primary key,
+    surveyevent_id integer references survey_event(id) on delete cascade,
+    monitoringteam_id integer references monitoring_team(id)
     );
 
-ALTER TABLE ONLY monitoring_team
-    ADD CONSTRAINT monitoring_team_pkey PRIMARY KEY (id);
+CREATE TABLE dd_user (
+  id serial primary key,
+  email character varying(150) NOT NULL,
+  password character varying(250) NOT NULL,
+  name character varying(250) NOT NULL
+);
 
-ALTER TABLE ONLY reef_type
-    ADD CONSTRAINT reef_type_pkey PRIMARY KEY (id);
+CREATE TABLE dd_role (
+  id serial primary key,
+  name character varying(150) NOT NULL
+);
 
-ALTER TABLE ONLY region
-    ADD CONSTRAINT region_pkey PRIMARY KEY (id);
+CREATE TABLE dd_user_role (
+  id serial primary key,
+  user_id integer references dd_user(id),
+  role_id integer references dd_role(id)
+);
 
-ALTER TABLE ONLY site
-    ADD CONSTRAINT site_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY subregion
-    ADD CONSTRAINT subregion_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY surveyevent_monitoring_team
-    ADD CONSTRAINT surveyevent_monitoring_surveyevent_id_monitoringteam_key UNIQUE (surveyevent_id, monitoringteam_id);
-
-ALTER TABLE ONLY surveyevent_monitoring_team
-    ADD CONSTRAINT surveyevent_monitoring_team_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY survey_event
-    ADD CONSTRAINT survey_event_pkey PRIMARY KEY (id);
-
+CREATE INDEX dd_user_email on dd_user USING btree (email);
+CREATE INDEX dd_user_password on dd_user USING btree (password);
 
 CREATE INDEX site_reef_type_id ON site USING btree (reef_type_id);
 
@@ -89,27 +85,9 @@ CREATE INDEX survey_event_site_id ON survey_event USING btree (site_id);
 
 CREATE INDEX survey_event_data ON survey_event USING GIN(data);
 
-ALTER TABLE ONLY site
-    ADD CONSTRAINT site_reef_type_id_fkey FOREIGN KEY (reef_type_id) REFERENCES reef_type(id) DEFERRABLE INITIALLY DEFERRED;
-
-ALTER TABLE ONLY site
-    ADD CONSTRAINT site_subregion_id_fkey FOREIGN KEY (subregion_id) REFERENCES subregion(id) DEFERRABLE INITIALLY DEFERRED;
-
-ALTER TABLE ONLY subregion
-    ADD CONSTRAINT subregion_region_id_fkey FOREIGN KEY (region_id) REFERENCES region(id) DEFERRABLE INITIALLY DEFERRED;
-
 ALTER TABLE ONLY surveyevent_monitoring_team
-    ADD CONSTRAINT surveyevent_monitoring_team_monitoringteam_id_fkey FOREIGN KEY (monitoringteam_id) REFERENCES monitoring_team(id) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT surveyevent_monitoring_surveyevent_id_monitoringteam_key UNIQUE (surveyevent_id, monitoringteam_id);
 
-ALTER TABLE ONLY survey_event
-    ADD CONSTRAINT survey_event_site_id_fkey FOREIGN KEY (site_id) REFERENCES site(id) DEFERRABLE INITIALLY DEFERRED;
-
-ALTER TABLE ONLY surveyevent_monitoring_team
-    ADD CONSTRAINT surveyevent_id_refs_id_c36946ba FOREIGN KEY (surveyevent_id) REFERENCES survey_event(id) DEFERRABLE INITIALLY DEFERRED;
-
-insert into region (name) values ('Tokyo Prefecture');
-insert into region (name) values ('Kagoshima Prefecture');
-insert into region (name) values ('Hokkaido Prefecture');
 
 insert into monitoring_team (name) values ('Monitoring 1');
 insert into monitoring_team (name) values ('Monitoring 2');
@@ -121,6 +99,10 @@ insert into monitoring_team (name) values ('Monitoring 7');
 insert into monitoring_team (name) values ('Monitoring 8');
 insert into monitoring_team (name) values ('Monitoring 9');
 insert into monitoring_team (name) values ('Monitoring 10');
+
+insert into region (name) values ('Tokyo Prefecture');
+insert into region (name) values ('Kagoshima Prefecture');
+insert into region (name) values ('Hokkaido Prefecture');
 
 insert into reef_type (name, depth) values ('Inner', '3-5m');
 insert into reef_type (name, depth) values ('Channel', '7-9m');
@@ -182,19 +164,25 @@ insert into survey_event (site_id, event_date, transect_length, photographer, an
 insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (7,'2011-07-04',25,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
 insert into survey_event (site_id, event_date, transect_length, photographer, analyzer, transect_depth, data) values (8,'2011-07-04',50,'photag','analyzer', 50, '{"id": "id1", "name": "name1"}');
 
+INSERT INTO dd_user (email, password, name) VALUES ('jeffusan@atware.jp', 'secret', 'Jeff');
+INSERT INTO dd_user (email, password, name) VALUES ('bigman@atware.jp', 'secret', 'Big Man');
+
+INSERT INTO dd_role (name) VAlUES ('user');
+INSERT INTO dd_role (name) VALUES ('administrator');
+
+INSERT INTO dd_user_role (user_id, role_id) VALUES ((select id from dd_user where name='Jeff'), (select id from dd_role where name='user'));
+INSERT INTO dd_user_role (user_id, role_id) VALUES ((select id from dd_user where name='Big Man'), (select id from dd_role where name='administrator'));
 
 # --- !Downs
 
-DROP TABLE monitoring_team;
+DROP TABLE region cascade;
 
 DROP TABLE reef_type;
 
-DROP TABLE region;
-
-DROP TABLE site;
-
-DROP TABLE subregion;
+DROP TABLE monitoring_team;
 
 DROP TABLE survey_event;
 
 DROP TABLE surveyevent_monitoring_team cascade;
+
+DROP TABLE dd_user_role cascade;
