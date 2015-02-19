@@ -12,6 +12,9 @@ trait SurveyEvents extends Controller with Security {
 
   /** Find all survey events by site id. */
   def showBySiteId(siteId: Long) = HasToken() { token => userId => implicit request =>
+    findBySiteId(siteId)
+  }
+  def findBySiteId(siteId: Long) = {
     val surveyEvents = service.findBySiteId(siteId)
     Ok(Json.toJson(surveyEvents))
   }
