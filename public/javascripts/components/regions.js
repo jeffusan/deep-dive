@@ -76,9 +76,13 @@ var Region = React.createClass({
   componentDidMount: function() {
       $('#' + this.props.id).editable({
       type: 'text',
-      pk: 1,
+      pk: this.props.id,
       url: '/regions',
-      name: 'something'
+      ajaxOptions: {
+        headers: {
+          'X-XSRF-TOKEN': auth.getToken()
+        }
+      }
     });
   },
 
