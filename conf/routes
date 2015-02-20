@@ -15,6 +15,7 @@ POST         /logout               controllers.Application.logout()
 GET          /regions              controllers.Regions.show()
 PUT          /regions              controllers.Regions.create()
 DELETE       /regions/:id          controllers.Regions.remove(id: Long)
+POST         /regions              controllers.Regions.update()
 
 # Static
 # ~~~~~~

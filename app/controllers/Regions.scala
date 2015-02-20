@@ -9,6 +9,7 @@ import services.RegionService
 import models.AnormRegionRepository
 
 case class RegionData(name: String)
+case class UpdateRegionData(pk: Int, name: String)
 
 trait Regions extends Controller with Security {
 
@@ -24,6 +25,27 @@ trait Regions extends Controller with Security {
       case e: Exception => BadRequest(Json.obj("status" -> "KO", "message" -> "Something terrible this way comes"))
     }
 
+  }
+
+  val updateForm = Form(
+    mapping(
+      "id" -> number,
+      "name" -> nonEmptyText
+    )(UpdateRegionData.apply)(UpdateRegionData.unapply)
+  )
+
+  def update() = HasAdminToken(parse.json) { token => userId => implicit request =>
+    Logger.info("On update")
+    updateForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
+      regionData => {
+        service.add(regionData.name).fold {
+          BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
+        } { region =>
+          Ok(Json.toJson(region))
+        }
+      }
+    )
   }
 
   /** Find all the regions */

@@ -81,7 +81,10 @@ var Region = React.createClass({
       ajaxOptions: {
         headers: {
           'X-XSRF-TOKEN': auth.getToken()
-        }
+        },
+        'dataType': 'json',
+        'data': JSON.stringify({'id': this.props.id, 'name': this.props.name}),
+        'contentType': 'application/json'
       }
     });
   },
