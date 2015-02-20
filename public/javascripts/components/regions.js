@@ -74,7 +74,7 @@ var CreateRegionTrigger = React.createClass({
 var Region = React.createClass({
 
   componentDidMount: function() {
-    $('#username').editable({
+      $('#' + this.props.id).editable({
       type: 'text',
       pk: 1,
       url: '/regions',
@@ -89,7 +89,7 @@ var Region = React.createClass({
   render: function() {
     return (
         <ListGroupItem bsStyle="info">
-        <h4><a href="#" id="username">{this.props.name}</a>
+        <h4><a href="#" id={this.props.id}>{this.props.name}</a>
         <span className="pull-right">
             <DeleteTrigger onDelete={this.onRegionDelete} id={this.props.id}/>
           </span></h4>
