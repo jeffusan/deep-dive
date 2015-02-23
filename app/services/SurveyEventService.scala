@@ -49,10 +49,10 @@ class SurveyEventService(repository: SurveyEventRepository) {
    * Save the survey events.
    *
    * @param a sequence instance including 0 or more [[models.SurveyEvent]] instances.
-   * @return a array instance including 0 or more [[Int]] instances.Int is a result for each query.
+   * @return status true is success, otherwise failure
    */
-  def save(surveyEvents: Seq[SurveyEvent]): Array[Int] = {
-    repository.save(surveyEvents)
+  def save(surveyEvents: Seq[SurveyEvent]): Boolean = {
+    surveyEvents.size == repository.save(surveyEvents).foldLeft(0)(_ + _)
   }
 
 }
