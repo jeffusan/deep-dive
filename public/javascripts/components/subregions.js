@@ -60,7 +60,7 @@ var CreateNameInput = React.createClass({
   }
 });
 
-var CreateRegionInput = React.createClass({
+var CreateRegionIdInput = React.createClass({
 
   getInitialState: function() {
     return {
@@ -162,7 +162,7 @@ var CreateSubRegion = React.createClass({
         <Modal title="Add A SubRegion" animation={true}>
           <div className="modal-body">
             <CreateNameInput onHandleChange={this.updateName} />
-            <CreateRegionInput onHandleChange={this.updateRegionId} />
+            <CreateRegionIdInput onHandleChange={this.updateRegionId} />
             <CreateCodeInput onHandleChange={this.updateCode} />
              <div className="modal-footer">
                <ButtonToolbar>

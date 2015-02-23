@@ -1,8 +1,6 @@
 package services
 
-import play.api.Logger
-import models.{RegionRepository, Region}
-import play.api.libs.json.{JsValue, Json}
+import models.{Region, RegionRepository}
 
 
 /**

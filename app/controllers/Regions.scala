@@ -1,12 +1,12 @@
 package controllers
 
-import play.api.libs.json.Json
-import play.api.mvc._
+import models.AnormRegionRepository
 import play.api.Logger
 import play.api.data._
 import play.api.data.Forms._
+import play.api.libs.json.Json
+import play.api.mvc._
 import services.RegionService
-import models.AnormRegionRepository
 
 case class RegionData(name: String)
 case class UpdateRegionData(pk: Int, name: String, value: String)
