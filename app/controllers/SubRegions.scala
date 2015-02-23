@@ -8,7 +8,7 @@ import play.api.data.Forms._
 import services.SubRegionService
 import models.AnormSubRegionRepository
 
-case class SubRegionData(name: String)
+case class SubRegionData(name: String, regionId: Int, code: String)
 case class UpdateSubRegionData(pk: Int, name: String, value: String)
 
 trait SubRegions extends Controller with Security {
@@ -50,16 +50,14 @@ trait SubRegions extends Controller with Security {
 
   /** Find all the regions */
   def show() = HasAdminToken() { token => userId => implicit request =>
-    service.findAll.fold {
-      BadRequest(Json.obj("status" -> "KO", "message" -> "Something terrible has happened"))
-    } { subRegionData =>
-      Ok(Json.toJson(subRegionData))
-    }
+    Ok(Json.toJson(service.findAll))
   }
 
   val createForm = Form(
     mapping(
-      "name" -> nonEmptyText
+      "name" -> nonEmptyText,
+      "regionId" -> number,
+      "code" -> nonEmptyText
     )(SubRegionData.apply)(SubRegionData.unapply)
   )
 
@@ -68,7 +66,7 @@ trait SubRegions extends Controller with Security {
     createForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("err" -> "Bad Credentials")),
       subRegionData => {
-        service.add(subRegionData.name).fold {
+        service.add(subRegionData.name, subRegionData.regionId, subRegionData.code).fold {
           BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
         } { subRegion =>
           Ok(Json.toJson(subRegion))

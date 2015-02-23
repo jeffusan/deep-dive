@@ -65,16 +65,14 @@ trait SubRegionRepository {
 
   }
 
-  def add(name: String): Option[SubRegion] = {
-    None
-  }
+  def add(name: String, regionId: Int, code: String): Option[SubRegion]
 
   /**
    * Finds list of sub-regions based on given region id
    * @param regionId region id
    * @return list of sub-regions
    */
-  def findAllSubRegionByRegionId(regionId: Int): List[SubRegion]
+  def findAllByRegionId(regionId: Int): List[SubRegion]
 
   /**
    * Finds a sub-region based on given sub-region id
@@ -87,7 +85,7 @@ trait SubRegionRepository {
    * Retrieves all available sub-regions
    * @return list of sub-regions
    */
-  def findAllSubRegion: List[SubRegion]
+  def findAll: List[SubRegion]
 }
 
 
@@ -120,6 +118,22 @@ object AnormSubRegionRepository extends SubRegionRepository {
     }
   }
 
+  def add(name: String, regionId: Int, code: String): Option[SubRegion] = {
+    DB.withConnection { implicit c =>
+      val maybe: Option[SubRegion] = SQL(
+        """
+        insert into subregion(id, name, region_id, code)
+        values (DEFAULT, {name}, {regionId}, {code})
+        returning id, name, region_id, code;
+        """
+      ).on(
+        'name -> name,
+        'regionId -> regionId,
+        'code -> code
+      ).as(subRegionParser.singleOpt)
+      maybe
+    }
+  }
 
   /**
    * Retrieves sub-region specified by given ID
@@ -128,7 +142,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
    */
   override def findOneById(id: Int): Option[SubRegion] = {
     DB.withConnection { implicit c =>
-      val mybeSubRegion: Option[SubRegion] = SQL(
+      val maybe: Option[SubRegion] = SQL(
         """
           SELECT
           id,
@@ -139,7 +153,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
           WHERE id={id}
         """).on('id -> id).as(subRegionParser.singleOpt)
 
-      mybeSubRegion
+      maybe
     }
   }
 
@@ -148,9 +162,9 @@ object AnormSubRegionRepository extends SubRegionRepository {
    * @param regionId region id
    * @return list of sub-regions or null
    */
-  override def findAllSubRegionByRegionId(regionId: Int): List[SubRegion] = {
+  override def findAllByRegionId(regionId: Int): List[SubRegion] = {
     DB.withConnection { implicit c =>
-      val mybeSubRegionList: List[SubRegion] = SQL(
+      val maybe: List[SubRegion] = SQL(
         """
           SELECT
           id,
@@ -163,7 +177,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
           'id -> regionId
         ).as(subRegionParser.*)
 
-      mybeSubRegionList
+      maybe
     }
   }
 
@@ -171,7 +185,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
    * Retrieves all available sub-regions
    * @return list of sub-regions
    */
-  override def findAllSubRegion: List[SubRegion] = {
+  override def findAll: List[SubRegion] = {
     DB.withConnection { implicit c =>
     val subRegionList: List[SubRegion] = SQL(
       """

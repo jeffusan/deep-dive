@@ -12,19 +12,61 @@ var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 var ButtonToolbar = ReactBootstrap.ButtonToolbar;
 
-var CreateSubRegionInput = React.createClass({
+var CreateNameInput = React.createClass({
 
   getInitialState: function() {
     return {
-      value: ''
+      name: ''
     };
   },
 
   validationState: function() {
-    var length = this.state.value.length;
-    if (length > 10) return 'success';
-    else if (length > 5) return 'warning';
-    else if (length > 0) return 'error';
+    var length = this.state.name.length;
+    if (length > 3) {
+      return 'success';
+    } else if (length > 1) {
+      return 'warning';
+    } else if (length > 0) {
+      return 'error';
+    }
+    return null;
+  },
+
+  handleChange: function(newValue) {
+    // This could also be done using ReactLink:
+    // http://facebook.github.io/react/docs/two-way-binding-helpers.html
+    this.setState({
+      name: this.refs.input.getValue()
+    });
+    this.props.onHandleChange({name: this.refs.input.getValue()});
+  },
+
+  render: function() {
+    return (
+        <Input
+      type="text"
+      value={this.state.value}
+      placeholder="Enter name"
+      label="Name of the SubRegion"
+      help="Validates sbased on string length."
+      bsStyle={this.validationState()}
+      hasFeedback
+      ref="input"
+      groupClassName="group-class"
+      wrapperClassName="wrapper-class"
+      labelClassName="label-class"
+      onChange={this.handleChange} />
+    );
+  }
+});
+
+var CreateRegionInput = React.createClass({
+
+  getInitialState: function() {
+    return {
+      data: {},
+      value: 1
+    };
   },
 
   handleChange: function(newValue) {
@@ -37,15 +79,40 @@ var CreateSubRegionInput = React.createClass({
   },
 
   render: function() {
+
+    return (
+      <Input type="select" label='Region Select' defaultValue="select" ref="input">
+        <option value="select">select</option>
+        <option value="hey">...</option>
+      </Input>
+    );
+  }
+});
+
+var CreateCodeInput = React.createClass({
+
+  getInitialState: function() {
+    return {
+      code: ''
+    };
+  },
+
+  handleChange: function(newValue) {
+    // This could also be done using ReactLink:
+    // http://facebook.github.io/react/docs/two-way-binding-helpers.html
+    this.setState({
+      code: this.refs.input.getValue()
+    });
+    this.props.onHandleChange({name: this.refs.input.getValue()});
+  },
+
+  render: function() {
     return (
         <Input
       type="text"
-      value={this.state.value}
-      placeholder="Enter name"
-      label="Name of the SubRegion"
-      help="Validates based on string length."
-      bsStyle={this.validationState()}
-      hasFeedback
+      value={this.state.code}
+      placeholder="Enter code"
+      label="Code of the SubRegion"
       ref="input"
       groupClassName="group-class"
       wrapperClassName="wrapper-class"
@@ -59,18 +126,34 @@ var CreateSubRegion = React.createClass({
 
   getInitialState: function() {
     return {
-      value: ''
+      name: '',
+      regionId: 1,
+      code: ''
     };
   },
 
   updateName: function(nameValue) {
-    this.state.value = nameValue;
+    this.state.name = nameValue.name;
+  },
+
+  updateRegionId: function(regionIdValue) {
+    this.state.regionId = regionIdValue;
+  },
+
+  updateCode: function(codeValue) {
+    this.state.code = codeValue.name;
   },
 
   handleSubmit: function(event) {
     event.preventDefault();
-    var name = this.state.value.name;
-    this.props.onCreateSubRegionSubmit({name: name});
+    var name = this.state.name;
+    var regionId = this.state.regionId;
+    var code = this.state.code;
+    this.props.onCreateSubRegionSubmit({
+      name: name,
+      regionId: regionId,
+      code: code
+    });
     this.props.onRequestHide();
   },
 
@@ -78,7 +161,9 @@ var CreateSubRegion = React.createClass({
     return (
         <Modal title="Add A SubRegion" animation={true}>
           <div className="modal-body">
-            <CreateSubRegionInput onHandleChange={this.updateName} />
+            <CreateNameInput onHandleChange={this.updateName} />
+            <CreateRegionInput onHandleChange={this.updateRegionId} />
+            <CreateCodeInput onHandleChange={this.updateCode} />
              <div className="modal-footer">
                <ButtonToolbar>
                  <Button onClick={this.handleSubmit} bsStyle="primary" bsSize="large">Create</Button>
@@ -135,7 +220,11 @@ var DeleteTrigger = React.createClass({
 var CreateSubRegionTrigger = React.createClass({
 
   handleDataSubmit: function(value) {
-    this.props.onHandlingData({name: value.name});
+    this.props.onHandlingData({
+      name: value.name,
+      regionId: value.regionId,
+      code: value.code
+    });
   },
 
   render: function() {
@@ -230,9 +319,9 @@ var SubRegions = React.createClass({
       },
       'success' : function(data) {
         if(this.isMounted()) {
-          var regions = this.state.data;
-          var remainingSubRegions = regions
-               .filter(function (reg) {
+          var subregions = this.state.data;
+          var remainingSubRegions =
+                subregions.filter(function (reg) {
                  return reg.id !== value.id;
                });
           this.setState({
@@ -246,7 +335,7 @@ var SubRegions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: {},
-            message: 'Um, yeah. About those regions you wanted canceled...',
+            message: 'Um, yeah. About those subregions you wanted canceled...',
             hasMessage: true
           });
         }
@@ -259,9 +348,13 @@ var SubRegions = React.createClass({
 
     $.ajax({
       'type': 'PUT',
-      'url': '/regions',
+      'url': '/subregions',
       'contentType': 'application/json',
-      'data': JSON.stringify({'name': value.name}),
+      'data': JSON.stringify({
+        'name': value.name,
+        'regionId': value.regionId,
+        'code': value.code
+      }),
       'dataType': 'json',
       'async': false,
       'headers': {
@@ -269,8 +362,8 @@ var SubRegions = React.createClass({
       },
       'success' : function(data) {
         if(this.isMounted()) {
-          var regions = this.state.data;
-          var newSubRegions = regions.concat([data]);
+          var subregions = this.state.data;
+          var newSubRegions = subregions.concat([data]);
           this.setState({
             data: newSubRegions,
             message: 'Roger that',
@@ -282,7 +375,7 @@ var SubRegions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: {},
-            message: 'Um, yeah. About those regions...',
+            message: 'Um, yeah. About those subregions...',
             hasMessage: true
           });
         }

@@ -51,7 +51,7 @@ trait Regions extends Controller with Security {
 
   /** Find all the regions */
   def show() = HasAdminToken() { token => userId => implicit request =>
-    Ok(Json.toJson(service.findAll()))
+    Ok(Json.toJson(service.findAll))
   }
 
   val createForm = Form(
