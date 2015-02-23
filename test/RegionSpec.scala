@@ -18,7 +18,7 @@ class RegionSpec extends PlaySpec with MockitoSugar {
 
       val regionJson: JsValue = Json.toJson(region)
 
-      region.id mustBe (regionJson \ "id").as[Option[Long]]
+      region.id mustBe (regionJson \ "id").as[Option[Int]]
       region.name mustBe (regionJson \ "name").as[String]
 
     }
@@ -69,7 +69,7 @@ class RegionSpec extends PlaySpec with MockitoSugar {
 
       var index = 0
       regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
+        (actual.get(index) \ "id").as[Int] mustBe e.id.get
         (actual.get(index) \ "name").as[String] mustBe e.name
         index += 1
       })
@@ -95,7 +95,7 @@ class RegionSpec extends PlaySpec with MockitoSugar {
 
       var index = 0
       regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
+        (actual.get(index) \ "id").as[Int] mustBe e.id.get
         (actual.get(index) \ "name").as[String] mustBe e.name
         index += 1
       })

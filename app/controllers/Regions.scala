@@ -9,14 +9,14 @@ import services.RegionService
 import models.AnormRegionRepository
 
 case class RegionData(name: String)
-case class UpdateRegionData(pk: Int, name: String)
+case class UpdateRegionData(pk: Int, name: String, value: String)
 
 trait Regions extends Controller with Security {
 
   lazy val service = new RegionService(AnormRegionRepository)
 
   /** Delete a region */
-  def remove(id: Long) =HasAdminToken() { token => userId => implicit request =>
+  def remove(id: Int) =HasAdminToken() { token => userId => implicit request =>
 
     try {
       service.remove(id)
@@ -29,17 +29,18 @@ trait Regions extends Controller with Security {
 
   val updateForm = Form(
     mapping(
-      "id" -> number,
-      "name" -> nonEmptyText
+      "pk" -> number,
+      "name" -> nonEmptyText,
+      "value" -> nonEmptyText
     )(UpdateRegionData.apply)(UpdateRegionData.unapply)
   )
 
   def update() = HasAdminToken(parse.json) { token => userId => implicit request =>
-    Logger.info("On update")
+    Logger.info("Controller update!")
     updateForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
       regionData => {
-        service.add(regionData.name).fold {
+        service.update(regionData.pk, regionData.value).fold {
           BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
         } { region =>
           Ok(Json.toJson(region))

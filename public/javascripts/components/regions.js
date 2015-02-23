@@ -83,9 +83,9 @@ var Region = React.createClass({
           'X-XSRF-TOKEN': auth.getToken()
         },
         'dataType': 'json',
-        'data': JSON.stringify({'id': this.props.id, 'name': this.props.name}),
         'contentType': 'application/json'
-      }
+      },
+      params: function(params) { return JSON.stringify(params); }
     });
   },
 
@@ -96,7 +96,7 @@ var Region = React.createClass({
   render: function() {
     return (
         <ListGroupItem bsStyle="info">
-        <h4><a href="#" id={this.props.id}>{this.props.name}</a>
+        <h4><a href="#" id={this.props.id} ref="input">{this.props.name}</a>
         <span className="pull-right">
             <DeleteTrigger onDelete={this.onRegionDelete} id={this.props.id}/>
           </span></h4>

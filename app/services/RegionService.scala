@@ -11,8 +11,13 @@ import play.api.libs.json.{JsValue, Json}
  */
 class RegionService(repository: RegionRepository) {
 
+  def update(id: Int, name: String): Option[Region] = {
+
+    repository.update(id, name)
+  }
+
   /** Remove a Region */
-  def remove(id: Long) {
+  def remove(id: Int) {
 
     repository.remove(id)
   }
@@ -27,7 +32,7 @@ class RegionService(repository: RegionRepository) {
    * @param regionId region ID
    * @return json converted region info or null
    */
-  def findOneById(regionId: Long): Option[JsValue] = {
+  def findOneById(regionId: Int): Option[JsValue] = {
     // validation of input
     require(regionId >= 1, "invalid region id")
 
