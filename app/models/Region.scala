@@ -14,9 +14,9 @@ import play.api.Logger
  * @param name region name
  */
 case class Region(
-                   id: Option[Long],
-                   name: String
-                   )
+  id: Option[Int],
+  name: String
+)
 
 /**
  * Companion object of case class
@@ -28,13 +28,13 @@ object Region {
    */
   // Json to Object
   implicit val RegionFromJson: Reads[Region] = (
-    (__ \ "id").readNullable[Long] ~
+    (__ \ "id").readNullable[Int] ~
       (__ \ "name").read[String]
     )(Region.apply _)
 
   // Object to Json
   implicit val RegionToJson: Writes[Region] = (
-    (__ \ "id").writeNullable[Long] ~
+    (__ \ "id").writeNullable[Int] ~
       (__ \ "name").write[String]
     )((region: Region) => (
     region.id,
@@ -59,7 +59,7 @@ trait RegionRepository {
    * @param regionId region id
    * @return region or null
    */
-  def findOneById(regionId: Long): Option[Region]
+  def findOneById(regionId: Int): Option[Region]
 
   /**
     * Add a region
@@ -69,7 +69,10 @@ trait RegionRepository {
   /**
     * Delete a region and return nothing
     */
-  def remove(id: Long)
+  def remove(id: Int)
+
+  /** Update a region and return it */
+  def update(id: Int, name: String): Option[Region]
 }
 
 
@@ -89,7 +92,7 @@ object AnormRegionRepository extends RegionRepository {
    * SQL parser
    */
   val regionParser: RowParser[Region] = {
-    long("id") ~
+    int("id") ~
       str("name") map {
       case i ~ n => Region(
         id = Some(i),
@@ -100,14 +103,15 @@ object AnormRegionRepository extends RegionRepository {
   /**
     * Removes a region based on id
     */
-  def remove(id: Long) {
-    Logger.info("Hello Region Repository Remover")
+  def remove(id: Int) {
+
     DB.withConnection { implicit c =>
       SQL("""
       delete from region where id={id}
       """
       ).on('id -> id).execute()
-  }}
+    }
+  }
 
   /**
     *  Adds a region based on name and returns it with it's new id
@@ -123,13 +127,28 @@ object AnormRegionRepository extends RegionRepository {
     }
   }
 
+  /**
+    * Updates a region and returns it
+    */
+  def update(id: Int, name: String): Option[Region] = {
+    DB.withConnection { implicit c =>
+      val maybeRegion: Option[Region] = SQL(
+        """
+        update region set name={name} where id={id} returning id, name;
+        """
+      ).on('name -> name, 'id -> id).as(regionParser.singleOpt)
+      Logger.info("The returned region: " + maybeRegion.get)
+      maybeRegion
+    }
+  }
+
 
   /**
    * Retrieves region info based on given id
    * @param id region id
    * @return region or null
    */
-  def findOneById(id: Long): Option[Region] = {
+  def findOneById(id: Int): Option[Region] = {
 
     DB.withConnection { implicit c =>
       val mybeRegion: Option[Region] = SQL(

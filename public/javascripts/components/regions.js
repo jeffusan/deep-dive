@@ -73,6 +73,22 @@ var CreateRegionTrigger = React.createClass({
 
 var Region = React.createClass({
 
+  componentDidMount: function() {
+      $('#' + this.props.id).editable({
+      type: 'text',
+      pk: this.props.id,
+      url: '/regions',
+      ajaxOptions: {
+        headers: {
+          'X-XSRF-TOKEN': auth.getToken()
+        },
+        'dataType': 'json',
+        'contentType': 'application/json'
+      },
+      params: function(params) { return JSON.stringify(params); }
+    });
+  },
+
   onRegionDelete: function(value) {
       this.props.onRegionDelete({id: value.id});
   },
@@ -80,7 +96,7 @@ var Region = React.createClass({
   render: function() {
     return (
         <ListGroupItem bsStyle="info">
-        <h4>{this.props.name}
+        <h4><a href="#" id={this.props.id} ref="input">{this.props.name}</a>
         <span className="pull-right">
             <DeleteTrigger onDelete={this.onRegionDelete} id={this.props.id}/>
           </span></h4>
