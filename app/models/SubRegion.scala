@@ -57,9 +57,7 @@ object SubRegion {
  */
 trait SubRegionRepository {
 
-  def update(id: Int, name: String): Option[SubRegion] = {
-    None
-  }
+  def update(id: Int, name: String): Option[SubRegion]
 
   def remove(id: Int) = {
 
@@ -115,6 +113,20 @@ object AnormSubRegionRepository extends SubRegionRepository {
         regionId = r,
         code = c
       )
+    }
+  }
+
+  def update(id: Int, name: String): Option[SubRegion] = {
+    DB.withConnection{ implicit c =>
+      val maybe: Option[SubRegion] = SQL(
+        """
+        update subregion set name={name} where id={id} returning id, name, region_id, code;
+        """
+      ).on(
+        'id -> id,
+        'name -> name
+      ).as(subRegionParser.singleOpt)
+      maybe
     }
   }
 
