@@ -15,9 +15,9 @@ import play.api.libs.functional.syntax._
  * @param code sub-region code
  */
 case class SubRegion(
-                      id: Option[Long],
+                      id: Option[Int],
                       name: String,
-                      regionId: Long,
+                      regionId: Int,
                       code: String
                       )
 
@@ -30,17 +30,17 @@ object SubRegion {
    */
   // Json to Object
   implicit val SubRegionFromJson: Reads[SubRegion] = (
-    (__ \ "id").readNullable[Long] ~
+    (__ \ "id").readNullable[Int] ~
       (__ \ "name").read[String] ~
-      (__ \ "regionId").read[Long] ~
+      (__ \ "regionId").read[Int] ~
       (__ \ "code").read[String]
     )(SubRegion.apply _)
 
   // Object to Json
   implicit val SubRegionToJson: Writes[SubRegion] = (
-    (__ \ "id").writeNullable[Long] ~
+    (__ \ "id").writeNullable[Int] ~
       (__ \ "name").write[String] ~
-      (__ \ "regionId").write[Long] ~
+      (__ \ "regionId").write[Int] ~
       (__ \ "code").write[String]
     )((subRegion: SubRegion) => (
     subRegion.id,
@@ -57,19 +57,31 @@ object SubRegion {
  */
 trait SubRegionRepository {
 
+  def update(id: Int, name: String): Option[SubRegion] = {
+    None
+  }
+
+  def remove(id: Int) = {
+
+  }
+
+  def add(name: String): Option[SubRegion] = {
+    None
+  }
+
   /**
    * Finds list of sub-regions based on given region id
    * @param regionId region id
    * @return list of sub-regions
    */
-  def findAllSubRegionByRegionId(regionId: Long): List[SubRegion]
+  def findAllSubRegionByRegionId(regionId: Int): List[SubRegion]
 
   /**
    * Finds a sub-region based on given sub-region id
    * @param subRegionId sub-region id
    * @return sub-region or null
    */
-  def findOneById(subRegionId: Long): Option[SubRegion]
+  def findOneById(subRegionId: Int): Option[SubRegion]
 
   /**
    * Retrieves all available sub-regions
@@ -95,9 +107,9 @@ object AnormSubRegionRepository extends SubRegionRepository {
    * SQL parser
    */
   val subRegionParser: RowParser[SubRegion] = {
-    long("id") ~
+    int("id") ~
       str("name") ~
-      long("region_id") ~
+      int("region_id") ~
       str("code") map {
       case i ~ n ~ r ~ c => SubRegion(
         id = Some(i),
@@ -114,7 +126,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
    * @param id sub-region ID
    * @return sub-region or null
    */
-  override def findOneById(id: Long): Option[SubRegion] = {
+  override def findOneById(id: Int): Option[SubRegion] = {
     DB.withConnection { implicit c =>
       val mybeSubRegion: Option[SubRegion] = SQL(
         """
@@ -136,7 +148,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
    * @param regionId region id
    * @return list of sub-regions or null
    */
-  override def findAllSubRegionByRegionId(regionId: Long): List[SubRegion] = {
+  override def findAllSubRegionByRegionId(regionId: Int): List[SubRegion] = {
     DB.withConnection { implicit c =>
       val mybeSubRegionList: List[SubRegion] = SQL(
         """
@@ -169,12 +181,9 @@ object AnormSubRegionRepository extends SubRegionRepository {
         region_id,
         code
         FROM subregion
-        WHERE region_id = {id}
       """).as(subRegionParser.*)
 
       subRegionList
    }
-
   }
-
 }
