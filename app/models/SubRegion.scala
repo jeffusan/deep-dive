@@ -189,12 +189,13 @@ object AnormSubRegionRepository extends SubRegionRepository {
       val maybe: Option[SubRegion] = SQL(
         """
           SELECT
-          id,
-          name,
-          region_id,
-          code
-          FROM subregion
-          WHERE id={id}
+          s.id,
+          s.name,
+          s.code
+          s.region_id,
+          r.name as region_name
+          FROM subregion s, region r
+          WHERE s.id={id}
         """).on('id -> id).as(subRegionParser.singleOpt)
 
       maybe
@@ -211,12 +212,13 @@ object AnormSubRegionRepository extends SubRegionRepository {
       val maybe: List[SubRegion] = SQL(
         """
           SELECT
-          id,
-          name,
-          region_id,
-          code
-          FROM subregion
-          WHERE region_id = {id}
+          subregion.id,
+          subregion.name,
+          subregion.code,
+          subregion.region_id,
+          region.name as region_name
+          FROM subregion, region
+          WHERE subregion.region_id = {id}
         """).on(
           'id -> regionId
         ).as(subRegionParser.*)
@@ -234,11 +236,14 @@ object AnormSubRegionRepository extends SubRegionRepository {
     val subRegionList: List[SubRegion] = SQL(
       """
         SELECT
-        id,
-        name,
-        region_id,
-        code
-        FROM subregion
+        s.id,
+        s.name,
+        s.code,
+        s.region_id,
+        r.name as region_name
+        FROM subregion s, region r
+        WHERE s.region_id = r.id
+        ORDER BY s.name;
       """).as(subRegionParser.*)
 
       subRegionList
