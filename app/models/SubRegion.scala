@@ -14,12 +14,7 @@ import play.api.libs.functional.syntax._
  * @param regionId related region id
  * @param code sub-region code
  */
-case class SubRegion(
-                      id: Option[Int],
-                      name: String,
-                      regionId: Int,
-                      code: String
-                      )
+case class SubRegion(id: Option[Int], name: String, region: Region, code: String)
 
 /**
  * Companion object of case class
@@ -32,7 +27,7 @@ object SubRegion {
   implicit val SubRegionFromJson: Reads[SubRegion] = (
     (__ \ "id").readNullable[Int] ~
       (__ \ "name").read[String] ~
-      (__ \ "regionId").read[Int] ~
+      (__ \ "region").read[Region] ~
       (__ \ "code").read[String]
     )(SubRegion.apply _)
 
@@ -40,12 +35,12 @@ object SubRegion {
   implicit val SubRegionToJson: Writes[SubRegion] = (
     (__ \ "id").writeNullable[Int] ~
       (__ \ "name").write[String] ~
-      (__ \ "regionId").write[Int] ~
+      (__ \ "region").write[Region] ~
       (__ \ "code").write[String]
     )((subRegion: SubRegion) => (
     subRegion.id,
     subRegion.name,
-    subRegion.regionId,
+    subRegion.region,
     subRegion.code
     )
     )
@@ -57,10 +52,19 @@ object SubRegion {
  */
 trait SubRegionRepository {
 
-  def update(id: Int, name: String): Option[SubRegion]
+  /**
+    * This will allow updating a subregions name or code
+    */
+  def update(id: Int, name: String, code: String): Option[SubRegion]
 
+  /**
+    * Remove a SubRegion
+    */
   def remove(id: Int)
 
+  /**
+    * Add a subregion providing a name, a code, and a reference to the Region
+    */
   def add(name: String, regionId: Int, code: String): Option[SubRegion]
 
   /**
@@ -102,27 +106,31 @@ object AnormSubRegionRepository extends SubRegionRepository {
    */
   val subRegionParser: RowParser[SubRegion] = {
     int("id") ~
-      str("name") ~
-      int("region_id") ~
-      str("code") map {
-      case i ~ n ~ r ~ c => SubRegion(
-        id = Some(i),
-        name = n,
-        regionId = r,
-        code = c
-      )
+    str("name") ~
+    str("code") ~
+    int("region_id") ~
+    str("region_name") map {
+      case i ~ n ~ c ~ ri ~ rn => SubRegion(Some(i), n, Region(Some(ri), rn), c)
     }
   }
 
-  def update(id: Int, name: String): Option[SubRegion] = {
+  def update(id: Int, name: String, code: String): Option[SubRegion] = {
     DB.withConnection{ implicit c =>
       val maybe: Option[SubRegion] = SQL(
         """
-        update subregion set name={name} where id={id} returning id, name, region_id, code;
+        with updated as (update subregion set name={name} where id={id} returning id)
+        select
+          subregion.id,
+          subregion.name as name,
+          subregion.code,
+          subregion.region_id,
+          region.name as region_name
+        from subregion, region where subregion.id in (select id from updated);
         """
       ).on(
         'id -> id,
-        'name -> name
+        'name -> name,
+        'code -> code
       ).as(subRegionParser.singleOpt)
       maybe
     }
@@ -130,18 +138,35 @@ object AnormSubRegionRepository extends SubRegionRepository {
 
   def add(name: String, regionId: Int, code: String): Option[SubRegion] = {
     DB.withConnection { implicit c =>
-      val maybe: Option[SubRegion] = SQL(
+      val maybe: Option[Long] = SQL(
         """
-        insert into subregion(id, name, region_id, code)
-        values (DEFAULT, {name}, {regionId}, {code})
-        returning id, name, region_id, code;
+        insert into subregion (id, name, region_id, code)
+        values (DEFAULT, {name}, {regionId}, {code}) returning id;
         """
       ).on(
         'name -> name,
         'regionId -> regionId,
         'code -> code
-      ).as(subRegionParser.singleOpt)
-      maybe
+      ).executeInsert()
+      maybe match {
+        case Some(maybe) =>
+          val maybe2: Option[SubRegion] = SQL (
+            """
+            select
+              subregion.id,
+              subregion.name as name,
+              subregion.code,
+              subregion.region_id,
+              region.name as region_name
+            from subregion, region where subregion.id={id}
+            """
+          ).on(
+            'id -> maybe.toInt
+          ).as(subRegionParser.singleOpt)
+          maybe2
+        case None => None
+
+      }
     }
   }
 

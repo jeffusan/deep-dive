@@ -9,8 +9,8 @@ import play.api.libs.json.{Json, JsValue}
  */
 class SubRegionService(repository: SubRegionRepository) {
 
-  def update(id: Int, name: String): Option[SubRegion] = {
-    repository.update(id, name)
+  def update(id: Int, name: String, code: String): Option[SubRegion] = {
+    repository.update(id, name, code)
   }
 
   def remove(id: Int) {

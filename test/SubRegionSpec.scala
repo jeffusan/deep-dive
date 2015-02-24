@@ -1,4 +1,4 @@
-import models.{SubRegion, SubRegionRepository}
+import models.{Region, SubRegion, SubRegionRepository}
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
@@ -15,13 +15,13 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
   "Sub-region to json conversion " should {
     "corresponding values should match when sub-region is converted to json" in {
 
-      val subRegion = new SubRegion(Some(1), "Izu-Oshima", 1, "OSH")
+      val subRegion = new SubRegion(Some(1), "Izu-Oshima", new Region(Option(1), "TEST"), "OSH")
 
       val jsonSubRegion: JsValue = Json.toJson(subRegion)
 
-      subRegion.id mustBe (jsonSubRegion \ "id").as[Option[Long]]
+      subRegion.id mustBe (jsonSubRegion \ "id").as[Option[Int]]
       subRegion.name mustBe (jsonSubRegion \ "name").as[String]
-      subRegion.regionId mustBe (jsonSubRegion \ "regionId").as[Long]
+      subRegion.region.id mustBe (jsonSubRegion \ "region" \ "id").as[Option[Int]]
       subRegion.code mustBe (jsonSubRegion \ "code").as[String]
 
     }
@@ -34,12 +34,15 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
           {
           "id" : 1,
           "name" : "Izu-Oshima",
-          "regionId" : 1,
+          "region" : {
+            "id": 1,
+            "name": "test"
+          },
           "code" : "OSH"
           }
       """)
 
-      val subRegion: SubRegion = new SubRegion(Some(1), "Izu-Oshima", 1, "OSH")
+      val subRegion: SubRegion = new SubRegion(Some(1), "Izu-Oshima", new Region(Option(1), "test"), "OSH")
 
       jsonSubRegion.as[SubRegion] mustBe subRegion
     }
@@ -110,7 +113,7 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
 
     }
 
-    "can return JsonValue with no object in it" in {
+    "can return object with no object in it" in {
       val regionId = 1
       val regions = List()
       val repo = mock[SubRegionRepository]
@@ -121,9 +124,9 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
       actual.size mustBe 0
     }
 
-    "can return JsonValue with one object in it" in {
+    "can return object with one object in it" in {
       val regionId = 1
-      val regions = List(new SubRegion(Some(1), "Izu-Oshima", 1, "OSH"))
+      val regions = List(new SubRegion(Some(1), "Izu-Oshima", new Region(Option(1), "test"), "OSH"))
       val repo = mock[SubRegionRepository]
       when(repo.findAllByRegionId(regionId)) thenReturn regions
 
@@ -134,11 +137,11 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
       actual.size mustBe 1
     }
 
-    "can return JsonValue with two objects in it" in {
+    "can return object with two objects in it" in {
       val regionId = 1
       val regions = List(
-        new SubRegion(Some(1), "Izu-Oshima", 1, "OSH"),
-        new SubRegion(Some(2), "Nii-Jima", 1, "NII")
+        new SubRegion(Some(1), "Izu-Oshima", new Region(Option(1), "test"), "OSH"),
+        new SubRegion(Some(2), "Nii-Jima", new Region(Option(1), "test"), "NII")
       )
       val repo = mock[SubRegionRepository]
       when(repo.findAllByRegionId(regionId)) thenReturn regions
@@ -168,7 +171,7 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
     }
 
     "can return an object with one object in it" in {
-      val regions = List(new SubRegion(Some(1), "Izu-Oshima", 1, "OSH"))
+      val regions = List(new SubRegion(Some(1), "Izu-Oshima", new Region(Option(1), "test"), "OSH"))
       val repo = mock[SubRegionRepository]
       when(repo.findAll) thenReturn regions
 
@@ -179,10 +182,10 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
 
     }
 
-    "can return JsonValue with two object in it" in {
+    "can return object with two object in it" in {
       val regions = List(
-        new SubRegion(Some(1), "Izu-Oshima", 1, "OSH"),
-        new SubRegion(Some(2), "Nii-Jima", 1, "NII")
+        new SubRegion(Some(1), "Izu-Oshima", new Region(Option(1), "test"), "OSH"),
+        new SubRegion(Some(2), "Nii-Jima", new Region(Option(1), "test"), "NII")
       )
       val repo = mock[SubRegionRepository]
       when(repo.findAll) thenReturn regions

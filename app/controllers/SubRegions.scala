@@ -39,7 +39,7 @@ trait SubRegions extends Controller with Security {
     updateForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
       subRegionData => {
-        service.update(subRegionData.pk, subRegionData.value).fold {
+        service.update(subRegionData.pk, subRegionData.value, "code").fold {
           BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
         } { subRegion =>
           Ok(Json.toJson(subRegion))
