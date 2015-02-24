@@ -1,8 +1,9 @@
-import models.{RegionRepository, Region}
+import java.lang.Throwable
+import models.{ RegionRepository, Region }
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsArray, Json, JsValue}
+import play.api.libs.json.{ JsArray, Json, JsValue }
 import services.RegionService
 
 /**
@@ -24,22 +25,20 @@ class RegionSpec extends PlaySpec with MockitoSugar {
     }
   }
 
-
   "Region from json conversion " should {
     "corresponding values should match when json is converted to a region" in {
-      val regionJson: JsValue = Json.parse( """
+      val regionJson: JsValue = Json.parse("""
           {
           "id" : 1,
           "name": "Tokyo Prefecture"
           }
-                                            """)
+      """)
 
       val region: Region = new Region(Some(1), "Tokyo Prefecture")
 
       regionJson.as[Region] mustBe region
     }
   }
-
 
   "Retrieve all available regions " should {
 
@@ -51,11 +50,11 @@ class RegionSpec extends PlaySpec with MockitoSugar {
       val service = new RegionService(repo)
       val actual = service.findAll
 
-      actual mustBe None
+      actual.size mustBe 0
 
     }
 
-    "can return JsonValue with one object in it" in {
+    "can return a list with one object in it" in {
 
       val regions = List(new Region(Some(1), "Tokyo Prefecture"))
       val repo = mock[RegionRepository]
@@ -64,20 +63,11 @@ class RegionSpec extends PlaySpec with MockitoSugar {
       val service = new RegionService(repo)
       val actual = service.findAll
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe regions.size
-
-
-      var index = 0
-      regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Int] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        index += 1
-      })
-
+      actual.size mustBe regions.size
 
     }
 
-    "can return JsonValue with two objects in it" in {
+    "can return a list with two objects in it" in {
 
       val regions = List(
         new Region(Some(1), "Tokyo Prefecture"),
@@ -90,20 +80,10 @@ class RegionSpec extends PlaySpec with MockitoSugar {
       val service = new RegionService(repo)
       val actual = service.findAll
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe regions.size
 
-
-      var index = 0
-      regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Int] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        index += 1
-      })
-
-
+      actual.size mustBe 2
     }
   }
-
 
   "Retrieve region based on given region id" should {
 
@@ -115,12 +95,11 @@ class RegionSpec extends PlaySpec with MockitoSugar {
         service.findOneById(0)
         // if no exception, test should fail
         fail()
-      }
-      catch {
+      } catch {
         // this is expected
         case il: IllegalArgumentException =>
         // in other cases, test should fail
-        case _ => fail()
+        case _ : Throwable => fail()
       }
     }
 
@@ -133,12 +112,11 @@ class RegionSpec extends PlaySpec with MockitoSugar {
         service.findOneById(-1)
         // if no exception, test should fail
         fail()
-      }
-      catch {
+      } catch {
         // this is expected
         case il: IllegalArgumentException =>
         // in other cases, test should fail
-        case _ => fail()
+        case _ : Throwable => fail()
       }
 
     }
