@@ -59,9 +59,7 @@ trait SubRegionRepository {
 
   def update(id: Int, name: String): Option[SubRegion]
 
-  def remove(id: Int) = {
-
-  }
+  def remove(id: Int)
 
   def add(name: String, regionId: Int, code: String): Option[SubRegion]
 
@@ -144,6 +142,15 @@ object AnormSubRegionRepository extends SubRegionRepository {
         'code -> code
       ).as(subRegionParser.singleOpt)
       maybe
+    }
+  }
+
+  def remove(id: Int) {
+    DB.withConnection { implicit c =>
+      SQL("""
+      delete from subregion where id={id};
+      """).on('id -> id).execute
+
     }
   }
 

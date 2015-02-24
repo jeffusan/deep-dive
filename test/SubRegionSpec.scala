@@ -37,7 +37,7 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
           "regionId" : 1,
           "code" : "OSH"
           }
-                                               """)
+      """)
 
       val subRegion: SubRegion = new SubRegion(Some(1), "Izu-Oshima", 1, "OSH")
 
@@ -53,12 +53,12 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
       val service = new SubRegionService(repo)
 
       try {
-        service.findSubRegionById(0)
+        service.findOneById(0)
         fail()
       }
       catch {
         case il: IllegalArgumentException =>
-        case _ => fail()
+        case _ : Throwable => fail()
       }
     }
 
@@ -67,12 +67,12 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
       val service = new SubRegionService(repo)
 
       try {
-        service.findSubRegionById(-1)
+        service.findOneById(-1)
         fail()
       }
       catch {
         case il: IllegalArgumentException =>
-        case _ => fail()
+        case _ : Throwable => fail()
       }
     }
 
@@ -86,12 +86,12 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
       val service = new SubRegionService(repo)
 
       try {
-        service.findAllSubRegionByRegionId(0)
+        service.findAllByRegionId(0)
         fail()
       }
       catch {
         case il: IllegalArgumentException =>
-        case _ => fail()
+        case _ : Throwable => fail()
       }
     }
 
@@ -100,12 +100,12 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
       val service = new SubRegionService(repo)
 
       try {
-        service.findAllSubRegionByRegionId(-1)
+        service.findAllByRegionId(-1)
         fail()
       }
       catch {
         case il: IllegalArgumentException =>
-        case _ => fail()
+        case _ : Throwable => fail()
       }
 
     }
@@ -114,33 +114,24 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
       val regionId = 1
       val regions = List()
       val repo = mock[SubRegionRepository]
-      when(repo.findAllSubRegionByRegionId(regionId)) thenReturn regions
+      when(repo.findAllByRegionId(regionId)) thenReturn regions
       val service = new SubRegionService(repo)
-      val actual = service.findAllSubRegionByRegionId(regionId)
+      val actual = service.findAllByRegionId(regionId)
 
-      actual mustBe None
+      actual.size mustBe 0
     }
 
     "can return JsonValue with one object in it" in {
       val regionId = 1
       val regions = List(new SubRegion(Some(1), "Izu-Oshima", 1, "OSH"))
       val repo = mock[SubRegionRepository]
-      when(repo.findAllSubRegionByRegionId(regionId)) thenReturn regions
+      when(repo.findAllByRegionId(regionId)) thenReturn regions
 
       val service = new SubRegionService(repo)
-      val actual = service.findAllSubRegionByRegionId(regionId)
+      val actual = service.findAllByRegionId(regionId)
 
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe regions.size
-
-      var index = 0
-      regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        (actual.get(index) \ "regionId").as[Long] mustBe e.regionId
-        (actual.get(index) \ "code").as[String] mustBe e.code
-        index += 1
-      })
+      actual.size mustBe 1
     }
 
     "can return JsonValue with two objects in it" in {
@@ -150,22 +141,13 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
         new SubRegion(Some(2), "Nii-Jima", 1, "NII")
       )
       val repo = mock[SubRegionRepository]
-      when(repo.findAllSubRegionByRegionId(regionId)) thenReturn regions
+      when(repo.findAllByRegionId(regionId)) thenReturn regions
 
       val service = new SubRegionService(repo)
-      val actual = service.findAllSubRegionByRegionId(regionId)
+      val actual = service.findAllByRegionId(regionId)
 
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe regions.size
-
-      var index = 0
-      regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        (actual.get(index) \ "regionId").as[Long] mustBe e.regionId
-        (actual.get(index) \ "code").as[String] mustBe e.code
-        index += 1
-      })
+      actual.size mustBe 2
 
     }
   }
@@ -177,33 +159,23 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
     "can return JsonValue with no object in it" in {
       val regions = List()
       val repo = mock[SubRegionRepository]
-      when(repo.findAllSubRegion) thenReturn regions
+      when(repo.findAll) thenReturn regions
 
       val service = new SubRegionService(repo)
-      val actual = service.findAllSubRegion
+      val actual = service.findAll
 
-      actual mustBe None
+      actual.size mustBe 0
     }
 
-    "can return JsonValue with one object in it" in {
+    "can return an object with one object in it" in {
       val regions = List(new SubRegion(Some(1), "Izu-Oshima", 1, "OSH"))
       val repo = mock[SubRegionRepository]
-      when(repo.findAllSubRegion) thenReturn regions
+      when(repo.findAll) thenReturn regions
 
       val service = new SubRegionService(repo)
-      val actual = service.findAllSubRegion
+      val actual = service.findAll
 
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe regions.size
-
-      var index = 0
-      regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        (actual.get(index) \ "regionId").as[Long] mustBe e.regionId
-        (actual.get(index) \ "code").as[String] mustBe e.code
-        index += 1
-      })
 
     }
 
@@ -213,26 +185,14 @@ class SubRegionSpec extends PlaySpec with MockitoSugar {
         new SubRegion(Some(2), "Nii-Jima", 1, "NII")
       )
       val repo = mock[SubRegionRepository]
-      when(repo.findAllSubRegion) thenReturn regions
+      when(repo.findAll) thenReturn regions
 
       val service = new SubRegionService(repo)
-      val actual = service.findAllSubRegion
+      val actual = service.findAll
 
       actual must not be empty
-      actual.get.as[JsArray].value.size mustBe regions.size
-
-      var index = 0
-      regions.foreach(f = e => {
-        (actual.get(index) \ "id").as[Long] mustBe e.id.get
-        (actual.get(index) \ "name").as[String] mustBe e.name
-        (actual.get(index) \ "regionId").as[Long] mustBe e.regionId
-        (actual.get(index) \ "code").as[String] mustBe e.code
-        index += 1
-      })
     }
-
   }
-
 }
 
 // End of SubRegionSpec
