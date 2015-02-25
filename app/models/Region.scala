@@ -60,7 +60,7 @@ trait RegionRepository {
    * Finds all regions available
    * @return list of regions or null
    */
-  def findAll: List[Region]
+  def findAll: JsArray
 
   /**
    * Finds a region based on given region id
@@ -72,7 +72,7 @@ trait RegionRepository {
   /**
     * Add a region
     */
-  def add(name: String): Option[Region]
+  def add(name: String): JsValue
 
   /**
     * Delete a region and return nothing
@@ -80,7 +80,7 @@ trait RegionRepository {
   def remove(id: Int)
 
   /** Update a region and return it */
-  def update(id: Int, name: String): Option[Region]
+  def update(id: Int, name: String): JsValue
 }
 
 
@@ -90,21 +90,32 @@ trait RegionRepository {
 object AnormRegionRepository extends RegionRepository {
 
   /**
-   * SQL parser
+   * SQL parsers
    */
-  val regionParser: RowParser[Region] = {
-    int("id") ~
-      str("name") map {
-      case i ~ n => Region(
-        id = Some(i),
-        name = n)
-    }
-  }
 
   implicit def rowToJsValue: Column[JsValue] = Column.nonNull { (value, meta) =>
     val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
-      case pgo: PGobject => Right(Json.parse(pgo.getValue))
+      case pgo: PGobject => Right({
+        pgo.getType match {
+          case "json" => Json.parse(pgo.getValue)
+          case _ => JsNull
+        }
+      })
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
+      value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
+    }
+  }
+
+  implicit def rowToJsArray: Column[JsArray] = Column.nonNull { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case pgo: PGobject => Right({
+        pgo.getType match {
+          case "json" => Json.parse(pgo.getValue).asInstanceOf[JsArray]
+          case _ => new JsArray()
+        }
+      })
       case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
       value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
     }
@@ -118,6 +129,12 @@ object AnormRegionRepository extends RegionRepository {
     }
   }
 
+  val array = {
+    get[JsArray]("array_to_json") map {
+      case array_to_json =>
+        array_to_json.asInstanceOf[JsArray]
+    }
+  }
 
   /**
     * Removes a region based on id
@@ -128,36 +145,40 @@ object AnormRegionRepository extends RegionRepository {
       SQL("""
       delete from region where id={id}
       """
-      ).on('id -> id).execute()
+      ).on('id -> id).execute
     }
   }
 
   /**
     *  Adds a region based on name and returns it with it's new id
     */
-  def add(name: String): Option[Region] = {
+  def add(name: String): JsValue = {
     DB.withConnection { implicit c =>
-      val maybeInsert: Option[Region] = SQL(
+      SQL(
         """
-        insert into region (id, name) values (DEFAULT, {name}) returning id, name;
+        with data(id, name) as (
+          insert into region (id, name) values (DEFAULT, {name}) returning id, name
+        )
+        select row_to_json(data) from data;
         """
-      ).on('name -> name).as(regionParser.singleOpt)
-      maybeInsert
+      ).on('name -> name).as(simple.single)
+
     }
   }
 
   /**
     * Updates a region and returns it
     */
-  def update(id: Int, name: String): Option[Region] = {
+  def update(id: Int, name: String): JsValue = {
     DB.withConnection { implicit c =>
-      val maybeRegion: Option[Region] = SQL(
+      SQL(
         """
-        update region set name={name} where id={id} returning id, name;
+        with data(id, name) as (
+          update region set name={name} where id={id} returning id, name
+        )
+        select row_to_json(data) from data;
         """
-      ).on('name -> name, 'id -> id).as(regionParser.singleOpt)
-      Logger.info("The returned region: " + maybeRegion.get)
-      maybeRegion
+      ).on('name -> name, 'id -> id).as(simple.single)
     }
   }
 
@@ -190,17 +211,18 @@ object AnormRegionRepository extends RegionRepository {
    * Retrieves all available region info
    * @return list of [[Region]] or null
    */
-  def findAll: List[Region] = {
+  def findAll: JsArray = {
     DB.withConnection { implicit c =>
-      val regionList: List[Region] = SQL(
-        """
-          SELECT
-          id,
-          name
-          FROM region;
-        """).as(regionParser.*)
-
-      regionList
+      try {
+        SQL(
+          """
+          select array_to_json(array_agg(region)) from region;
+          """
+        ).as(array.single)
+      } catch {
+        case nse: NoSuchElementException =>
+          Json.toJson(Seq("")).asInstanceOf[JsArray]
+      }
     }
   }
 }

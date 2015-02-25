@@ -41,18 +41,14 @@ trait Regions extends Controller with Security {
     updateForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
       regionData => {
-        AnormRegionRepository.update(regionData.pk, regionData.value).fold {
-          BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
-        } { region =>
-          Ok(Json.toJson(region))
-        }
+        Ok(AnormRegionRepository.update(regionData.pk, regionData.value))
       }
     )
   }
 
   /** Find all the regions */
   def show() = HasAdminToken() { token => userId => implicit request =>
-    Ok(Json.toJson(AnormRegionRepository.findAll))
+    Ok(AnormRegionRepository.findAll)
   }
 
   val createForm = Form(
@@ -66,11 +62,7 @@ trait Regions extends Controller with Security {
     createForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("err" -> "Bad Credentials")),
       regionData => {
-        AnormRegionRepository.add(regionData.name).fold {
-          BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
-        } { region =>
-          Ok(Json.toJson(region))
-        }
+        Ok(AnormRegionRepository.add(regionData.name))
       }
     )
   }

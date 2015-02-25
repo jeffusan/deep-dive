@@ -12,35 +12,34 @@ class RegionFunSpec extends PlaySpec with OneAppPerSuite {
   "The Region Model" should {
 
     "Create Regions" in {
-      val maybeRegion = AnormRegionRepository.add("My Region")
+      val region = AnormRegionRepository.add("My Region")
 
-      val region = maybeRegion getOrElse fail()
-      region.name mustBe "My Region"
+      (region \ "name").as[String] mustBe "My Region"
     }
 
     "Update Regions" in {
-      val maybeRegion = AnormRegionRepository.add("My Region")
-      val region = maybeRegion getOrElse fail()
-      val regionId = region.id getOrElse fail()
-      val maybeUpdated = AnormRegionRepository.update(regionId, "My New Region")
+      val region: JsValue = AnormRegionRepository.add("My Region")
+      val regionId = region \ "id"
+      val updated: JsValue = AnormRegionRepository.update(regionId.as[Int], "My New Region")
 
-      val updated = maybeUpdated getOrElse fail()
-
-      updated.name mustBe "My New Region"
+      (updated \ "name").as[String] mustBe "My New Region"
 
     }
 
     "Remove Regions" in {
-      val maybeRegion = AnormRegionRepository.add("My Region")
-      val region = maybeRegion getOrElse(fail())
-      val regionId = region.id getOrElse(fail())
+      val region: JsValue = AnormRegionRepository.add("My Region")
 
-      val regionJs = AnormRegionRepository.findOneById(regionId)
 
     }
 
     "Find Region by id" in {
       val region: JsValue = AnormRegionRepository.findOneById(2)
+    }
+
+    "Find all and introspect" in {
+      val regions: JsArray = AnormRegionRepository.findAll
+      println(regions)
+
     }
   }
 }
