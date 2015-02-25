@@ -1,8 +1,13 @@
 package models
 
+import anorm._
+import anorm.SqlParser._
+import play.api.db.DB
+import play.api.Play.current
 import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import org.postgresql.util.PGobject
 
 /**
  * This represents a region object
@@ -40,7 +45,10 @@ object Region {
     region.id,
     region.name
     )
-    )
+  )
+
+
+
 }
 
 
@@ -59,7 +67,7 @@ trait RegionRepository {
    * @param regionId region id
    * @return region or null
    */
-  def findOneById(regionId: Int): Option[Region]
+  def findOneById(regionId: Int): JsValue
 
   /**
     * Add a region
@@ -81,13 +89,6 @@ trait RegionRepository {
  */
 object AnormRegionRepository extends RegionRepository {
 
-  // Database related dependencies
-
-  import anorm._
-  import anorm.SqlParser._
-  import play.api.db.DB
-  import play.api.Play.current
-
   /**
    * SQL parser
    */
@@ -99,6 +100,24 @@ object AnormRegionRepository extends RegionRepository {
         name = n)
     }
   }
+
+  implicit def rowToJsValue: Column[JsValue] = Column.nonNull { (value, meta) =>
+    val MetaDataItem(qualified, nullable, clazz) = meta
+    value match {
+      case pgo: PGobject => Right(Json.parse(pgo.getValue))
+      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
+      value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
+    }
+  }
+
+
+  val simple = {
+    get[JsValue]("row_to_json") map {
+      case row_to_json =>
+        row_to_json.asInstanceOf[JsValue]
+    }
+  }
+
 
   /**
     * Removes a region based on id
@@ -148,18 +167,22 @@ object AnormRegionRepository extends RegionRepository {
    * @param id region id
    * @return region or null
    */
-  def findOneById(id: Int): Option[Region] = {
-
+  def findOneById(id: Int): JsValue = {
     DB.withConnection { implicit c =>
-      val mybeRegion: Option[Region] = SQL(
+      try {
+        SQL(
         """
-          SELECT
-          id,
-          name
-          FROM region
-          WHERE id={id}
-        """).on('id -> id).as(regionParser.singleOpt)
-      mybeRegion
+          SELECT ROW_TO_JSON(row)
+          FROM(
+            SELECT id, name
+            FROM region
+            WHERE id={id}) row;
+        """).on('id -> id).as(simple.single)
+      } catch {
+        case nse: NoSuchElementException =>
+          Json.parse("{}")
+      }
+
     }
   }
 

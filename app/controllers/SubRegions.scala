@@ -64,7 +64,7 @@ trait SubRegions extends Controller with Security {
   /** Create a new region */
   def create() = HasAdminToken(parse.json) { token => userId => implicit request =>
     createForm.bindFromRequest.fold(
-      formWithErrors => BadRequest(Json.obj("err" -> "Bad Credentials")),
+      formWithErrors => BadRequest(Json.obj("err" -> "You're Either Sending Bad Credentials or Bad Data")),
       subRegionData => {
         service.add(subRegionData.name, subRegionData.regionId, subRegionData.code).fold {
           BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))

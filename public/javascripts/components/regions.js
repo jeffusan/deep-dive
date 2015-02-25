@@ -9,8 +9,6 @@ var ListGroupItem = ReactBootstrap.ListGroupItem;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 
-
-
 var Region = React.createClass({
 
   componentDidMount: function() {
@@ -182,7 +180,7 @@ var Regions = React.createClass({
         }
       }.bind(this)
     });
-    console.log("finished call!");
+
   },
 
   render: function() {
