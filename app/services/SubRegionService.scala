@@ -18,7 +18,9 @@ class SubRegionService(repository: SubRegionRepository) {
   }
 
   def add(name: String, regionId: Int, code: String): Option[SubRegion] = {
-    repository.add(name, regionId, code)
+    val result: Option[Long] = repository.add(name, regionId, code)
+    val intResult = result map { _.toInt }
+    repository.findOneById(intResult getOrElse 0)
   }
 
   /**

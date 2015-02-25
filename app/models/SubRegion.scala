@@ -2,6 +2,7 @@ package models
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.Logger
 
 /**
  * This represents a sub-region object
@@ -65,7 +66,7 @@ trait SubRegionRepository {
   /**
     * Add a subregion providing a name, a code, and a reference to the Region
     */
-  def add(name: String, regionId: Int, code: String): Option[SubRegion]
+  def add(name: String, regionId: Int, code: String): Option[Long]
 
   /**
    * Finds list of sub-regions based on given region id
@@ -136,37 +137,20 @@ object AnormSubRegionRepository extends SubRegionRepository {
     }
   }
 
-  def add(name: String, regionId: Int, code: String): Option[SubRegion] = {
+  def add(name: String, regionId: Int, code: String): Option[Long] = {
+    Logger.info("We have name: " + name + " code: " + code + " regionId: " + regionId)
     DB.withConnection { implicit c =>
       val maybe: Option[Long] = SQL(
         """
         insert into subregion (id, name, region_id, code)
-        values (DEFAULT, {name}, {regionId}, {code}) returning id;
+        values (DEFAULT, {name}, {regionId}, {code})
         """
       ).on(
         'name -> name,
         'regionId -> regionId,
         'code -> code
       ).executeInsert()
-      maybe match {
-        case Some(maybe) =>
-          val maybe2: Option[SubRegion] = SQL (
-            """
-            select
-              subregion.id,
-              subregion.name as name,
-              subregion.code,
-              subregion.region_id,
-              region.name as region_name
-            from subregion, region where subregion.id={id}
-            """
-          ).on(
-            'id -> maybe.toInt
-          ).as(subRegionParser.singleOpt)
-          maybe2
-        case None => None
-
-      }
+      maybe
     }
   }
 

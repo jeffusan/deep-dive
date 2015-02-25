@@ -94,6 +94,46 @@ var SubRegions = React.createClass({
     });
   },
 
+  handleCreate: function(value) {
+    console.log("create name: " + value.name);
+
+    $.ajax({
+      'type': 'PUT',
+      'url': '/subregions',
+      'contentType': 'application/json',
+      'data': JSON.stringify({
+        'name': value.name,
+        'code': value.code,
+        'regionId': value.regionId
+      }),
+      'dataType': 'json',
+      'async': false,
+      'headers': {
+        'X-XSRF-TOKEN': auth.getToken()
+      },
+      'success' : function(data) {
+        if(this.isMounted()) {
+          var subregions = this.state.data;
+          var newSubRegions = subregions.concat([data]);
+          this.setState({
+            data: newSubRegions,
+            message: 'Roger that',
+            hasMessage: true
+          });
+        }
+      }.bind(this),
+      'error': function(data) {
+        if(this.isMounted()) {
+          this.setState({
+            data: {},
+            message: 'Um, yeah. About those subregions...',
+            hasMessage: true
+          });
+        }
+      }.bind(this)
+    });
+  },
+
   componentDidMount: function() {
 
     $.ajax({
@@ -134,7 +174,7 @@ var SubRegions = React.createClass({
         <div className="container-fluid">
           <div className="row">
              <div className="col-lg-9 page-header">
-               <h2>Sub Regions</h2>
+               <h2>Sub Regions <CreateSubRegionTrigger onHandlingData={this.handleCreate}/></h2>
                <hr/>
                <SubRegionList delete={this.delete} data={this.state.data}/>
              </div>
