@@ -6,6 +6,24 @@ var Input = ReactBootstrap.Input;
 var Modal = ReactBootstrap.Modal;
 var ButtonToolbar = ReactBootstrap.ButtonToolbar;
 
+var CreateRegionTrigger = React.createClass({
+
+  handleDataSubmit: function(value) {
+    this.props.onHandlingData({name: value.name});
+  },
+
+  render: function() {
+    return (
+        <ModalTrigger modal={<CreateRegion onCreateRegionSubmit={this.handleDataSubmit}/>}>
+          <button onClick={this.handleClick} type="button" className="btn btn-default" aria-label="Left Align">
+            <span className="glyphicon glyphicon-plus" aria-hidden="true"></span>
+          </button>
+        </ModalTrigger>
+    );
+  }
+});
+
+
 var CreateRegionInput = React.createClass({
 
   getInitialState: function() {

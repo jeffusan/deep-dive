@@ -1,21 +1,21 @@
 package controllers
 
-import models.AnormRegionRepository
+import play.api.libs.json.Json
+import play.api.mvc._
 import play.api.Logger
 import play.api.data._
 import play.api.data.Forms._
-import play.api.libs.json.Json
-import play.api.mvc._
-import services.RegionService
+import services.SubRegionService
+import models.AnormSubRegionRepository
 
-case class RegionData(name: String)
-case class UpdateRegionData(pk: Int, name: String, value: String)
+case class SubRegionData(name: String, regionId: Int, code: String)
+case class UpdateSubRegionData(pk: Int, name: String, value: String)
 
-trait Regions extends Controller with Security {
+trait SubRegions extends Controller with Security {
 
-  lazy val service = new RegionService(AnormRegionRepository)
+  lazy val service = new SubRegionService(AnormSubRegionRepository)
 
-  /** Delete a region */
+  /** Delete a subregion */
   def remove(id: Int) =HasAdminToken() { token => userId => implicit request =>
 
     try {
@@ -32,18 +32,17 @@ trait Regions extends Controller with Security {
       "pk" -> number,
       "name" -> nonEmptyText,
       "value" -> nonEmptyText
-    )(UpdateRegionData.apply)(UpdateRegionData.unapply)
+    )(UpdateSubRegionData.apply)(UpdateSubRegionData.unapply)
   )
 
   def update() = HasAdminToken(parse.json) { token => userId => implicit request =>
-    Logger.info("Controller update!")
     updateForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
-      regionData => {
-        service.update(regionData.pk, regionData.value).fold {
+      subRegionData => {
+        service.update(subRegionData.pk, subRegionData.value, "code").fold {
           BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
-        } { region =>
-          Ok(Json.toJson(region))
+        } { subRegion =>
+          Ok(Json.toJson(subRegion))
         }
       }
     )
@@ -56,23 +55,25 @@ trait Regions extends Controller with Security {
 
   val createForm = Form(
     mapping(
-      "name" -> nonEmptyText
-    )(RegionData.apply)(RegionData.unapply)
+      "name" -> nonEmptyText,
+      "regionId" -> number,
+      "code" -> nonEmptyText
+    )(SubRegionData.apply)(SubRegionData.unapply)
   )
 
   /** Create a new region */
   def create() = HasAdminToken(parse.json) { token => userId => implicit request =>
     createForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("err" -> "Bad Credentials")),
-      regionData => {
-        service.add(regionData.name).fold {
+      subRegionData => {
+        service.add(subRegionData.name, subRegionData.regionId, subRegionData.code).fold {
           BadRequest(Json.obj("status" -> "KO", "message" -> "Yeah, about that region name..."))
-        } { region =>
-          Ok(Json.toJson(region))
+        } { subRegion =>
+          Ok(Json.toJson(subRegion))
         }
       }
     )
   }
 }
 
-object Regions extends Regions
+object SubRegions extends SubRegions

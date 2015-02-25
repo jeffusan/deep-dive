@@ -1,8 +1,6 @@
 package services
 
-import play.api.Logger
-import models.{RegionRepository, Region}
-import play.api.libs.json.{JsValue, Json}
+import models.{Region, RegionRepository}
 
 
 /**
@@ -32,27 +30,18 @@ class RegionService(repository: RegionRepository) {
    * @param regionId region ID
    * @return json converted region info or null
    */
-  def findOneById(regionId: Int): Option[JsValue] = {
+  def findOneById(regionId: Int): Option[Region] = {
     // validation of input
     require(regionId >= 1, "invalid region id")
-
-    // returns converted json result
-    Some(Json.toJson(repository.findOneById(regionId)))
-
+    repository.findOneById(regionId)
   }
 
   /**
    * Retrieves all available regions
    * @return json converted list of regions or null
    */
-  def findAll: Option[JsValue] = {
-    repository.findAll match {
-      // in case of empty list, do nothing
-      case List() => None
-      // in case of list is return, convert to json
-      case lists => Some(Json.toJson(lists))
-
-    }
+  def findAll: List[Region] = {
+    repository.findAll
   }
 }
 

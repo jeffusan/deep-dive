@@ -1,6 +1,6 @@
 package services
 
-import models.SubRegionRepository
+import models.{SubRegionRepository, SubRegion}
 import play.api.libs.json.{Json, JsValue}
 
 /**
@@ -9,50 +9,52 @@ import play.api.libs.json.{Json, JsValue}
  */
 class SubRegionService(repository: SubRegionRepository) {
 
+  def update(id: Int, name: String, code: String): Option[SubRegion] = {
+    repository.update(id, name, code)
+  }
+
+  def remove(id: Int) {
+    repository.remove(id)
+  }
+
+  def add(name: String, regionId: Int, code: String): Option[SubRegion] = {
+    repository.add(name, regionId, code)
+  }
+
   /**
    * Retrieves sub-region info based on specified sub-region ID
    * @param subRegionId sub-region ID
-   * @return json converted sub-region
+   * @return sub-region option
    */
-  def findSubRegionById(subRegionId: Long): Option[JsValue] = {
+  def findOneById(subRegionId: Int): Option[SubRegion] = {
     // validation of input
     require(subRegionId >= 1, "incorrect id")
 
     // returns converted json result
-    Some(Json.toJson(repository.findOneById(subRegionId)))
+    repository.findOneById(subRegionId)
 
   }
 
   /**
    * Retrieves list of all related sub-regions based on specified region ID
    * @param regionId region ID
-   * @return json converted list of sub-regions
+   * @return list of sub-regions
    */
-  def findAllSubRegionByRegionId(regionId: Long): Option[JsValue] = {
+  def findAllByRegionId(regionId: Int): List[SubRegion] = {
     // validation of input
     require(regionId >= 1, "invalid region id")
 
-    repository.findAllSubRegionByRegionId(regionId) match {
-      // in case of empty list, do nothing
-      case List() => None
-      // in case of list is return, convert to json
-      case lists => Some(Json.toJson(lists))
-    }
+    repository.findAllByRegionId(regionId)
 
   }
 
 
   /**
    * Retrieves all available sub-regions
-   * @return json converted list of sub-regions
+   * @return list of sub-regions
    */
-  def findAllSubRegion: Option[JsValue] = {
-    repository.findAllSubRegion match {
-      // in case of empty list, do nothing
-      case List() => None
-      // in case of list is return, convert to json
-      case lists => Some(Json.toJson(lists))
-    }
+  def findAll: List[SubRegion] = {
+    repository.findAll
   }
 
 }

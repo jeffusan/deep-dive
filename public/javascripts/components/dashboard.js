@@ -32,6 +32,7 @@ var Dashboard = React.createClass({
         switch(selection) {
 
         case 'regions': page = <Regions/>; break;
+        case 'subregions': page = <SubRegions/>; break;
         default: page = <Empty/>; break;
 
         }

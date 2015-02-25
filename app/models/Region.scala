@@ -1,8 +1,8 @@
 package models
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
 import play.api.Logger
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 /**
  * This represents a region object
@@ -167,14 +167,14 @@ object AnormRegionRepository extends RegionRepository {
    * Retrieves all available region info
    * @return list of [[Region]] or null
    */
-  override def findAll: List[Region] = {
+  def findAll: List[Region] = {
     DB.withConnection { implicit c =>
       val regionList: List[Region] = SQL(
         """
           SELECT
           id,
           name
-          FROM region
+          FROM region;
         """).as(regionParser.*)
 
       regionList
