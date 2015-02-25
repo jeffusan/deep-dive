@@ -1,5 +1,6 @@
 package funspec
 
+import play.api.libs.json._
 import org.scalatest._
 import play.api.test._
 import play.api.test.Helpers._
@@ -36,6 +37,10 @@ class RegionFunSpec extends PlaySpec with OneAppPerSuite {
 
       val regionJs = AnormRegionRepository.findOneById(regionId)
 
+    }
+
+    "Find Region by id" in {
+      val region: JsValue = AnormRegionRepository.findOneById(2)
     }
   }
 }
