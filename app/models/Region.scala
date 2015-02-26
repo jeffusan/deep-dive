@@ -24,35 +24,6 @@ case class Region(
 )
 
 /**
- * Companion object of case class
- */
-object Region {
-
-  /**
-   * Converts Region object from & to Json
-   */
-  // Json to Object
-  implicit val RegionFromJson: Reads[Region] = (
-    (__ \ "id").readNullable[Int] ~
-      (__ \ "name").read[String]
-    )(Region.apply _)
-
-  // Object to Json
-  implicit val RegionToJson: Writes[Region] = (
-    (__ \ "id").writeNullable[Int] ~
-      (__ \ "name").write[String]
-    )((region: Region) => (
-    region.id,
-    region.name
-    )
-  )
-
-
-
-}
-
-
-/**
  * [[RegionRepository]] trait defines functionalities supported by [[Region]] object
  */
 trait RegionRepository {
@@ -92,7 +63,6 @@ object AnormRegionRepository extends RegionRepository {
   /**
    * SQL parsers
    */
-
   implicit def rowToJsValue: Column[JsValue] = Column.nonNull { (value, meta) =>
     val MetaDataItem(qualified, nullable, clazz) = meta
     value match {
@@ -120,7 +90,6 @@ object AnormRegionRepository extends RegionRepository {
       value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
     }
   }
-
 
   val simple = {
     get[JsValue]("row_to_json") map {

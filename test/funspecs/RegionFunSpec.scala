@@ -28,18 +28,9 @@ class RegionFunSpec extends PlaySpec with OneAppPerSuite {
 
     "Remove Regions" in {
       val region: JsValue = AnormRegionRepository.add("My Region")
-
-
-    }
-
-    "Find Region by id" in {
-      val region: JsValue = AnormRegionRepository.findOneById(2)
-    }
-
-    "Find all and introspect" in {
-      val regions: JsArray = AnormRegionRepository.findAll
-      println(regions)
+      (region \ "name").as[String] mustBe "My Region"
 
     }
+
   }
 }
