@@ -5,7 +5,7 @@ import org.scalatest._
 import play.api.test._
 import play.api.test.Helpers._
 import org.scalatestplus.play._
-import models.{AnormRegionRepository, Region}
+import models.{AnormRegionRepository}
 
 class RegionFunSpec extends PlaySpec with OneAppPerSuite {
 

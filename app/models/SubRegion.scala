@@ -10,19 +10,6 @@ import play.api.Logger
 import org.postgresql.util.PGobject
 
 /**
- * This represents a sub-region object
- */
-
-/**
- * Case class for SubRegion
- * @param id sub-region id
- * @param name sub-region name
- * @param regionId related region id
- * @param code sub-region code
- */
-case class SubRegion(id: Option[Int], name: String, region: Region, code: String)
-
-/**
  * [[SubRegionRepository]] trait defines the functionalities supported by [[SubRegion]] object
  */
 trait SubRegionRepository {
@@ -66,61 +53,7 @@ trait SubRegionRepository {
 /**
  * Anorm specific database implementations of [[SubRegionRepository]] trait
  */
-object AnormSubRegionRepository extends SubRegionRepository {
-
-
-  /**
-   * SQL parsers
-   */
-  implicit def rowToJsValue: Column[JsValue] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
-    value match {
-      case pgo: PGobject => Right({
-        pgo.getType match {
-          case "json" => Json.parse(pgo.getValue)
-          case _ => JsNull
-        }
-      })
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
-      value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
-    }
-  }
-
-  implicit def rowToJsArray: Column[JsArray] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
-    value match {
-      case pgo: PGobject => Right({
-        pgo.getType match {
-          case "json" => Json.parse(pgo.getValue).asInstanceOf[JsArray]
-          case _ => new JsArray()
-        }
-      })
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
-      value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
-    }
-  }
-
-  val simple = {
-    get[JsValue]("row_to_json") map {
-      case row_to_json =>
-        row_to_json.asInstanceOf[JsValue]
-    }
-  }
-
-  val simple_build = {
-    get[JsValue]("json_build_object") map {
-      case json_build_object =>
-        json_build_object.asInstanceOf[JsValue]
-    }
-  }
-
-  val array = {
-    get[JsArray]("array_to_json") map {
-      case array_to_json =>
-        array_to_json.asInstanceOf[JsArray]
-    }
-  }
-
+object AnormSubRegionRepository extends SubRegionRepository with JSONParsers {
 
   def update(id: Int, name: String, code: String): JsValue = {
     DB.withConnection{ implicit c =>
@@ -184,7 +117,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
   /**
    * Retrieves sub-region specified by given ID
    * @param id sub-region ID
-   * @return sub-region or null
+   * @return sub-region JsValue
    */
   override def findOneById(id: Int): JsValue = {
     DB.withConnection { implicit c =>
@@ -241,7 +174,7 @@ object AnormSubRegionRepository extends SubRegionRepository {
 
   /**
    * Retrieves all available sub-regions
-   * @return list of sub-regions
+   * @return list of sub-regions in JSON
    */
   override def findAll: JsArray = {
     DB.withConnection { implicit c =>

@@ -7,21 +7,6 @@ import play.api.Play.current
 import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import org.postgresql.util.PGobject
-
-/**
- * This represents a region object
- */
-
-/**
- * Case class for Region
- * @param id region id
- * @param name region name
- */
-case class Region(
-  id: Option[Int],
-  name: String
-)
 
 /**
  * [[RegionRepository]] trait defines functionalities supported by [[Region]] object
@@ -58,52 +43,7 @@ trait RegionRepository {
 /**
  * Anorm specific database implementations of [[RegionRepository]] trait
  */
-object AnormRegionRepository extends RegionRepository {
-
-  /**
-   * SQL parsers
-   */
-  implicit def rowToJsValue: Column[JsValue] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
-    value match {
-      case pgo: PGobject => Right({
-        pgo.getType match {
-          case "json" => Json.parse(pgo.getValue)
-          case _ => JsNull
-        }
-      })
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
-      value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
-    }
-  }
-
-  implicit def rowToJsArray: Column[JsArray] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
-    value match {
-      case pgo: PGobject => Right({
-        pgo.getType match {
-          case "json" => Json.parse(pgo.getValue).asInstanceOf[JsArray]
-          case _ => new JsArray()
-        }
-      })
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
-      value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
-    }
-  }
-
-  val simple = {
-    get[JsValue]("row_to_json") map {
-      case row_to_json =>
-        row_to_json.asInstanceOf[JsValue]
-    }
-  }
-
-  val array = {
-    get[JsArray]("array_to_json") map {
-      case array_to_json =>
-        array_to_json.asInstanceOf[JsArray]
-    }
-  }
+object AnormRegionRepository extends RegionRepository with JSONParsers {
 
   /**
     * Removes a region based on id
@@ -155,7 +95,7 @@ object AnormRegionRepository extends RegionRepository {
   /**
    * Retrieves region info based on given id
    * @param id region id
-   * @return region or null
+   * @return JsValue
    */
   def findOneById(id: Int): JsValue = {
     DB.withConnection { implicit c =>
@@ -178,7 +118,7 @@ object AnormRegionRepository extends RegionRepository {
 
   /**
    * Retrieves all available region info
-   * @return list of [[Region]] or null
+   * @return list of Region JSON
    */
   def findAll: JsArray = {
     DB.withConnection { implicit c =>

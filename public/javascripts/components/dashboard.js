@@ -33,6 +33,7 @@ var Dashboard = React.createClass({
 
         case 'regions': page = <Regions/>; break;
         case 'subregions': page = <SubRegions/>; break;
+        case 'reeftypes': page = <ReefTypes/>; break;
         default: page = <Empty/>; break;
 
         }
