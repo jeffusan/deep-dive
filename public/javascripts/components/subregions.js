@@ -5,7 +5,6 @@ var SubRegion = React.createClass({
 
   itemDelete: function(event) {
     var id = this.props.id;
-    console.log("Value: " + id);
     this.props.onSubRegionDelete({id: id});
   },
 
@@ -95,8 +94,6 @@ var SubRegions = React.createClass({
   },
 
   handleCreate: function(value) {
-    console.log("create name: " + value.name);
-
     $.ajax({
       'type': 'PUT',
       'url': '/subregions',

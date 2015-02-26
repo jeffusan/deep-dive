@@ -2,129 +2,111 @@ package models
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-
-/**
- * This represents a reef-type object
- */
-
-/**
- * Case class for ReefType
- * @param id reef-type id
- * @param name reef name
- * @param depth depth of reef location
- */
-case class ReefType(
-                     id: Option[Long],
-                     name: String,
-                     depth: String
-                     )
-
-
-/**
- * Companion object of case class
- */
-object ReefType {
-
-  /**
-   * Converts Reef-type object from & to Json
-   */
-  // Json to Object
-  implicit val ReefTypeFromJson: Reads[ReefType] = (
-    (__ \ "id").readNullable[Long] ~
-      (__ \ "name").read[String] ~
-      (__ \ "depth").read[String]
-    )(ReefType.apply _)
-
-  // Object to Json
-  implicit val ReefTypeToJson: Writes[ReefType] = (
-    (__ \ "id").writeNullable[Long] ~
-      (__ \ "name").write[String] ~
-      (__ \ "depth").write[String]
-    )((reefType: ReefType) => (
-    reefType.id,
-    reefType.name,
-    reefType.depth
-    )
-    )
-}
+import anorm._
+import anorm.SqlParser._
+import play.api.db.DB
+import play.api.Play.current
+import play.api.Logger
 
 /**
  * [[ReefTypeRepository]] trait defines the functionalities supported by [[ReefType]] object
  */
 trait ReefTypeRepository {
 
-  def findAllReefTypes: List[ReefType]
+  def findAll: JsArray
 
-  def findReefTypeById(reefTypeId: Long): Option[ReefType]
+  def findOneById(reefTypeId: Int): JsValue
+
+  def add(name: String, depth: String): JsValue
+
+  def remove(id: Int)
+
+  def update(id: Int, name: String, depth: String): JsValue
 
 }
 
 /**
  * Anorm specific database implementations of [[ReefTypeRepository]] trait
  */
-object AnormReefTypeRepository extends ReefTypeRepository {
+object AnormReefTypeRepository extends ReefTypeRepository with JSONParsers {
 
-  // Database related dependencies
-
-  import anorm._
-  import anorm.SqlParser._
-  import play.api.db.DB
-  import play.api.Play.current
-
-  /**
-   * SQL parser
-   */
-  val reefTypeParser: RowParser[ReefType] = {
-    long("id") ~
-      str("name") ~
-      str("depth") map {
-      case i ~ n ~ d => ReefType(
-        id = Some(i),
-        name = n,
-        depth = d
-      )
+  override def update(id: Int, name: String, depth: String): JsValue = {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+        with data(id, name, depth) as (
+          update reef_type set name={name}, depth={depth} where id={id} returning id, name, depth
+        )
+        select row_to_json(data) from data;
+        """
+      ).on('id -> id, 'name -> name, 'depth -> depth).as(simple.single)
     }
   }
 
+  override def remove(id: Int) {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+        delete from reef_type where id={id}
+        """
+      ).on('id -> id).execute
+    }
+  }
+
+  override def add(name: String, depth: String): JsValue = {
+    try {
+      DB.withConnection { implicit c =>
+        SQL(
+          """
+          with data(id, name, depth) as (
+            insert into reef_type(id, name, depth) values (DEFAULT, {name}, {depth}) returning id, name, depth
+          ) select row_to_json(data) from data;
+          """
+        ).on('name -> name, 'depth -> depth).as(simple.single)
+      }
+    } catch {
+      case nse: NoSuchElementException =>
+        Json.parse("")
+    }
+  }
 
   /**
    * Retrieves reef type specified by ID
    * @param reefTypeId reef type id
-   * @return reef-type or null
+   * @return JsValue
    */
-  override def findReefTypeById(reefTypeId: Long): Option[ReefType] = {
+  override def findOneById(reefTypeId: Int): JsValue = {
     DB.withConnection { implicit c =>
-      val mybeReefType: Option[ReefType] = SQL(
+      try {
+        SQL(
         """
-          SELECT
-          id,
-          name,
-          depth
-          FROM reef_type
-          WHERE id = {id}
-        """).on('id -> reefTypeId).as(reefTypeParser.singleOpt)
-
-      mybeReefType
+        select row_to_json(row) from (
+          select id, name, depth from reef_type where id={id}) row;
+        """).on('id -> reefTypeId).as(simple.single)
+      } catch {
+        case nse: Throwable =>
+          Logger.warn("Found a problem" + nse.toString())
+          Json.parse("")
+      }
     }
   }
 
   /**
    * Retrieves all available reef type info
-   * @return list of [[ReefType]] or null
+   * @return JsArray
    */
-  override def findAllReefTypes: List[ReefType] = {
+  override def findAll: JsArray = {
     DB.withConnection { implicit c =>
-      val reefTypeList: List[ReefType] = SQL(
+      try {
+      SQL(
         """
-          SELECT
-          id,
-          name,
-          depth
-          FROM reef_type
-        """).as(reefTypeParser.*)
-
-      reefTypeList
+          select array_to_json(array_agg(reef_type)) from reef_type;
+        """).as(array.single)
+      } catch {
+        case unf: Throwable =>
+          Logger.warn("Found a problem: " + unf.toString())
+          Json.toJson(Seq("")).asInstanceOf[JsArray]
+      }
     }
   }
-
 }

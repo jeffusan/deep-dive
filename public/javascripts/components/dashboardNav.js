@@ -58,7 +58,7 @@ var DashboardNav = React.createClass({
                     <a href="/dashboard"><i className="fa fa-fw fa-upload"></i> Upload Benthic Data</a>
                   </li>
                   <li>
-                    <a href="/dashboard"><i className="fa fa-fw fa-table"></i> Reef Types</a>
+                    <a href="/dashboard/reeftypes"><i className="fa fa-fw fa-table"></i> Reef Types</a>
                   </li>
                   <li>
                     <a href="#"><i className="fa fa-fw fa-table"></i> Survey Events</a>

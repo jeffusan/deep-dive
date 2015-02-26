@@ -24,6 +24,12 @@ PUT          /subregions              controllers.SubRegions.create()
 DELETE       /subregions/:id          controllers.SubRegions.remove(id: Int)
 POST         /subregions              controllers.SubRegions.update()
 
+# ReefTypes
+GET          /reeftypes              controllers.ReefTypes.show()
+PUT          /reeftypes              controllers.ReefTypes.create()
+DELETE       /reeftypes/:id          controllers.ReefTypes.remove(id: Int)
+POST         /reeftypes              controllers.ReefTypes.update()
+
 # Static
 # ~~~~~~
 

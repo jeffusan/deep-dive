@@ -7,50 +7,6 @@ import play.api.Play.current
 import play.api.Logger
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import org.postgresql.util.PGobject
-
-/**
- * This represents a region object
- */
-
-/**
- * Case class for Region
- * @param id region id
- * @param name region name
- */
-case class Region(
-  id: Option[Int],
-  name: String
-)
-
-/**
- * Companion object of case class
- */
-object Region {
-
-  /**
-   * Converts Region object from & to Json
-   */
-  // Json to Object
-  implicit val RegionFromJson: Reads[Region] = (
-    (__ \ "id").readNullable[Int] ~
-      (__ \ "name").read[String]
-    )(Region.apply _)
-
-  // Object to Json
-  implicit val RegionToJson: Writes[Region] = (
-    (__ \ "id").writeNullable[Int] ~
-      (__ \ "name").write[String]
-    )((region: Region) => (
-    region.id,
-    region.name
-    )
-  )
-
-
-
-}
-
 
 /**
  * [[RegionRepository]] trait defines functionalities supported by [[Region]] object
@@ -60,7 +16,7 @@ trait RegionRepository {
    * Finds all regions available
    * @return list of regions or null
    */
-  def findAll: List[Region]
+  def findAll: JsArray
 
   /**
    * Finds a region based on given region id
@@ -72,7 +28,7 @@ trait RegionRepository {
   /**
     * Add a region
     */
-  def add(name: String): Option[Region]
+  def add(name: String): JsValue
 
   /**
     * Delete a region and return nothing
@@ -80,44 +36,14 @@ trait RegionRepository {
   def remove(id: Int)
 
   /** Update a region and return it */
-  def update(id: Int, name: String): Option[Region]
+  def update(id: Int, name: String): JsValue
 }
 
 
 /**
  * Anorm specific database implementations of [[RegionRepository]] trait
  */
-object AnormRegionRepository extends RegionRepository {
-
-  /**
-   * SQL parser
-   */
-  val regionParser: RowParser[Region] = {
-    int("id") ~
-      str("name") map {
-      case i ~ n => Region(
-        id = Some(i),
-        name = n)
-    }
-  }
-
-  implicit def rowToJsValue: Column[JsValue] = Column.nonNull { (value, meta) =>
-    val MetaDataItem(qualified, nullable, clazz) = meta
-    value match {
-      case pgo: PGobject => Right(Json.parse(pgo.getValue))
-      case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" +
-      value.asInstanceOf[AnyRef].getClass + " to JsValue for column " + qualified))
-    }
-  }
-
-
-  val simple = {
-    get[JsValue]("row_to_json") map {
-      case row_to_json =>
-        row_to_json.asInstanceOf[JsValue]
-    }
-  }
-
+object AnormRegionRepository extends RegionRepository with JSONParsers {
 
   /**
     * Removes a region based on id
@@ -128,36 +54,40 @@ object AnormRegionRepository extends RegionRepository {
       SQL("""
       delete from region where id={id}
       """
-      ).on('id -> id).execute()
+      ).on('id -> id).execute
     }
   }
 
   /**
     *  Adds a region based on name and returns it with it's new id
     */
-  def add(name: String): Option[Region] = {
+  def add(name: String): JsValue = {
     DB.withConnection { implicit c =>
-      val maybeInsert: Option[Region] = SQL(
+      SQL(
         """
-        insert into region (id, name) values (DEFAULT, {name}) returning id, name;
+        with data(id, name) as (
+          insert into region (id, name) values (DEFAULT, {name}) returning id, name
+        )
+        select row_to_json(data) from data;
         """
-      ).on('name -> name).as(regionParser.singleOpt)
-      maybeInsert
+      ).on('name -> name).as(simple.single)
+
     }
   }
 
   /**
     * Updates a region and returns it
     */
-  def update(id: Int, name: String): Option[Region] = {
+  def update(id: Int, name: String): JsValue = {
     DB.withConnection { implicit c =>
-      val maybeRegion: Option[Region] = SQL(
+      SQL(
         """
-        update region set name={name} where id={id} returning id, name;
+        with data(id, name) as (
+          update region set name={name} where id={id} returning id, name
+        )
+        select row_to_json(data) from data;
         """
-      ).on('name -> name, 'id -> id).as(regionParser.singleOpt)
-      Logger.info("The returned region: " + maybeRegion.get)
-      maybeRegion
+      ).on('name -> name, 'id -> id).as(simple.single)
     }
   }
 
@@ -165,7 +95,7 @@ object AnormRegionRepository extends RegionRepository {
   /**
    * Retrieves region info based on given id
    * @param id region id
-   * @return region or null
+   * @return JsValue
    */
   def findOneById(id: Int): JsValue = {
     DB.withConnection { implicit c =>
@@ -188,19 +118,20 @@ object AnormRegionRepository extends RegionRepository {
 
   /**
    * Retrieves all available region info
-   * @return list of [[Region]] or null
+   * @return list of Region JSON
    */
-  def findAll: List[Region] = {
+  def findAll: JsArray = {
     DB.withConnection { implicit c =>
-      val regionList: List[Region] = SQL(
-        """
-          SELECT
-          id,
-          name
-          FROM region;
-        """).as(regionParser.*)
-
-      regionList
+      try {
+        SQL(
+          """
+          select array_to_json(array_agg(region)) from region;
+          """
+        ).as(array.single)
+      } catch {
+        case nse: NoSuchElementException =>
+          Json.toJson(Seq("")).asInstanceOf[JsArray]
+      }
     }
   }
 }

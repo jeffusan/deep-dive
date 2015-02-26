@@ -5,18 +5,19 @@ import play.api.mvc._
 import play.api.Logger
 import play.api.data._
 import play.api.data.Forms._
-import models.AnormSubRegionRepository
+import models.AnormReefTypeRepository
 
-case class SubRegionData(name: String, regionId: Int, code: String)
-case class UpdateSubRegionData(pk: Int, name: String, value: String)
+case class ReefTypeData(name: String, depth: String)
+case class ReefTypeUpdateData(id: Int, name: String, depth: String)
 
-trait SubRegions extends Controller with Security {
+trait ReefTypes extends Controller with Security {
+
 
   /** Delete a subregion */
   def remove(id: Int) =HasAdminToken() { token => userId => implicit request =>
 
     try {
-      AnormSubRegionRepository.remove(id)
+      AnormReefTypeRepository.remove(id)
       Ok(Json.obj("status" -> "Ok", "message" -> "Great Success!"))
     } catch {
       case e: Exception => BadRequest(Json.obj("status" -> "KO", "message" -> "Something terrible this way comes"))
@@ -26,32 +27,31 @@ trait SubRegions extends Controller with Security {
 
   val updateForm = Form(
     mapping(
-      "pk" -> number,
+      "id" -> number,
       "name" -> nonEmptyText,
-      "value" -> nonEmptyText
-    )(UpdateSubRegionData.apply)(UpdateSubRegionData.unapply)
+      "depth" -> nonEmptyText
+    )(ReefTypeUpdateData.apply)(ReefTypeUpdateData.unapply)
   )
 
   def update() = HasAdminToken(parse.json) { token => userId => implicit request =>
     updateForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
       subRegionData => {
-        Ok(AnormSubRegionRepository.update(subRegionData.pk, subRegionData.value, "code"))
+        Ok(AnormReefTypeRepository.update(subRegionData.id, subRegionData.name, subRegionData.depth))
       }
     )
   }
 
   /** Find all the regions */
   def show() = HasAdminToken() { token => userId => implicit request =>
-    Ok(Json.toJson(AnormSubRegionRepository.findAll))
+    Ok(Json.toJson(AnormReefTypeRepository.findAll))
   }
 
   val createForm = Form(
     mapping(
       "name" -> nonEmptyText,
-      "regionId" -> number,
-      "code" -> nonEmptyText
-    )(SubRegionData.apply)(SubRegionData.unapply)
+      "depth" -> nonEmptyText
+    )(ReefTypeData.apply)(ReefTypeData.unapply)
   )
 
   /** Create a new region */
@@ -59,10 +59,11 @@ trait SubRegions extends Controller with Security {
     createForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("err" -> "You're Either Sending Bad Credentials or Bad Data")),
       subRegionData => {
-        Ok(AnormSubRegionRepository.add(subRegionData.name, subRegionData.regionId, subRegionData.code))
+        Ok(AnormReefTypeRepository.add(subRegionData.name, subRegionData.depth))
       }
     )
   }
+
 }
 
-object SubRegions extends SubRegions
+object ReefTypes extends ReefTypes
