@@ -1,28 +1,29 @@
 /*jshint strict:false */
 /*global React:false*/
 
-var SubRegion = React.createClass({
+var SurveyEvent = React.createClass({
 
   itemDelete: function(event) {
     var id = this.props.id;
-    this.props.onSubRegionDelete({id: id});
+    this.props.onSurveyEventDelete({id: id});
   },
 
   render: function() {
     return (
-    <ListGroupItem bsStyle="info"><h4>{this.props.name}</h4> ({this.props.regionName})
-      <span className="pull-right">
-        <DeleteItem
-          title="Delete this Subregion?"
-          message="Deleting this subregion will also delete it's sites and surveys."
-          delete={this.itemDelete} />
-      </span>
-    </ListGroupItem>
+        <ListGroupItem bsStyle="info">
+         <h4>{this.props.name}</h4> ({this.props.eventDate})
+          <span className="pull-right">
+           <DeleteItem
+             title="Delete this SurveyEvent?"
+             message="Deleting this survey event will also delete the associated data!"
+             delete={this.itemDelete} />
+          </span>
+        </ListGroupItem>
     );
   }
 });
 
-var SubRegionList = React.createClass({
+var SurveyEventList = React.createClass({
 
   itemDelete: function(event) {
     var id = this.props.id;
@@ -31,38 +32,32 @@ var SubRegionList = React.createClass({
 
   render: function() {
 
-    var subregions = this.props.data.map(function(subregion) {
+    var surveyEvents = this.props.data.map(function(surveyEvent) {
       return (
-      <SubRegion
-        onSubRegionDelete={this.itemDelete}
-        id={subregion.id}
-        name={subregion.name}
-        regionName={subregion.region.name}/>
+        <SurveyEvent onSurveyEventDelete={this.itemDelete} id={surveyEvent.id} eventDate={surveyEvent.event_date}/>
       );
     }.bind(this));
 
     return (
         <ListGroup>
-          {subregions}
+        {surveyEvents}
         </ListGroup>
     );
   }
 });
 
-var SubRegions = React.createClass({
+var SurveyEvents = React.createClass({
 
   getInitialState: function() {
     return {
-      data: [],
-      message: '',
-      hasMessage: false
+      data: []
     };
   },
 
   delete: function(value) {
     $.ajax({
       'type': 'DELETE',
-      'url': '/subregions/' + value.id,
+      'url': '/surveyevents/' + value.id,
       'contentType': 'application/json',
       'data': JSON.stringify({'id': value.id}),
       'dataType': 'json',
@@ -72,13 +67,13 @@ var SubRegions = React.createClass({
       },
       'success' : function(data) {
         if(this.isMounted()) {
-          var subRegions = this.state.data;
-          var remainingSubRegions = subRegions
+          var surveyEvents = this.state.data;
+          var remainder = surveyEvents
                .filter(function (reg) {
                  return reg.id !== value.id;
                });
           this.setState({
-            data: remainingSubRegions,
+            data: remainder,
             message: 'Gone!',
             hasMessage: true
           });
@@ -87,24 +82,22 @@ var SubRegions = React.createClass({
       'error': function(data) {
         if(this.isMounted()) {
           this.setState({
-            data: {},
-            message: 'Um, yeah. About those subregions you wanted deleted...',
-            hasMessage: true
+            data: {}
           });
         }
       }.bind(this)
     });
+
   },
 
-  handleCreate: function(value) {
+  create: function(value) {
+
     $.ajax({
       'type': 'PUT',
-      'url': '/subregions',
+      'url': '/surveyevents',
       'contentType': 'application/json',
       'data': JSON.stringify({
-        'name': value.name,
-        'code': value.code,
-        'regionId': value.regionId
+        'eventDate': value.name
       }),
       'dataType': 'json',
       'async': false,
@@ -113,10 +106,10 @@ var SubRegions = React.createClass({
       },
       'success' : function(data) {
         if(this.isMounted()) {
-          var subregions = this.state.data;
-          var newSubRegions = subregions.concat([data]);
+          var surveyevents = this.state.data;
+          var results = surveyevents.concat([data]);
           this.setState({
-            data: newSubRegions,
+            data: results,
             message: 'Roger that',
             hasMessage: true
           });
@@ -126,7 +119,7 @@ var SubRegions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: {},
-            message: 'Um, yeah. About those subregions...',
+            message: 'Um, yeah. About those reeftypes...',
             hasMessage: true
           });
         }
@@ -138,7 +131,7 @@ var SubRegions = React.createClass({
 
     $.ajax({
       'type': 'GET',
-      'url': '/subregions',
+      'url': '/surveyevents',
       'contentType': 'application/json',
       'async': 'false',
       'headers': {
@@ -174,9 +167,9 @@ var SubRegions = React.createClass({
         <div className="container-fluid">
           <div className="row">
              <div className="col-lg-9 page-header">
-               <h2>Sub Regions <CreateSubRegionTrigger onHandlingData={this.handleCreate}/></h2>
+               <h2>Survey Events </h2>
                <hr/>
-               <SubRegionList delete={this.delete} data={this.state.data}/>
+               <SurveyEventList delete={this.delete} data={this.state.data}/>
              </div>
           </div>
         </div>

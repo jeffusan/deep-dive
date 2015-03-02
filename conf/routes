@@ -30,6 +30,12 @@ PUT          /reeftypes              controllers.ReefTypes.create()
 DELETE       /reeftypes/:id          controllers.ReefTypes.remove(id: Int)
 POST         /reeftypes              controllers.ReefTypes.update()
 
+# Sites
+GET          /sites                  controllers.Sites.show()
+
+# SurveyEvents
+GET          /surveyevents           controllers.SurveyEvents.show()
+
 # Static
 # ~~~~~~
 

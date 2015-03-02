@@ -1,68 +1,75 @@
 /*jshint strict:false */
-/*global React:false*/
+/*global React:false */
+/*global auth:false */
+/*global $:false */
+/*global ReactBootstrap:false*/
 
-var SubRegion = React.createClass({
+var ListGroup = ReactBootstrap.ListGroup;
+var ListGroupItem = ReactBootstrap.ListGroupItem;
+var Button = ReactBootstrap.Button;
+var Input = ReactBootstrap.Input;
 
-  itemDelete: function(event) {
+var Site = React.createClass({
+  onSiteDelete: function(event) {
     var id = this.props.id;
-    this.props.onSubRegionDelete({id: id});
+    this.props.onSiteDelete({id: id});
   },
-
   render: function() {
     return (
-    <ListGroupItem bsStyle="info"><h4>{this.props.name}</h4> ({this.props.regionName})
-      <span className="pull-right">
-        <DeleteItem
-          title="Delete this Subregion?"
-          message="Deleting this subregion will also delete it's sites and surveys."
-          delete={this.itemDelete} />
-      </span>
-    </ListGroupItem>
+        <ListGroupItem bsStyle="info">
+          <h4><a href="#" id={this.props.id} ref="input">{this.props.name}</a>
+            <span className="pull-right">
+              <DeleteItem
+      title="Are You Sure???"
+      message="Deleting a Site will also delete it's Survey Events!"
+      delete={this.onSiteDelete}/>
+            </span>
+          </h4>
+        </ListGroupItem>
     );
   }
 });
 
-var SubRegionList = React.createClass({
+var SiteList = React.createClass({
 
-  itemDelete: function(event) {
-    var id = this.props.id;
-    this.props.delete(event);
+  delete: function(value) {
+    this.props.delete({id: value.id});
   },
 
   render: function() {
-
-    var subregions = this.props.data.map(function(subregion) {
+    var siteNodes = this.props.data.map(function(site){
       return (
-      <SubRegion
-        onSubRegionDelete={this.itemDelete}
-        id={subregion.id}
-        name={subregion.name}
-        regionName={subregion.region.name}/>
+          <Site
+        onSiteDelete={this.delete}
+        id={site.id}
+        name={site.name}
+        latitude={site.latitude}
+        longitude={site.longitude}
+        map_datum={site.map_datum}
+        subregion_id={site.subregion_id}/>
       );
     }.bind(this));
 
     return (
         <ListGroup>
-          {subregions}
-        </ListGroup>
+        {siteNodes}
+      </ListGroup>
     );
   }
 });
 
-var SubRegions = React.createClass({
+var Sites = React.createClass({
 
   getInitialState: function() {
     return {
-      data: [],
-      message: '',
-      hasMessage: false
+      data: []
     };
   },
 
   delete: function(value) {
     $.ajax({
       'type': 'DELETE',
-      'url': '/subregions/' + value.id,
+      'url': '/sites/' + value.id,
       'contentType': 'application/json',
       'data': JSON.stringify({'id': value.id}),
       'dataType': 'json',
@@ -72,13 +79,13 @@ var SubRegions = React.createClass({
       },
       'success' : function(data) {
         if(this.isMounted()) {
-          var subRegions = this.state.data;
-          var remainingSubRegions = subRegions
+          var sites = this.state.data;
+          var remainingSites = sites
                .filter(function (reg) {
                  return reg.id !== value.id;
                });
           this.setState({
-            data: remainingSubRegions,
+            data: remainingSites,
             message: 'Gone!',
             hasMessage: true
           });
@@ -88,7 +95,7 @@ var SubRegions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: {},
-            message: 'Um, yeah. About those subregions you wanted deleted...',
+            message: 'Um, yeah. About those sites you wanted canceled...',
             hasMessage: true
           });
         }
@@ -97,14 +104,18 @@ var SubRegions = React.createClass({
   },
 
   handleCreate: function(value) {
+
     $.ajax({
       'type': 'PUT',
-      'url': '/subregions',
+      'url': '/sites',
       'contentType': 'application/json',
       'data': JSON.stringify({
         'name': value.name,
-        'code': value.code,
-        'regionId': value.regionId
+        'latitude': value.latitude,
+        'longitude': value.longitude,
+        'map_datum': value.map_datum,
+        'reef_type_id': value.reef_type_id,
+        'region_id': value.region_id
       }),
       'dataType': 'json',
       'async': false,
@@ -113,10 +124,10 @@ var SubRegions = React.createClass({
       },
       'success' : function(data) {
         if(this.isMounted()) {
-          var subregions = this.state.data;
-          var newSubRegions = subregions.concat([data]);
+          var sites = this.state.data;
+          var newSites = sites.concat([data]);
           this.setState({
-            data: newSubRegions,
+            data: newSites,
             message: 'Roger that',
             hasMessage: true
           });
@@ -126,7 +137,7 @@ var SubRegions = React.createClass({
         if(this.isMounted()) {
           this.setState({
             data: {},
-            message: 'Um, yeah. About those subregions...',
+            message: 'Um, yeah. About those sites...',
             hasMessage: true
           });
         }
@@ -138,7 +149,7 @@ var SubRegions = React.createClass({
 
     $.ajax({
       'type': 'GET',
-      'url': '/subregions',
+      'url': '/sites',
       'contentType': 'application/json',
       'async': 'false',
       'headers': {
@@ -168,15 +179,22 @@ var SubRegions = React.createClass({
 
   render: function() {
 
+    var maybeMessage = this.state.hasMessage ?
+          <Expire visible={true} delay={4000}>{this.state.message}</Expire> :
+          <span />;
+
     return (
       /* jshint ignore:start */
       <div id="page-wrapper">
         <div className="container-fluid">
           <div className="row">
+            <h3 id='errors'>{this.state.mess}</h3>
              <div className="col-lg-9 page-header">
-               <h2>Sub Regions <CreateSubRegionTrigger onHandlingData={this.handleCreate}/></h2>
+        <h2>Sites         <CreateSiteTrigger
+      onHandlingData={this.handleCreate}/></h2>
                <hr/>
-               <SubRegionList delete={this.delete} data={this.state.data}/>
+               {maybeMessage}
+               <SiteList delete={this.delete} data={this.state.data} />
              </div>
           </div>
         </div>

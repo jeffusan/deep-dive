@@ -3,96 +3,39 @@ package models
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-/**
- * This represents a site object
- */
-
-/**
- * Case class for Site
- * @param id site id
- * @param name site name
- * @param subRegionId sub-region id
- * @param reefTypeId reef type id for site
- * @param latitude latitude of the site
- * @param longitude longitude of the site
- * @param mapDatum map datum used by site
- */
-case class Site(
-                 id: Option[Long],
-                 subRegionId: Long,
-                 reefTypeId: Long,
-                 name: String,
-                 latitude: Double,
-                 longitude: Double,
-                 mapDatum: String
-                 )
 
 
 /**
- * Companion object of case class
- */
-object Site {
-
-  /**
-   * Converts Site object from & to Json
-   */
-  //Json to Object
-  implicit val SiteFromJson: Reads[Site] = (
-    (__ \ "id").readNullable[Long] ~
-      (__ \ "subRegionId").read[Long] ~
-      (__ \ "reefTypeId").read[Long] ~
-      (__ \ "name").read[String] ~
-      (__ \ "latitude").read[Double] ~
-      (__ \ "longitude").read[Double] ~
-      (__ \ "mapDatum").read[String]
-    )(Site.apply _)
-
-  //Object to Json
-  implicit val SiteToJson: Writes[Site] = (
-    (__ \ "id").writeNullable[Long] ~
-      (__ \ "subRegionId").write[Long] ~
-      (__ \ "reefTypeId").write[Long] ~
-      (__ \ "name").write[String] ~
-      (__ \ "latitude").write[Double] ~
-      (__ \ "longitude").write[Double] ~
-      (__ \ "mapDatum").write[String]
-    )((site: Site) => (
-    site.id,
-    site.subRegionId,
-    site.reefTypeId,
-    site.name,
-    site.latitude,
-    site.longitude,
-    site.mapDatum
-    )
-    )
-}
-
-
-/**
- * [[SiteRepository]] trait defines functionalities supported by [[Site]] object
+ * [[SiteRepository]] trait defines functionalities supported
  */
 trait SiteRepository {
+
+  /**
+    * Find all Sites
+    *  @return JsArray
+    */
+  def findAll(): JsArray
+
   /**
    * Finds list of sites based on given sub-region id
    * @param subRegionId sub-region id
-   * @return list of sites or null
+   * @return JsArray
    */
-  def findAllBySubRegionId(subRegionId: Long): List[Site]
+  def findAllBySubRegionId(subRegionId: Int): JsArray
 
   /**
    * Finds a site based on given site id
    * @param siteId site id
    * @return site or null
    */
-  def findOneById(siteId: Long): Option[Site]
+  def findOneById(siteId: Int): JsValue
 }
 
 
 /**
  * Anorm specific database implementations of [[SiteRepository]] trait
  */
-object AnormSiteRepository extends SiteRepository {
+object AnormSiteRepository extends SiteRepository with JSONParsers {
 
   // Database related dependencies
   import anorm._
@@ -100,57 +43,64 @@ object AnormSiteRepository extends SiteRepository {
   import play.api.db.DB
   import play.api.Play.current
 
-
   /**
-   * SQL parser
-   */
-  val siteParser: RowParser[Site] = {
-    long("id") ~
-      long("subregion_id") ~
-      long("reef_type_id") ~
-      str("name") ~
-      double("latitude") ~
-      double("longitude") ~
-      str("map_datum") map {
-      case i ~ s ~ r ~ n ~ la ~ lo ~ m => Site(
-        id = Some(i),
-        subRegionId = s,
-        reefTypeId = r,
-        name = n,
-        latitude = la,
-        longitude = lo,
-        mapDatum = m
-      )
+    * Find all sites
+    * @return JsArray
+    */
+  override def findAll(): JsArray = {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+        with data as (
+          select
+            s.id,
+            s.name,
+            s.latitude,
+            s.longitude,
+            s.map_datum,
+            json_build_object('id', rt.id, 'name', rt.name, 'depth', rt.depth) as reef_type,
+            json_build_object('id', sr.id, 'name', sr.name, 'code', sr.code, 'region', json_build_object('id', r.id, 'name', r.name)) as subregion
+          from site s, reef_type rt, subregion sr, region r
+          where s.reef_type_id = rt.id
+          and s.subregion_id = sr.id
+          and sr.region_id = r.id
+          order by name
+        )
+        select array_to_json(array_agg(data), true) from data;
+        """
+      ).as(array.single)
     }
   }
-
-
-
 
   /**
    * Finds list of sites based on given sub-region id
    * @param subRegionId sub-region id
    * @return list of sites or null
    */
-  override def findAllBySubRegionId(subRegionId: Long): List[Site] = {
+  override def findAllBySubRegionId(subRegionId: Int): JsArray = {
     DB.withConnection { implicit c =>
-      val mybeSiteList: List[Site] = SQL(
+      SQL(
         """
-          SELECT
-          id,
-          subregion_id,
-          reef_type_id,
-          name,
-          latitude,
-          longitude,
-          map_datum
-          FROM site
-          WHERE subregion_id = {id}
+        with data as (
+          select
+            s.id,
+            s.name,
+            s.latitude,
+            s.longitude,
+            s.map_datum,
+            json_build_object('id', rt.id, 'name', rt.name, 'depth', rt.depth) as reef_type,
+            json_build_object('id', sr.id, 'name', sr.name, 'code', sr.code, 'region', json_build_object('id', r.id, 'name', r.name)) as subregion
+          from site s, reef_type rt, subregion sr, region r
+          where s.subregion_id = {id}
+          and s.reef_type_id = rt.id
+          and s.subregion_id = sr.id
+          and sr.region_id = r.id
+          order by name
+        )
+        select array_to_json(array_agg(data), true) from data;
         """).on(
           'id -> subRegionId
-        ).as(siteParser.*)
-
-      mybeSiteList
+        ).as(array.single)
     }
   }
 
@@ -160,23 +110,28 @@ object AnormSiteRepository extends SiteRepository {
    * @param id site id
    * @return site or null
    */
-  override def findOneById(id: Long): Option[Site] = {
+  override def findOneById(id: Int): JsValue = {
     DB.withConnection { implicit c =>
-      val mybeSite: Option[Site] = SQL(
+      SQL(
         """
-          SELECT
-          id,
-          subregion_id,
-          reef_type_id,
-          name,
-          latitude,
-          longitude,
-          map_datum
-          FROM site
-          WHERE id = {id}
-        """).on('id -> id).as(siteParser.singleOpt)
-
-      mybeSite
+         with data as (
+          select
+            s.id,
+            s.name,
+            s.latitude,
+            s.longitude,
+            s.map_datum,
+            json_build_object('id', rt.id, 'name', rt.name, 'depth', rt.depth) as reef_type,
+            json_build_object('id', sr.id, 'name', sr.name, 'code', sr.code, 'region', json_build_object('id', r.id, 'name', r.name)) as subregion
+          from site s, reef_type rt, subregion sr, region r
+          where s.id = 1
+          and s.reef_type_id = rt.id
+          and s.subregion_id = sr.id
+          and sr.region_id = r.id
+          order by name
+        )
+        select to_json(data) from data;
+        """).on('id -> id).as(simple.single)
     }
   }
 }

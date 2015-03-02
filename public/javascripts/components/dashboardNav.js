@@ -49,19 +49,19 @@ var DashboardNav = React.createClass({
               <a href="/dashboard/subregions"><i className="fa fa-fw fa-database"></i> Subregions</a>
             </li>
             <li>
-              <a href="/dashboard"><i className="fa fa-fw fa-database"></i> Sites</a>
+              <a href="/dashboard/sites"><i className="fa fa-fw fa-database"></i> Sites</a>
             </li>
             <li>
               <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i className="fa fa-fw fa-arrows-v"></i> Benthic <i className="fa fa-fw fa-caret-down"></i></a>
                 <ul id="demo" className="collapse">
                   <li>
-                    <a href="/dashboard"><i className="fa fa-fw fa-upload"></i> Upload Benthic Data</a>
+                    <a href="/dashboard/upload"><i className="fa fa-fw fa-upload"></i> Upload Benthic Data</a>
                   </li>
                   <li>
                     <a href="/dashboard/reeftypes"><i className="fa fa-fw fa-table"></i> Reef Types</a>
                   </li>
                   <li>
-                    <a href="#"><i className="fa fa-fw fa-table"></i> Survey Events</a>
+                    <a href="/dashboard/surveyevents"><i className="fa fa-fw fa-table"></i> Survey Events</a>
                   </li>
                   <li>
                     <a href="#"><i className="fa fa-fw fa-table"></i> Categories</a>

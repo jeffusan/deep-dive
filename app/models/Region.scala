@@ -21,7 +21,7 @@ trait RegionRepository {
   /**
    * Finds a region based on given region id
    * @param regionId region id
-   * @return region or null
+   * @return JsValue
    */
   def findOneById(regionId: Int): JsValue
 

@@ -3,6 +3,8 @@ A repository for marine monitoring data.
 
 # Getting Started
 
+## Before Starting
+
 1. Clone the repository
 
 Since the development status is pre-alpha, use the [development branch](https://github.com/atware/deep-dive).
@@ -17,3 +19,16 @@ Then start the app- evolutions will load the example data automatically.
 
 bower install --save should do the trick. Default directory is public/javascripts/bower_components.
 This is configured [in the .bowerrc](https://github.com/atware/deep-dive/blob/development/.bowerrc) file.
+
+4. Install Activator
+
+## Starting
+
+From the command line, in the root of the project directory, run 'activator'. Once it has loaded, 'run'.
+
+
+## Testing
+
+To run all tests both functional and unit, run 'test'.
+
+To run only functional tests, 'test-only funspec.*'

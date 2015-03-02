@@ -38,7 +38,10 @@ var Region = React.createClass({
         <ListGroupItem bsStyle="info">
           <h4><a href="#" id={this.props.id} ref="input">{this.props.name}</a>
             <span className="pull-right">
-        <DeleteItem title="Are You Sure???" message="Deleting a Region will also delete it's SubRegions, Sites, and Surveys. You will be destroying the world..." delete={this.onRegionDelete}/>
+              <DeleteItem
+      title="Are You Sure???"
+      message="Deleting a Region will also delete it's SubRegions, Sites, and Surveys. You will be destroying the world..."
+      delete={this.onRegionDelete}/>
             </span>
           </h4>
         </ListGroupItem>
@@ -62,7 +65,7 @@ var RegionList = React.createClass({
 
     return (
       <ListGroup>
-                {regionNodes}
+        {regionNodes}
       </ListGroup>
     );
   }
