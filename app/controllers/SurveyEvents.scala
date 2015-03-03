@@ -51,11 +51,12 @@ trait SurveyEvents extends Controller with Security {
   def benthicUploadHandler = Action(parse.multipartFormData) { implicit request =>
 
     Logger.warn("Accepted")
+    Logger.warn("Request body: " + request.body.toString())
       request.body.file("inputFile").map { picture =>
     import java.io.File
     val filename = picture.filename
     val contentType = picture.contentType
-    picture.ref.moveTo(new File(s"/tmp/picture/$filename"))
+    picture.ref.moveTo(new File(s"$filename"))
         Ok(Json.obj("message" -> "File uploaded"))
       }.getOrElse {
         Redirect(routes.Application.index).flashing("error" -> "Missing file")
