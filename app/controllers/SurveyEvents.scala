@@ -51,7 +51,7 @@ trait SurveyEvents extends Controller with Security {
   def benthicUploadHandler = Action(parse.multipartFormData) { implicit request =>
 
     Logger.warn("Accepted")
-      request.body.file("picture").map { picture =>
+      request.body.file("inputFile").map { picture =>
     import java.io.File
     val filename = picture.filename
     val contentType = picture.contentType

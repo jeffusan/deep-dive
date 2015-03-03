@@ -68,7 +68,9 @@ var BenthicUploadForm = React.createClass({
       photographer: this.refs.photographer.getDOMNode().value,
       analyzer: this.refs.analyzer.getDOMNode().value,
       eventDate: this.refs.eventDate.getDOMNode().value,
-      inputFile: this.refs.inputFile.getDOMNode().value};
+      inputFile: this.refs.inputFile.getDOMNode().files[0],
+      inputFileName: this.refs.inputFile.getDOMNode().value
+    };
     return data;
   },
 

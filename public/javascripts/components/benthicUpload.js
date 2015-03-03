@@ -10,22 +10,8 @@ var BenthicUpload = React.createClass({
 
   getInitialState: function() {
     return {
-      value: 'Yodel',
-      question: '',
-      email: ''
+      submitted: {}
     };
-  },
-
-  validationState: function() {
-    var length = this.state.value.length;
-    return 'success';
-  },
-
-  handleChange: function(newValue) {
-    this.setState({
-      value: this.refs.input.getValue()
-    });
-    this.props.onHandleChange({value: this.refs.input.getValue()});
   },
 
   onSubmit: function() {
@@ -33,6 +19,36 @@ var BenthicUpload = React.createClass({
     if (this.refs.uploadForm.isValid()) {
       this.setState({submitted: this.refs.uploadForm.getFormData()});
     }
+
+    var formData = new FormData();
+    formData.append('depth', this.state.submitted.depth);
+    formData.append('photographer', this.state.submitted.photographer);
+    formData.append('analyzer', this.state.submitted.analyzer);
+    formData.append('eventDate', this.state.submitted.eventDate);
+    formData.append('inputFile', this.state.submitted.inputFile, this.state.submitted.inputFileName);
+
+    $.ajax({
+      type: 'POST',
+      url: '/benthic',
+      processData: false,
+      contentType: false,
+      dataType: 'json',
+      data: formData,
+      success: function(data, textStatus, jqXHR) {
+        if(typeof data.error === 'undefined') {
+          // Success so call function to process the form
+          submitForm(event, data);
+        } else {
+          // Handle errors here
+          console.log('ERRORS: ' + data.error);
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        // Handle errors here
+        console.log('ERRORS: ' + textStatus);
+        // STOP LOADING SPINNER
+        }
+    });
   },
 
   render: function() {
