@@ -78,7 +78,7 @@ case class Login(email: String, password: String)
 trait Application extends Controller with Security {
 
   lazy val CacheExpiration =
-    app.configuration.getInt("cache.expiration").getOrElse(60 /*seconds*/ * 2 /* minutes */)
+    app.configuration.getInt("cache.expiration").getOrElse(60 /*seconds*/ * 12 /* minutes */)
 
   lazy val userService = new UserService(AnormUserRepository)
 

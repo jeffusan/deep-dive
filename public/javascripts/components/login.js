@@ -52,7 +52,7 @@ var Login = React.createClass({
     var errors = this.state.error ? <p>Bad login information</p> : '';
     return (
 
-        <div className="container">
+        <div className="login-container">
         <div className="row">
         <div className="col-md-offset-5 col-md-3">
         <div className="form-login">

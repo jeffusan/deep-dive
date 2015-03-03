@@ -36,6 +36,8 @@ GET          /sites                  controllers.Sites.show()
 # SurveyEvents
 GET          /surveyevents           controllers.SurveyEvents.show()
 
+POST         /benthic                controllers.SurveyEvents.benthicUploadHandler
+
 # Static
 # ~~~~~~
 

@@ -173,7 +173,7 @@ var ReefTypes = React.createClass({
         <div className="container-fluid">
           <div className="row">
              <div className="col-lg-9 page-header">
-               <h2>Reef Types <CreateReefTypeTrigger onHandlingData={this.handleCreate}/></h2>
+        <h2>Reef Types <CreateReefTypeTrigger onHandlingData={this.create}/></h2>
                <hr/>
                <ReefTypeList delete={this.delete} data={this.state.data}/>
              </div>

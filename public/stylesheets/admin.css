@@ -6,6 +6,39 @@
 
 /* Global Styles */
 
+/**
+*.admin-container-fluid, .container-fluid {
+*    padding: 25px;
+*    position: fixed;
+*    margin-top: 50px;
+*}
+*/
+
+.admin-input-label {
+    margin-left: auto;
+    margin-right: auto;
+    margin: 40px auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.container-fluid {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.admin-grid {
+    margin-top: 25px;
+}
+
+.bar {
+    height: 18px;
+    background: green;
+}
+
 .modal-container {
     position: relative;
 }
