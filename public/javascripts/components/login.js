@@ -54,7 +54,7 @@ var Login = React.createClass({
 
         <div className="login-container">
         <div className="row">
-        <div className="col-md-offset-5 col-md-3">
+        <div className="col-md-offset-5 col-md-2">
         <div className="form-login">
         <h4>Welcome back.</h4>
         <input type="email" ref="email" className="form-control input-sm chat-input" placeholder="email" defaultValue="bigman@atware.jp"/>

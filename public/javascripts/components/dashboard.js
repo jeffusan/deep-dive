@@ -36,7 +36,7 @@ var Dashboard = React.createClass({
         case 'reeftypes': page = <ReefTypes/>; break;
         case 'sites': page = <Sites/>; break;
         case 'surveyevents': page = <SurveyEvents/>; break;
-        case 'upload': page = <UploadForm/>; break;
+        case 'upload': page = <BenthicUpload/>; break;
         default: page = <Empty/>; break;
 
         }
