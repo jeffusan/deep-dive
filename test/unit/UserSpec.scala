@@ -1,3 +1,5 @@
+package unit
+
 import models.{User, Role}
 import org.scalatestplus.play._
 import play.api.libs.json._
