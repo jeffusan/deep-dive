@@ -21,7 +21,6 @@ class ReefTypeFunSpec extends PlaySpec with OneAppPerSuite {
 
       val reefTypes = AnormReefTypeRepository.findAll
 
-      println(reefTypes)
     }
   }
 

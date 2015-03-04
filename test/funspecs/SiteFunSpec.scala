@@ -14,7 +14,7 @@ class SiteFunSpec extends PlaySpec with OneAppPerSuite {
 
     "Get All Sites" in {
       val sites = AnormSiteRepository.findAll
-      println(sites)
+
     }
   }
 }

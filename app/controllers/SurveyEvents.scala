@@ -6,6 +6,7 @@ import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
 import play.api.Logger
+import play.api.libs.iteratee.Enumerator
 import models.AnormSurveyEventRepository
 
 case class UploadBenthicData(depth: String, photographer: String, analyzer: String, eventDate : String, data: String)
@@ -50,19 +51,25 @@ trait SurveyEvents extends Controller with Security {
 
   def benthicUploadHandler = Action(parse.multipartFormData) { implicit request =>
 
-    Logger.warn("Accepted")
-    Logger.warn("Request body: " + request.body.toString())
-      request.body.file("inputFile").map { picture =>
-    import java.io.File
-    val filename = picture.filename
-    val contentType = picture.contentType
-    picture.ref.moveTo(new File(s"$filename"))
-        Ok(Json.obj("message" -> "File uploaded"))
-      }.getOrElse {
-        Redirect(routes.Application.index).flashing("error" -> "Missing file")
-      }
+    Logger.warn("Request body: " + request.body)
+    val dataParts = request.body.dataParts
+    val photographer = dataParts("photographer")(0)
+    val depth = dataParts("depth")(0)
+    val analyzer = dataParts("analyzer")(0)
+    val eventDate = dataParts("eventDate")(0)
+    Logger.warn(s"Photographer: ${photographer}")
+    Logger.warn(s"TransectDepth: ${depth}")
+    Logger.warn(s"Analyzer: ${analyzer}")
+    Logger.warn(s"EventDate: ${eventDate}")
 
+    if(request.body.files.isEmpty) BadRequest("Invalid file!")
+    else if (request.body.asFormUrlEncoded.isEmpty) BadRequest("Invalid Data!")
+    else {
+      val dataContent = Enumerator.fromStream(request.body.file("inputFile"))
+    }
+    Ok("Everything is okay!")
   }
+
 
 }
 
