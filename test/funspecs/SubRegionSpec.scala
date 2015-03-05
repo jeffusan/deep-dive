@@ -17,12 +17,12 @@ class SubRegionFunSpec extends PlaySpec with OneAppPerSuite {
       (subr \ "name").as[String] mustBe "hot stuff"
     }
 
-    "Update SubRegions" in {
+    "Update SubRegion Name" in {
       val sbur: JsValue = AnormSubRegionRepository.add("bit time", 2, "BT")
       val id = (sbur \ "id").as[Int]
-      val updated: JsValue = AnormSubRegionRepository.update(id, "bit time", "BT2")
+      val updated: JsValue = AnormSubRegionRepository.update(id, "bit times")
 
-      (updated \ "code").as[String] mustBe "BT2"
+      (updated \ "name").as[String] mustBe "bit times"
 
     }
 
