@@ -1,4 +1,4 @@
-package unit
+package funspec
 
 import java.io.{ByteArrayOutputStream, File}
 import java.nio.charset.Charset
@@ -18,7 +18,7 @@ import scala.concurrent.Future
 
 import play.api.Logger
 
-class SurveyEventUploadSpec extends PlaySpec {
+class SurveyEventUploadSpec extends PlaySpec with OneAppPerSuite {
 
    def writeableOf_multipartFormData(request: FakeRequest[MultipartFormData[TemporaryFile]]) = {
      val builder = MultipartEntityBuilder.create()
