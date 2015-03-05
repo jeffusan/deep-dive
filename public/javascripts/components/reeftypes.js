@@ -4,19 +4,6 @@
 var ReefType = React.createClass({
 
   componentDidMount: function() {
-      $('#name' + this.props.id).editable({
-      type: 'text',
-      pk: this.props.id,
-      url: '/reeftypesname',
-      ajaxOptions: {
-        headers: {
-          'X-XSRF-TOKEN': auth.getToken()
-        },
-        'dataType': 'json',
-        'contentType': 'application/json'
-      },
-      params: function(params) { return JSON.stringify(params); }
-      });
     $('#depth' + this.props.id).editable({
       type: 'text',
       pk: this.props.id,
@@ -42,8 +29,8 @@ var ReefType = React.createClass({
     return (
         <ListGroupItem bsStyle="info">
         <h4>
-        <a href="#" id={"name" + this.props.id} ref="input">{this.props.name}</a>
-         (<a href="#" id={"depth" + this.props.id} ref="input">{this.props.depth}</a>)
+        <EditableTextInput id={this.props.id} name={this.props.name} url="reeftypesname" elementid={"name" + this.props.id}/>
+        (<EditableTextInput id={this.props.id} name={this.props.depth} url="reeftypesdepth" elementid={"depth" + this.props.id}/>)
           <span className="pull-right">
            <DeleteItem
              title="Delete this ReefType?"
