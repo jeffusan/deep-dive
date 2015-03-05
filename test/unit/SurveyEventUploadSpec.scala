@@ -16,6 +16,8 @@ import play.api.test.{FakeHeaders, FakeRequest, WithApplication}
 import org.scalatestplus.play._
 import scala.concurrent.Future
 
+import play.api.Logger
+
 class SurveyEventUploadSpec extends PlaySpec {
 
    def writeableOf_multipartFormData(request: FakeRequest[MultipartFormData[TemporaryFile]]) = {
@@ -24,7 +26,8 @@ class SurveyEventUploadSpec extends PlaySpec {
 
      // ContentType part is necessary here because it gets parsed as a DataPart otherwise.
      request.body.files.foreach {
-       case f => builder.addBinaryBody(
+       case f =>
+         builder.addBinaryBody(
          f.filename,
          f.ref.file,
          ContentType.create(f.contentType.get, null: Charset),
@@ -46,7 +49,7 @@ class SurveyEventUploadSpec extends PlaySpec {
 
   def sendUploadRequest(url: String, file: File, mimeType: String, parameters: Map[String, String]): Future[Result] = {
     // Your original file will be deleted after the controller executes if you don't do the copy part below
-    val tempFile = TemporaryFile("TEST_REMOVE_")
+    val tempFile = TemporaryFile("inputFile")
     Files.copy(file.toPath, tempFile.file.toPath, StandardCopyOption.REPLACE_EXISTING)
 
     val part = FilePart[TemporaryFile](
@@ -69,7 +72,7 @@ class SurveyEventUploadSpec extends PlaySpec {
   "Upload" should {
     "pass" in new WithApplication {
 
-      val tempFile = TemporaryFile("TEST_")
+      val tempFile = TemporaryFile("inputFile")
       val fileRef = tempFile.file
 
       Files.write(fileRef.toPath, """{"hello":"world"}""".getBytes, StandardOpenOption.WRITE)
