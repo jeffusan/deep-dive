@@ -3,6 +3,36 @@
 
 var ReefType = React.createClass({
 
+  componentDidMount: function() {
+      $('#name' + this.props.id).editable({
+      type: 'text',
+      pk: this.props.id,
+      url: '/reeftypesname',
+      ajaxOptions: {
+        headers: {
+          'X-XSRF-TOKEN': auth.getToken()
+        },
+        'dataType': 'json',
+        'contentType': 'application/json'
+      },
+      params: function(params) { return JSON.stringify(params); }
+      });
+    $('#depth' + this.props.id).editable({
+      type: 'text',
+      pk: this.props.id,
+      url: '/reeftypesdepth',
+      ajaxOptions: {
+        headers: {
+          'X-XSRF-TOKEN': auth.getToken()
+        },
+        'dataType': 'json',
+        'contentType': 'application/json'
+      },
+      params: function(params) { return JSON.stringify(params); }
+    });
+
+  },
+
   itemDelete: function(event) {
     var id = this.props.id;
     this.props.onReefTypeDelete({id: id});
@@ -11,13 +41,16 @@ var ReefType = React.createClass({
   render: function() {
     return (
         <ListGroupItem bsStyle="info">
-         <h4>{this.props.name}</h4> ({this.props.depth})
+        <h4>
+        <a href="#" id={"name" + this.props.id} ref="input">{this.props.name}</a>
+         (<a href="#" id={"depth" + this.props.id} ref="input">{this.props.depth}</a>)
           <span className="pull-right">
            <DeleteItem
              title="Delete this ReefType?"
              message="Deleting this reeftype may be constained by it's associations with Sites."
              delete={this.itemDelete} />
-          </span>
+        </span>
+        </h4>
         </ListGroupItem>
     );
   }
@@ -167,20 +200,25 @@ var ReefTypes = React.createClass({
 
   render: function() {
 
+    var maybeMessage = this.state.hasMessage ?
+          <Expire visible={true} delay={4000}>{this.state.message}</Expire> :
+          <span />;
+
     return (
-      /* jshint ignore:start */
-      <div id="page-wrapper">
+
         <div className="container-fluid">
-          <div className="row">
-             <div className="col-lg-9 page-header">
-        <h2>Reef Types <CreateReefTypeTrigger onHandlingData={this.create}/></h2>
-               <hr/>
-               <ReefTypeList delete={this.delete} data={this.state.data}/>
-             </div>
-          </div>
+        <div className="panel panel-default">
+          <div className="panel-heading clearfix">
+        <h3 className="panel-title pull-left">Reef Types <CreateReefTypeTrigger onHandlingData={this.create}/></h3>
         </div>
+        <div className="panel-body">
+        <ReefTypeList delete={this.delete} data={this.state.data} />
+        </div>
+        <div className="panel-footer">
+        {maybeMessage}
       </div>
-      /* jshint ignore:end */
+        </div>
+        </div>
     );
   }
 

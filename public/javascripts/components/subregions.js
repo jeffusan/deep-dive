@@ -3,6 +3,22 @@
 
 var SubRegion = React.createClass({
 
+  componentDidMount: function() {
+      $('#' + this.props.id).editable({
+      type: 'text',
+      pk: this.props.id,
+      url: '/subregions',
+      ajaxOptions: {
+        headers: {
+          'X-XSRF-TOKEN': auth.getToken()
+        },
+        'dataType': 'json',
+        'contentType': 'application/json'
+      },
+      params: function(params) { return JSON.stringify(params); }
+    });
+  },
+
   itemDelete: function(event) {
     var id = this.props.id;
     this.props.onSubRegionDelete({id: id});
@@ -10,13 +26,15 @@ var SubRegion = React.createClass({
 
   render: function() {
     return (
-    <ListGroupItem bsStyle="info"><h4>{this.props.name}</h4> ({this.props.regionName})
-      <span className="pull-right">
+        <ListGroupItem bsStyle="info">
+        <h4><a href="#" id={this.props.id} ref="input">{this.props.name}</a> ({this.props.regionName})
+        <span className="pull-right">
         <DeleteItem
           title="Delete this Subregion?"
           message="Deleting this subregion will also delete it's sites and surveys."
           delete={this.itemDelete} />
-      </span>
+        </span>
+        </h4>
     </ListGroupItem>
     );
   }
@@ -168,20 +186,26 @@ var SubRegions = React.createClass({
 
   render: function() {
 
+        var maybeMessage = this.state.hasMessage ?
+          <Expire visible={true} delay={4000}>{this.state.message}</Expire> :
+          <span />;
+
+
     return (
-      /* jshint ignore:start */
-      <div id="page-wrapper">
         <div className="container-fluid">
-          <div className="row">
-             <div className="col-lg-9 page-header">
-               <h2>Sub Regions <CreateSubRegionTrigger onHandlingData={this.handleCreate}/></h2>
-               <hr/>
-               <SubRegionList delete={this.delete} data={this.state.data}/>
-             </div>
-          </div>
+        <div className="panel panel-default">
+          <div className="panel-heading clearfix">
+        <h3 className="panel-title pull-left">Sub Regions <CreateSubRegionTrigger onHandlingData={this.handleCreate}/></h3>
         </div>
+        <div className="panel-body">
+        <SubRegionList delete={this.delete} data={this.state.data} />
+        </div>
+        <div className="panel-footer">
+        {maybeMessage}
       </div>
-      /* jshint ignore:end */
+        </div>
+        </div>
+
     );
   }
 

@@ -28,7 +28,8 @@ POST         /subregions              controllers.SubRegions.update()
 GET          /reeftypes              controllers.ReefTypes.show()
 PUT          /reeftypes              controllers.ReefTypes.create()
 DELETE       /reeftypes/:id          controllers.ReefTypes.remove(id: Int)
-POST         /reeftypes              controllers.ReefTypes.update()
+POST         /reeftypesname          controllers.ReefTypes.updateName()
+POST         /reeftypesdepth          controllers.ReefTypes.updateDepth()
 
 # Sites
 GET          /sites                  controllers.Sites.show()

@@ -193,21 +193,19 @@ var Regions = React.createClass({
           <span />;
 
     return (
-      /* jshint ignore:start */
-      <div id="page-wrapper">
         <div className="container-fluid">
-          <div className="row">
-            <h3 id='errors'>{this.state.mess}</h3>
-             <div className="col-lg-9 page-header">
-               <h2>Regions         <CreateRegionTrigger onHandlingData={this.handleCreate}/></h2>
-               <hr/>
-               {maybeMessage}
-               <RegionList delete={this.delete} data={this.state.data} />
-             </div>
-          </div>
+        <div className="panel panel-default">
+          <div className="panel-heading clearfix">
+        <h3 className="panel-title pull-left">Regions <CreateRegionTrigger onHandlingData={this.handleCreate}/></h3>
         </div>
+        <div className="panel-body">
+        <RegionList delete={this.delete} data={this.state.data} />
+        </div>
+        <div className="panel-footer">
+        {maybeMessage}
       </div>
-      /* jshint ignore:end */
+        </div>
+        </div>
     );
   }
 });

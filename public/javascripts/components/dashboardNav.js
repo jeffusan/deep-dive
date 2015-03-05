@@ -52,13 +52,13 @@ var DashboardNav = React.createClass({
               <a href="/dashboard/sites"><i className="fa fa-fw fa-database"></i> Sites</a>
             </li>
             <li>
+              <a href="/dashboard/reeftypes"><i className="fa fa-fw fa-table"></i> Reef Types</a>
+            </li>
+            <li>
               <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i className="fa fa-fw fa-arrows-v"></i> Benthic <i className="fa fa-fw fa-caret-down"></i></a>
                 <ul id="demo" className="collapse">
                   <li>
                     <a href="/dashboard/upload"><i className="fa fa-fw fa-upload"></i> Upload Benthic Data</a>
-                  </li>
-                  <li>
-                    <a href="/dashboard/reeftypes"><i className="fa fa-fw fa-table"></i> Reef Types</a>
                   </li>
                   <li>
                     <a href="/dashboard/surveyevents"><i className="fa fa-fw fa-table"></i> Survey Events</a>
@@ -68,6 +68,14 @@ var DashboardNav = React.createClass({
                   </li>
                   <li>
                     <a href="#"><i className="fa fa-fw fa-table"></i> Sub Categories</a>
+                  </li>
+                </ul>
+           </li>
+            <li>
+              <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i className="fa fa-fw fa-arrows-v"></i> Survey Metadata <i className="fa fa-fw fa-caret-down"></i></a>
+                <ul id="demo" className="collapse">
+                  <li>
+                    <a href="/dashboard/surveyevents"><i className="fa fa-fw fa-table"></i> Benthic Surveys</a>
                   </li>
                 </ul>
             </li>

@@ -17,7 +17,7 @@ trait SubRegionRepository {
   /**
     * This will allow updating a subregions name or code
     */
-  def update(id: Int, name: String, code: String): JsValue
+  def update(id: Int, name: String): JsValue
 
   /**
     * Remove a SubRegion
@@ -55,16 +55,16 @@ trait SubRegionRepository {
  */
 object AnormSubRegionRepository extends SubRegionRepository with JSONParsers {
 
-  def update(id: Int, name: String, code: String): JsValue = {
+  def update(id: Int, name: String): JsValue = {
     DB.withConnection{ implicit c =>
       SQL(
         """
         with updated as
-          (update subregion set name={name}, code={code} where id={id} returning id, name, code)
+          (update subregion set name={name} where id={id} returning id, name)
         select
           json_build_object('id', (select id from updated),
           'name', (select name from updated),
-          'code', (select code from updated),
+          'code', s.code,
           'region', json_build_object(
             'id', s.region_id,
             'name', r.name))
@@ -74,8 +74,7 @@ object AnormSubRegionRepository extends SubRegionRepository with JSONParsers {
         """
       ).on(
         'id -> id,
-        'name -> name,
-        'code -> code
+        'name -> name
       ).as(simple_build.single)
     }
   }

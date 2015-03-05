@@ -21,7 +21,9 @@ trait ReefTypeRepository {
 
   def remove(id: Int)
 
-  def update(id: Int, name: String, depth: String): JsValue
+  def updateName(id: Int, name: String): JsValue
+
+  def updateDepth(id: Int, depth: String): JsValue
 
 }
 
@@ -30,16 +32,37 @@ trait ReefTypeRepository {
  */
 object AnormReefTypeRepository extends ReefTypeRepository with JSONParsers {
 
-  override def update(id: Int, name: String, depth: String): JsValue = {
+  override def updateName(id: Int, name: String): JsValue = {
     DB.withConnection { implicit c =>
       SQL(
         """
-        with data(id, name, depth) as (
-          update reef_type set name={name}, depth={depth} where id={id} returning id, name, depth
-        )
-        select row_to_json(data) from data;
+        with updated as
+          (update reef_type set name={name} where id={id} returning id, name)
+        select
+          json_build_object(
+           'id', rt.id,
+           'name', {name},
+           'depth', rt.depth)
+        from reef_type rt where rt.id={id};
         """
-      ).on('id -> id, 'name -> name, 'depth -> depth).as(simple.single)
+      ).on('id -> id, 'name -> name).as(simple_build.single)
+    }
+  }
+
+  override def updateDepth(id: Int, depth: String): JsValue = {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+        with updated as
+          (update reef_type set depth={depth} where id={id} returning id, depth)
+        select
+          json_build_object(
+           'id', rt.id,
+           'name', rt.name,
+           'depth', {depth})
+        from reef_type rt where rt.id={id};
+        """
+      ).on('id -> id, 'depth -> depth).as(simple_build.single)
     }
   }
 

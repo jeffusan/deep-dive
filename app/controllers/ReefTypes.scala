@@ -8,7 +8,7 @@ import play.api.data.Forms._
 import models.AnormReefTypeRepository
 
 case class ReefTypeData(name: String, depth: String)
-case class ReefTypeUpdateData(id: Int, name: String, depth: String)
+case class ReefTypeUpdateData(pl: Int, name: String, value: String)
 
 trait ReefTypes extends Controller with Security {
 
@@ -27,20 +27,30 @@ trait ReefTypes extends Controller with Security {
 
   val updateForm = Form(
     mapping(
-      "id" -> number,
+      "pk" -> number,
       "name" -> nonEmptyText,
-      "depth" -> nonEmptyText
+      "value" -> nonEmptyText
     )(ReefTypeUpdateData.apply)(ReefTypeUpdateData.unapply)
   )
 
-  def update() = HasAdminToken(parse.json) { token => userId => implicit request =>
+  def updateName() = HasAdminToken(parse.json) { token => userId => implicit request =>
     updateForm.bindFromRequest.fold(
       formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
       subRegionData => {
-        Ok(AnormReefTypeRepository.update(subRegionData.id, subRegionData.name, subRegionData.depth))
+        Ok(AnormReefTypeRepository.updateName(subRegionData.pl, subRegionData.value))
       }
     )
   }
+
+  def updateDepth() = HasAdminToken(parse.json) { token => userId => implicit request =>
+    updateForm.bindFromRequest.fold(
+      formWithErrors => BadRequest(Json.obj("msg" -> "Bad Credentials", "status" -> "error")),
+      subRegionData => {
+        Ok(AnormReefTypeRepository.updateDepth(subRegionData.pl, subRegionData.value))
+      }
+    )
+  }
+
 
   /** Find all the regions */
   def show() = HasAdminToken() { token => userId => implicit request =>

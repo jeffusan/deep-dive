@@ -184,22 +184,22 @@ var Sites = React.createClass({
           <span />;
 
     return (
-      /* jshint ignore:start */
-      <div id="page-wrapper">
+
         <div className="container-fluid">
-          <div className="row">
-            <h3 id='errors'>{this.state.mess}</h3>
-             <div className="col-lg-9 page-header">
-        <h2>Sites         <CreateSiteTrigger
-      onHandlingData={this.handleCreate}/></h2>
-               <hr/>
-               {maybeMessage}
-               <SiteList delete={this.delete} data={this.state.data} />
-             </div>
-          </div>
+        <div className="panel panel-default">
+        <div className="panel-heading clearfix">
+        <h3 className="panel-title pull-left">Sites</h3>
         </div>
+        <div className="panel-body">
+        <SiteList delete={this.delete} data={this.state.data} />
+        </div>
+        <div className="panel-footer">
+        {maybeMessage}
       </div>
-      /* jshint ignore:end */
+        </div>
+        </div>
+
+
     );
   }
 
