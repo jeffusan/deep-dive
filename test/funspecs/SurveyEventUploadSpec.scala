@@ -6,7 +6,7 @@ import java.nio.file.{Files, StandardCopyOption, StandardOpenOption}
 
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder
-import org.specs2.mutable.Specification
+//import org.specs2.mutable.Specification
 import play.api.http.{ContentTypeOf, Writeable}
 import play.api.libs.Files.TemporaryFile
 import play.api.mvc.MultipartFormData.FilePart
@@ -15,7 +15,7 @@ import play.api.test.Helpers._
 import play.api.test.{FakeHeaders, FakeRequest, WithApplication}
 import org.scalatestplus.play._
 import scala.concurrent.Future
-
+import play.api.libs.json.Json
 import play.api.Logger
 
 class SurveyEventUploadSpec extends PlaySpec with OneAppPerSuite {
@@ -83,13 +83,16 @@ class SurveyEventUploadSpec extends PlaySpec with OneAppPerSuite {
         "analyzer" -> "BBB",
         "eventDate" -> "2015-01-01"
       )
+      val json = Json.obj("message" -> "Everything is okay!")
 
       val future = sendUploadRequest(
         controllers.routes.SurveyEvents.benthicUploadHandler().url,
-        fileRef, "multipart/form-data", parameters)
+        fileRef, "multipart/form-data", parameters
+      )
 
-        status(future) mustBe OK
-        contentAsString(future) mustBe "Everything is okay!"
+      status(future) mustBe OK
+      val jsonResult = contentAsJson(future)
+      jsonResult mustBe json
     }
   }
 }
