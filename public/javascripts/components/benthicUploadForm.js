@@ -124,7 +124,7 @@ var BenthicUploadForm = React.createClass({
     return this.renderField(
       id,
       label,
-      <input type="file" id={id} ref={id}/>
+      <input type="file" id={id} ref={id} accept=".xlsx"/>
     );
   }
 });
