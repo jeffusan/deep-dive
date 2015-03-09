@@ -14,7 +14,7 @@ import akka.pattern.ask
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.concurrent.Akka
 import akka.actor.Props
-import actors.{BenthicInputFileHandler, BenthicFileMessage}
+import actors.{BenthicInputActor, BenthicFileInputMessage}
 import play.api.data._
 import play.api.libs.json._
 
@@ -50,9 +50,9 @@ trait SurveyEvents extends Controller with Security {
       Logger.warn("Filepart: " + filepart.toString())
       Logger.warn("Ref: " + filepart.ref.toString())
       val fileIn = new FileInputStream(filepart.ref.file)
-      val inputHandler = Akka.system.actorOf(Props(new BenthicInputFileHandler()))
+      val inputHandler = Akka.system.actorOf(Props(new BenthicInputActor()))
       implicit val timeout = Timeout(25 seconds)
-      val future = inputHandler ? BenthicFileMessage(photographer, depth, analyzer, eventDate, fileIn)
+      val future = inputHandler ? BenthicFileInputMessage(photographer, depth, analyzer, eventDate, fileIn)
       future.map { result =>
         Logger.warn("Total number of words " + result)
       }
