@@ -29,7 +29,9 @@ var ReefType = React.createClass({
     return (
         <ListGroupItem bsStyle="info">
         <h4>
+        <div className="pull-left reef-name-edit">
         <EditableTextInput id={this.props.id} name={this.props.name} url="reeftypesname" elementid={"name" + this.props.id}/>
+        </div>
         (<EditableTextInput id={this.props.id} name={this.props.depth} url="reeftypesdepth" elementid={"depth" + this.props.id}/>)
           <span className="pull-right">
            <DeleteItem

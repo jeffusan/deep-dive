@@ -30,6 +30,10 @@ function $c(staticClassName, conditionalClassNames) {
 
 var BenthicUploadForm = React.createClass({
 
+  componentDidMount: function() {
+    $('.datepicker').datepicker()
+  },
+
   getInitialState: function() {
     return {errors: {}};
   },
@@ -97,11 +101,22 @@ var BenthicUploadForm = React.createClass({
     );
   },
 
+  renderDateInput: function(id, label) {
+    return this.renderField(
+      id,
+      label,
+      <div className="input-append date">
+        <input className="datepicker" type="text" value="12-02-2012" id={id} ref={id} data-provide="datepicker"/>
+        <span className="add-on"><i className="icon-th"></i></span>
+      </div>
+    );
+  },
+
   renderTextInput: function(id, label) {
     return this.renderField(
       id,
       label,
-      <input type="text" className="form-control" id={id} ref={id}/>
+      <input type="text" className="form-control" id={id} ref={id} />
     );
   },
 

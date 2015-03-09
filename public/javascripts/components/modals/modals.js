@@ -4,6 +4,31 @@ var Modal = ReactBootstrap.Modal;
 var ModalTrigger = ReactBootstrap.ModalTrigger;
 var Badge = ReactBootstrap.Label;
 
+var Message = React.createClass({
+  getInitialState : function() {
+    return { message: ''};
+  },
+
+  render: function() {
+
+    var display = function() {
+      if(this.state.message !== '') {
+        if(!!this.state.message.error) {
+          return <div className="bg-success">{JSON.stringify(this.state.message.value, null, ' ')}</div>;
+        } else {
+          return <div className="bg-danger">{JSON.stringify(this.state.message.error.value, null, ' ')}</div>;
+        }
+      } else {
+        return <div></div>;
+      }
+    };
+
+    return (
+        <div>{display}</div>
+    );
+  }
+});
+
 var EditableTextInput = React.createClass({
 
   componentDidMount: function() {
@@ -24,7 +49,7 @@ var EditableTextInput = React.createClass({
 
   render: function() {
     return (
-        <a href="#" id={this.props.elementid} ref="input">{this.props.name}</a>
+        <a className="col" href="#" id={this.props.elementid} ref="input">{this.props.name}</a>
     );
 
   }

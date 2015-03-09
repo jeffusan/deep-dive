@@ -15,6 +15,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.concurrent.Akka
 import akka.actor.Props
 import actors.{BenthicInputFileHandler, BenthicFileMessage}
+import play.api.data._
+import play.api.libs.json._
+
 
 trait SurveyEvents extends Controller with Security {
 
@@ -53,7 +56,7 @@ trait SurveyEvents extends Controller with Security {
       future.map { result =>
         Logger.warn("Total number of words " + result)
       }
-      Ok("Everything is okay!")
+      Ok(Json.obj("message" -> "Everything is okay!"))
     }
 
   }

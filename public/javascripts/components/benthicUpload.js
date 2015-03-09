@@ -5,19 +5,24 @@ var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
 
-
 var BenthicUpload = React.createClass({
 
   getInitialState: function() {
     return {
-      submitted: {}
+      submitted: {},
+      loaded: false,
+      message: ''
     };
   },
 
   onSubmit: function() {
     console.log("On Submit");
     if (this.refs.uploadForm.isValid()) {
-      this.setState({submitted: this.refs.uploadForm.getFormData()});
+      this.setState({
+        submitted: this.refs.uploadForm.getFormData(),
+        loaded: false,
+        message: ''
+      });
     }
 
     var formData = new FormData();
@@ -37,17 +42,21 @@ var BenthicUpload = React.createClass({
       success: function(data, textStatus, jqXHR) {
         if(typeof data.error === 'undefined') {
           // Success so call function to process the form
-          submitForm(event, data);
+          //submitForm(event, data);
+          console.log("SUCCESS");
+          this.setState({submitted: {}, loaded: true, message: data.message});
         } else {
           // Handle errors here
           console.log('ERRORS: ' + data.error);
+          this.setState({submitted: {}, loaded: true, message: data.error});
         }
-      },
+      }.bind(this),
       error: function(jqXHR, textStatus, errorThrown) {
         // Handle errors here
         console.log('ERRORS: ' + textStatus);
+        this.setState({submitted: formData, loaded: true, message: data.error});
         // STOP LOADING SPINNER
-        }
+      }.bind(this)
     });
   },
 
@@ -71,7 +80,11 @@ var BenthicUpload = React.createClass({
           <h3 className="panel-title pull-left">Submit Benthic Data</h3>
         </div>
         <div className="panel-body">
+        <Message message={this.state.message}/>
+
         <BenthicUploadForm ref="uploadForm"/>
+
+
         </div>
         <div className="panel-footer">
           <button type="button" className="btn btn-primary btn-block" onClick={this.onSubmit}>Submit</button>

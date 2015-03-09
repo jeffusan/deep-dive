@@ -6,6 +6,11 @@
 /*global Dashboard:false */
 /*global User:false */
 /*global Logout:false */
+$(document).bind("ajaxSend", function(){
+   $("#loading").show();
+ }).bind("ajaxComplete", function(){
+   $("#loading").hide();
+ });
 var Router = ReactRouter;
 var Route = Router.Route, DefaultRoute = Router.DefaultRoute,
     Link=Router.Link, RouteHandler = Router.RouteHandler,
