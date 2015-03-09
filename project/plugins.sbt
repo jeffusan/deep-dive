@@ -7,6 +7,8 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.7")
 
 addSbtPlugin("com.heroku" % "sbt-heroku" % "0.3.0")
 
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
+
 scalacOptions ++= (
 "-deprecation" ::
 "-unchecked" ::

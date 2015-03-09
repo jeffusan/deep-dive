@@ -15,7 +15,9 @@ libraryDependencies ++= Seq(
   filters,
   ws,
   "org.postgresql" % "postgresql" % "9.3-1102-jdbc41",
-  "org.scalatestplus" %% "play" % "1.2.0" % "test"
+  "org.scalatestplus" %% "play" % "1.2.0" % "test",
+  "info.folone" %% "poi-scala" % "0.14",
+  "com.typesafe.akka" %% "akka-testkit" % "2.3.8" % "test"
 )
 
 // Scala Compiler Options
@@ -39,3 +41,5 @@ enablePlugins(HerokuPlugin)
 herokuAppName in Compile := "warm-beyond-9991"
 
 herokuJdkVersion in Compile := "1.8"
+
+net.virtualvoid.sbt.graph.Plugin.graphSettings
