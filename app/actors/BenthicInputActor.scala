@@ -8,7 +8,6 @@ import info.folone.scala.poi._
 import play.api.libs.json._
 import scala.concurrent.{Future, Await}
 import akka.pattern.ask
-import akka.pattern.pipe
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,10 +24,7 @@ class BenthicInputActor extends Actor {
   implicit val timeout = Timeout(5 seconds)
 
   val workbookActor = context.actorOf(Props[WorkbookActor])
-  val sheetActor = context.actorOf(Props[SheetActor])
-  val transectActor = context.actorOf(Props[TransectActor])
   val surveyResultAggregator = context.actorOf(Props[SurveyResultAggregator])
-
 
   def receive = {
 
@@ -45,8 +41,6 @@ class BenthicInputActor extends Actor {
 
     result match {
       case a: ValidWorkbookResponse => {
-        val sheetFuture = sheetActor ? new SheetMessage(a.workbook)
-        val sheetResult = Await.result(sheetFuture, Duration("4 seconds")).asInstanceOf[Sheet]
         requestor ! result
       }
       case b: ErrorWorkbookResponse => requestor ! result

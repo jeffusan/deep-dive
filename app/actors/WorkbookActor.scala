@@ -5,6 +5,10 @@ import play.api.Logger
 import java.io.{InputStream, FileInputStream}
 import akka.dispatch.ExecutionContexts._
 import info.folone.scala.poi._
+import akka.util.Timeout
+import akka.pattern.ask
+import scala.concurrent.{Future, Await}
+import scala.concurrent.duration._
 
 case class WorkbookMessage(input: FileInputStream)
 trait WorkbookResponse
@@ -12,6 +16,9 @@ case class ErrorWorkbookResponse(message: String) extends WorkbookResponse
 case class ValidWorkbookResponse(workbook: Workbook) extends WorkbookResponse
 
 class WorkbookActor extends Actor {
+
+  implicit val timeout = Timeout(5 seconds)
+  val sheetActor = context.actorOf(Props[SheetActor])
 
   def safely[T](handler: PartialFunction[Throwable, T]): PartialFunction[Throwable, T] = {
     //case ex: java.io.FileNotFoundException => return None
@@ -34,6 +41,20 @@ class WorkbookActor extends Actor {
 
     try {
       val workBook = load(inputStream)
+      val sheetFuture = sheetActor ? new SheetMessage(workBook)
+      val sheetResult = Await.result(sheetFuture, Duration("4 seconds")).asInstanceOf[SheetResponse]
+
+      sheetResult match {
+        case a: ValidSheetResponse => {
+          Logger.info("You're a hero")
+        }
+        case b: ErrorSheetResponse => {
+          Logger.error("Something is wrong with the sheet")
+        }
+        case _ => {
+          Logger.error("Unfathomable! Without fathom!")
+        }
+      }
       new ValidWorkbookResponse(workBook)
     } catch safely {
       case nse: java.io.FileNotFoundException =>

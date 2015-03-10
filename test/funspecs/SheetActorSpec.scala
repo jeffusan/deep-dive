@@ -23,7 +23,7 @@ class SheetActorSpec extends Specification {
 
         sheetActor.tell(message, probe.ref)
 
-        val response = probe.receiveOne(Duration("5 seconds"))
+        val response = probe.receiveOne(Duration("10 seconds"))
         response must not be null
       }
     }

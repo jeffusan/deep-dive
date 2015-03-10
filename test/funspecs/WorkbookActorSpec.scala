@@ -21,7 +21,7 @@ class WorkbookActorSpec extends Specification {
         val probe = TestProbe()
         workbookActor.tell(message, probe.ref)
 
-        val response = probe.receiveOne(Duration("5 seconds"))
+        val response = probe.receiveOne(Duration("10 seconds"))
         response must not be null
         val expectedResponse = new ErrorWorkbookResponse("Illegal file type")
         response must beLike { case expectedResponse => ok }
@@ -37,7 +37,7 @@ class WorkbookActorSpec extends Specification {
         val probe = TestProbe()
         workbookActor.tell(message, probe.ref)
 
-        val response = probe.receiveOne(Duration("5 seconds"))
+        val response = probe.receiveOne(Duration("10 seconds"))
         response must not be null
         val expectedResponse = new ErrorWorkbookResponse("Input file was not found")
         response must beLike { case expectedResponse => ok }
@@ -53,7 +53,7 @@ class WorkbookActorSpec extends Specification {
         val probe = TestProbe()
         workbookActor.tell(message, probe.ref)
 
-        val response = probe.receiveOne(Duration("5 seconds"))
+        val response = probe.receiveOne(Duration("10 seconds"))
         response must not be null
         response must beAnInstanceOf[ValidWorkbookResponse]
       }

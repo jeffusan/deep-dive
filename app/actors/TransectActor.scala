@@ -4,24 +4,29 @@ import info.folone.scala.poi._
 import akka.actor._
 import play.api.Logger
 
+trait TransectResponse
+case class ErrorTransectResponse(message: String) extends TransectResponse
+case class ValidTransectResponse(transects: Seq[String]) extends TransectResponse
 case class TransectMessage(sheet: Sheet)
-case class TransectException(smth:String) extends Exception(smth)
+
 
 class TransectActor extends Actor {
 
   def receive = {
 
-    case message: TransectMessage =>
-      Logger.debug("Extracting transects")
-      val maybeRow = maybeFindTransectRow(message.sheet)
-      val row = maybeRow.getOrElse {
-        throw new TransectException("Unable to find a transect row")
-      }
-      val transects = extractTransectValues(row)
-      sender ! transects
+    case message: TransectMessage => processMessage(sender, message)
+
   }
 
-  def maybeFindTransectRow(sheet: Sheet): Option[Row] = {
+  def processMessage(requestor: ActorRef, msg: TransectMessage) {
+    Logger.debug("Checking transects")
+
+    val response: TransectResponse = findTransects(msg.sheet)
+
+    requestor ! response
+  }
+
+  def findTransects(sheet: Sheet): TransectResponse = {
 
     def hasCellWithTransectNameMatch(row: Row): Boolean = {
 
@@ -36,8 +41,15 @@ class TransectActor extends Actor {
       !maybeMatch.isEmpty
     }
 
-    sheet.rows.find((r: Row) => hasCellWithTransectNameMatch(r))
-
+    val maybeRow = sheet.rows.find((r: Row) => hasCellWithTransectNameMatch(r))
+    Logger.debug("Has maybeRow: " + maybeRow.isEmpty)
+    maybeRow match {
+      case None => new ErrorTransectResponse("Could not find a transect row")
+      case Some(row) => {
+        val transects = extractTransectValues(row)
+        new ValidTransectResponse(transects)
+      }
+    }
   }
 
   def extractTransectValues(row: Row): Seq[String] = {
