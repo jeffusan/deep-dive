@@ -51,14 +51,13 @@ trait SurveyEvents extends Controller with Security {
       Logger.warn("Ref: " + filepart.ref.toString())
       val fileIn = new FileInputStream(filepart.ref.file)
       val inputHandler = Akka.system.actorOf(Props(new BenthicInputActor()))
-      implicit val timeout = Timeout(25 seconds)
+      implicit val timeout = Timeout(5 seconds)
       val future = inputHandler ? BenthicFileInputMessage(photographer, depth, analyzer, eventDate, fileIn)
       future.map { result =>
         Logger.warn("Total number of words " + result)
       }
       Ok(Json.obj("message" -> "Everything is okay!"))
     }
-
   }
 
 }

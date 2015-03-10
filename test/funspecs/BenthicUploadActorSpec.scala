@@ -1,6 +1,6 @@
 package funspec
 
-import actors.{BenthicInputActor, BenthicFileInputMessage}
+import actors.{BenthicInputActor, BenthicFileInputMessage, WorkbookResponse, ErrorWorkbookResponse}
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.scalatest.matchers.ShouldMatchers
@@ -9,6 +9,9 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.test.WithApplication
 import java.io.FileInputStream
+import play.api.libs.json._
+import scala.concurrent.duration._
+import play.api.Logger
 
 class BenthicInputActorSpec extends Specification {
 
@@ -22,7 +25,10 @@ class BenthicInputActorSpec extends Specification {
         val probe = TestProbe()
         myActor.tell(message, probe.ref)
 
-        probe.expectMsg("not a valid file")
+        val response = probe.receiveOne(Duration("5 seconds"))
+        response must not be null
+        response must beAnInstanceOf[ErrorWorkbookResponse]
+        (response.asInstanceOf[ErrorWorkbookResponse]).message must beMatching("Illegal file type")
       }
     }
   }
