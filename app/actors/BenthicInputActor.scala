@@ -45,6 +45,8 @@ class BenthicInputActor extends Actor {
 
     result match {
       case a: ValidWorkbookResponse => {
+        val sheetFuture = sheetActor ? new SheetMessage(a.workbook)
+        val sheetResult = Await.result(sheetFuture, Duration("4 seconds")).asInstanceOf[Sheet]
         requestor ! result
       }
       case b: ErrorWorkbookResponse => requestor ! result

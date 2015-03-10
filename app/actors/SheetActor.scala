@@ -4,19 +4,27 @@ import info.folone.scala.poi._
 import akka.actor._
 import play.api.Logger
 
+
 case class SheetMessage(workbook: Workbook)
-case class SheetException(smth:String) extends Exception(smth)
+trait SheetResponse
+case class ErrorSheetResponse(message: String) extends SheetResponse
+case class ValidSheetResponse(sheet: Sheet) extends SheetResponse
 
 class SheetActor extends Actor {
 
   def receive = {
 
     case message: SheetMessage =>
-      Logger.debug("Loading the sheet")
-      val maybeSheet = (message.workbook).sheets.find((s: Sheet) => s.name == "Data Summary")
+      Logger.debug("Finding the sheet")
+      val response: SheetResponse = findSheet(message.workbook)
+      sender ! response
+  }
+
+  def findSheet(workbook: Workbook): SheetResponse = {
+      val maybeSheet = (workbook).sheets.find((s: Sheet) => s.name == "Data Summary")
       val sheet = maybeSheet.getOrElse {
-        throw new SheetException("Unable to find the data input sheet")
+        new ErrorSheetResponse("Exception- unable to find Data Summary sheet")
       }
-      sender ! sheet
+      new ValidSheetResponse(sheet.asInstanceOf[Sheet])
   }
 }
