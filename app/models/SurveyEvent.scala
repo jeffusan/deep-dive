@@ -9,18 +9,50 @@ import play.api.db.DB
 import play.api.Play.current
 import org.postgresql.util.PGobject
 import anorm.SqlParser.{ long, int, str, date, get }
-import scala.language.postfixOps
-
+import play.api.Logger
 
 /** A trait for data access. */
 trait SurveyEventRepository {
   def findBySiteId(siteId: Int): JsArray
   def findByEventDate(eventDate: Date): JsArray
   def findAll: JsArray
+  def add(photographer: String, analyzer: String, monitoring: String, depth: Int, length: Int, eventDate: Date, data: JsValue): JsValue
 }
 
 /** A concrete class that extends [[models.SurveyEventRepository]].	*/
 object AnormSurveyEventRepository extends SurveyEventRepository with JSONParsers {
+
+  override def add(photographer: String, analyzer: String, monitoring: String, depth: Int, length: Int, eventDate: Date, data: JsValue): JsValue = {
+    val pgObject: org.postgresql.util.PGobject =
+      new org.postgresql.util.PGobject();
+    pgObject.setValue(data.toString())
+    pgObject.setType("jsonb")
+
+    try {
+      DB.withConnection { implicit c =>
+        SQL(
+          """
+          with data(id, photographer, analyzer, monitoring_teams, transect_depth, transect_length, event_date) as (
+            insert into survey_event(id, photographer, monitoring_teams, analyzer, transect_depth, transect_length, event_date, data)
+            values(DEFAULT, {photographer}, {analyzer}, {monitoring_teams}, {transect_depth}, {transect_length}, {event_date}, {data})
+            returning id, photographer, analyzer, monitoring_teams, transect_depth, transect_length, event_date
+          ) select row_to_json(data) from data;
+          """
+        ).on(
+          'photographer -> photographer,
+          'analyzer -> analyzer,
+          'monitoring_teams -> monitoring,
+          'transect_depth -> depth,
+          'transect_length -> length,
+          'event_date -> eventDate,
+          'data -> anorm.Object(pgObject)).as(simple.single)
+      }
+    } catch {
+      case nse: NoSuchElementException =>
+        Logger.error("Unable to save")
+        Json.parse("")
+    }
+  }
 
   def findAll(): JsArray = {
     DB.withConnection{ implicit c =>

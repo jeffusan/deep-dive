@@ -5,8 +5,8 @@ import anorm.SqlParser._
 import play.api.db.DB
 import play.api.Play.current
 import play.api.Logger
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 /**
  * [[RegionRepository]] trait defines functionalities supported by [[Region]] object

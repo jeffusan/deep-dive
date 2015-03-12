@@ -16,9 +16,10 @@ libraryDependencies ++= Seq(
   ws,
   "org.postgresql" % "postgresql" % "9.3-1102-jdbc41",
   "org.scalatestplus" %% "play" % "1.2.0" % "test",
-  "info.folone" %% "poi-scala" % "0.14",
   "org.specs2" % "specs2_2.11" % "2.3.12-scalaz-7.1.0-M7",
-  "com.typesafe.akka" %% "akka-testkit" % "2.3.4" % "test"
+  "com.typesafe.akka" %% "akka-testkit" % "2.3.4" % "test",
+  "org.apache.poi" % "poi" % "3.11",
+  "org.apache.poi" % "poi-ooxml" % "3.11"
 )
 
 // Scala Compiler Options

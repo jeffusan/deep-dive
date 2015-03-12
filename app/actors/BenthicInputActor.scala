@@ -4,7 +4,6 @@ import akka.actor._
 import play.api.Logger
 import java.io.FileInputStream
 import akka.dispatch.ExecutionContexts._
-import info.folone.scala.poi._
 import play.api.libs.json._
 import scala.concurrent.{Future, Await}
 import akka.pattern.ask
@@ -12,39 +11,59 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Success, Failure}
+import actors.utils.{Sheet}
+import models.AnormSurveyEventRepository
+import java.util.Date
 
-case class BenthicFileInputMessage(photographer: String, depth: String, analyzer: String, eventDate: String, input: FileInputStream)
+case class BenthicFileInputMessage(photographer: String, monitoring: String, depth: Int, length: Int, analyzer: String, eventDate: Date, input: FileInputStream)
 
 case class SheetResult(sheet: Sheet)
 
-case class FutureSheetException(message:String) extends Exception(message)
+trait BenthicInputResponse
+case class ValidBenthicInputResponse(json: JsValue) extends BenthicInputResponse
+case class ErrorBenthicInputResponse(message: String) extends BenthicInputResponse
 
+/**
+  * Supervisor actor for extracting data from benthic input spreadsheets
+  */
 class BenthicInputActor extends Actor {
 
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout = Timeout(15 seconds)
 
   val workbookActor = context.actorOf(Props[WorkbookActor])
-  val surveyResultAggregator = context.actorOf(Props[SurveyResultAggregator])
 
+  /**
+    * Actor receive function
+    */
   def receive = {
-
     case message: BenthicFileInputMessage => processMessage(sender, message)
-
   }
 
-  // set to 2 seconds to respond faster than the TestProbe
+  /**
+    * Actual message processing takes place here
+    */
   def processMessage(requestor: ActorRef, msg: BenthicFileInputMessage) {
 
-    val future = workbookActor ? new WorkbookMessage(msg.input)
+    Logger.debug("Processing benthic spreadsheet")
 
-    val result = Await.result(future, Duration("4 seconds")).asInstanceOf[WorkbookResponse]
+    val future = workbookActor ? new WorkbookMessage(msg.input)
+    val result = Await.result(future, Duration("14 seconds")).asInstanceOf[WorkbookResponse]
 
     result match {
       case a: ValidWorkbookResponse => {
-        requestor ! result
+        val response = AnormSurveyEventRepository.add(
+          msg.photographer,
+          msg.analyzer,
+          msg.monitoring,
+          msg.depth,
+          msg.length,
+          msg.eventDate,
+          a.json)
+
+        requestor ! new ValidBenthicInputResponse(response)
       }
-      case b: ErrorWorkbookResponse => requestor ! result
-      case _ => requestor ! new ErrorWorkbookResponse("Unknown error!")
+      case b: ErrorWorkbookResponse => requestor ! new ErrorBenthicInputResponse(b.message)
+      case _ => requestor ! new ErrorBenthicInputResponse("Terrible, frightening error")
     }
 
   }

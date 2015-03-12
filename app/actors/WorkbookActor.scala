@@ -4,17 +4,22 @@ import akka.actor._
 import play.api.Logger
 import java.io.{InputStream, FileInputStream}
 import akka.dispatch.ExecutionContexts._
-import info.folone.scala.poi._
 import akka.util.Timeout
 import akka.pattern.ask
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration._
+import org.apache.poi.ss.usermodel.FormulaEvaluator
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import play.api.libs.json._
 
 case class WorkbookMessage(input: FileInputStream)
 trait WorkbookResponse
 case class ErrorWorkbookResponse(message: String) extends WorkbookResponse
-case class ValidWorkbookResponse(workbook: Workbook) extends WorkbookResponse
+case class ValidWorkbookResponse(json: JsValue) extends WorkbookResponse
 
+/**
+  * A Workbook actor loads a workbook, extracts the input sheet and returns it
+  */
 class WorkbookActor extends Actor {
 
   implicit val timeout = Timeout(5 seconds)
@@ -30,47 +35,55 @@ class WorkbookActor extends Actor {
   }
 
   def receive = {
-
-    case message: WorkbookMessage =>
-      Logger.debug("Loading the workbook")
-      val response: WorkbookResponse = loadWorkbook(message.input)
-      sender ! response
+    case message: WorkbookMessage => loadWorkbook(sender, message.input)
   }
 
-  def loadWorkbook(inputStream: FileInputStream): WorkbookResponse = {
+  def loadWorkbook(requestor: ActorRef, inputStream: FileInputStream) {
+
+    Logger.debug("Loading the workbook")
 
     try {
-      val workBook = load(inputStream)
+      val workBook = new XSSFWorkbook(inputStream)
+      Logger.debug("loaded valid workbook")
+
       val sheetFuture = sheetActor ? new SheetMessage(workBook)
-      val sheetResult = Await.result(sheetFuture, Duration("4 seconds")).asInstanceOf[SheetResponse]
+      val sheetResult = Await.result(sheetFuture, Duration("10 seconds")).asInstanceOf[SheetResponse]
 
       sheetResult match {
         case a: ValidSheetResponse => {
           Logger.info("You're a hero")
+          requestor ! new ValidWorkbookResponse(a.json)
         }
         case b: ErrorSheetResponse => {
-          Logger.error("Something is wrong with the sheet")
+          val message = "Something is wrong with the sheet"
+          Logger.error(message)
+          requestor ! new ErrorWorkbookResponse(message)
         }
         case _ => {
-          Logger.error("Unfathomable! Without fathom!")
+          val message = "Unfathomable! Without fathom!"
+          Logger.error(message)
+          requestor ! new ErrorWorkbookResponse(message)
         }
       }
-      new ValidWorkbookResponse(workBook)
+
     } catch safely {
-      case nse: java.io.FileNotFoundException =>
+      case nse: java.io.FileNotFoundException => {
         val errorMessage = "Input file was not found"
         Logger.error(errorMessage)
-        new ErrorWorkbookResponse(errorMessage)
-      case ile: java.lang.IllegalArgumentException =>
+        requestor ! new ErrorWorkbookResponse(errorMessage)
+      }
+
+      case ile: java.lang.IllegalArgumentException => {
         val errorMessage = "Illegal file type"
         Logger.error(errorMessage)
-        new ErrorWorkbookResponse(errorMessage)
+        requestor !new ErrorWorkbookResponse(errorMessage)
+      }
+
+      case _ => {
+        requestor ! new ErrorWorkbookResponse("Illegal file type")
+      }
+
     }
   }
 
-}
-
-object load {
-  def apply(is: InputStream): Workbook =
-    Workbook(is).fold(ex ⇒ throw ex, identity).unsafePerformIO
 }
