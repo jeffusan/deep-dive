@@ -48,7 +48,7 @@ class WorkbookActorSpec extends Specification {
   "When given an Excel file a WorkbookActor" should {
     "returns a ValidWorkbookMessage" in new Actors {
       new WithApplication {
-        val message = new WorkbookMessage(new FileInputStream("test/resources/workbook.xlsx"))
+        val message = new WorkbookMessage(new FileInputStream("test/resources/wkb2.xlsx"))
         val workbookActor = system.actorOf(Props[WorkbookActor])
         val probe = TestProbe()
         workbookActor.tell(message, probe.ref)
