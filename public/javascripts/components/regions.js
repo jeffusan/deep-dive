@@ -77,7 +77,11 @@ var Regions = React.createClass({
     return {
       data: [],
       message: '',
-      hasMessage: false
+      hasMessage: false,
+      pagination: {
+        page: 0,
+        perPage: 5
+      }
     };
   },
 
@@ -188,6 +192,10 @@ var Regions = React.createClass({
 
   render: function() {
 
+    var data = this.state.data || [];
+    var pagination = this.state.pagination || {};
+//    var paginated = Paginator.paginate(data, pagination);
+
     var maybeMessage = this.state.hasMessage ?
           <Expire visible={true} delay={4000}>{this.state.message}</Expire> :
           <span />;
@@ -199,7 +207,7 @@ var Regions = React.createClass({
         <h3 className="panel-title pull-left">Regions <CreateRegionTrigger onHandlingData={this.handleCreate}/></h3>
         </div>
         <div className="panel-body">
-        <RegionList delete={this.delete} data={this.state.data} />
+        <RegionList className='data' delete={this.delete} data={this.state.data} />
         </div>
         <div className="panel-footer">
         {maybeMessage}
@@ -207,5 +215,25 @@ var Regions = React.createClass({
         </div>
         </div>
     );
+  },
+
+  onSelect(page) {
+    var pagination = this.state.pagination || {};
+
+    pagination.page = page;
+
+    this.setState({
+      pagination: pagination
+    });
+  },
+
+  onPerPage(e) {
+    var pagination = this.state.pagination || {};
+
+    pagination.perPage = parseInt(event.target.value, 10);
+
+    this.setState({
+      pagination: pagination
+    });
   }
 });
