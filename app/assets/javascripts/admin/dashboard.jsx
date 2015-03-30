@@ -7,6 +7,7 @@ define(function(require){
   var DashboardNav = require('jsx!admin/dashboardNav');
   var Empty = require('jsx!admin/empty');
   var Regions = require('jsx!admin/regions');
+  var SubRegions = require('jsx!admin/subregions');
 
   var Dashboard = React.createClass({
     mixins: [ Authentication, Router.State ],

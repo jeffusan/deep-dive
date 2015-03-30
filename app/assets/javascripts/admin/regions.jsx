@@ -39,18 +39,6 @@ define(function(require) {
       };
     },
 
-    validationState: function() {
-      var length = this.state.value.length;
-      if (length > 10) {
-       return 'success';
-      } else if (length > 5){
-        return 'warning';
-      } else if (length > 0) {
-       return 'error';
-      }
-      return null;
-    },
-
     handleChange: function(newValue) {
       // This could also be done using ReactLink:
       // http://facebook.github.io/react/docs/two-way-binding-helpers.html
@@ -67,9 +55,6 @@ define(function(require) {
           value={this.state.value}
           placeholder="Enter name"
           label="Name of the Region"
-          help="Validates based on string length."
-          bsStyle={this.validationState()}
-          hasFeedback
           ref="input"
           groupClassName="group-class"
           wrapperClassName="wrapper-class"
