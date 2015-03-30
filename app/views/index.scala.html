@@ -11,21 +11,20 @@
 
     <title>Deep Dive!</title>
 
-    <link href="@routes.Assets.at("javascripts/bower_components/bootstrap/dist/css/bootstrap.min.css")" rel="stylesheet">
-    <link href="@routes.Assets.at("javascripts/bower_components/jquery-file-upload/css/jquery.fileupload.css")" rel="stylesheet">
-    <link href="@routes.Assets.at("stylesheets/login.css")" rel="stylesheet">
-    <link href="@routes.Assets.at("stylesheets/admin.css")" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/bootstrap/css/bootstrap.css")" />
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/font-awesome/css/font-awesome.min.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/x-editable-bootstrap3/css/bootstrap-editable.css")">
 
-    <!-- Custom Fonts -->
-    <link href="@routes.Assets.at("javascripts/bower_components/font-awesome/css/font-awesome.min.css")" rel="stylesheet" type="text/css">
-    <link href="@routes.Assets.at("javascripts/bower_components/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css")" rel="stylesheet" type="text/css">
+    @*-- Add More CSS here -- *@
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/login.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/admin.css")">
+
     <link href="http://fonts.googleapis.com/css?family=Dosis" rel="stylesheet" type="text/css">
 
-    <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.ico")">
-    <script src="@routes.Assets.at("javascripts/bower_components/react/react-with-addons.js")"></script>
-    <script src="@routes.Assets.at("javascripts/bower_components/react-router/build/global/ReactRouter.js")"></script>
-    <script src="@routes.Assets.at("javascripts/bower_components/react/JSXTransformer.js")"></script>
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.ico")">
 
+    <script data-main="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript" src="@routes.Assets.versioned("lib/requirejs/require.js")"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -40,30 +39,5 @@
       <div id="magic" class="text-vertical-center">
       </div>
     </header>
-
-    <script src="@routes.Assets.at("javascripts/bower_components/jquery/dist/jquery.js")"></script>
-    <script src="@routes.Assets.at("javascripts/bower_components/bootstrap/dist/js/bootstrap.js")"></script>
-    <script src="@routes.Assets.at("javascripts/bower_components/react-bootstrap/react-bootstrap.js")"></script>
-    <script src="@routes.Assets.at("javascripts/bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/modals/modals.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/logout.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/login.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/expirableMessage.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/dashboard.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/dashboardNav.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/createRegion.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/createSubRegion.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/createReefType.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/createSite.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/regions.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/subregions.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/reeftypes.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/surveyevents.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/benthicUploadForm.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/benthicUpload.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/sites.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/user.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/empty.js")"></script>
-    <script type="text/jsx" src="@routes.Assets.at("javascripts/components/app.js")"></script>
   </body>
 </html>

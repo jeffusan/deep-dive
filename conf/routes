@@ -43,4 +43,7 @@ POST         /benthic                controllers.SurveyEvents.benthicUploadHandl
 # ~~~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET    /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)
+
+# JavaScript routes object
+GET     /jsroutes.js            controllers.Application.jsRoutes()
