@@ -8,6 +8,7 @@ define(function(require){
   var Empty = require('jsx!admin/empty');
   var Regions = require('jsx!admin/regions');
   var SubRegions = require('jsx!admin/subregions');
+  var ReefTypes = require('jsx!admin/reeftypes');
 
   var Dashboard = React.createClass({
     mixins: [ Authentication, Router.State ],

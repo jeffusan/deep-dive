@@ -7,13 +7,12 @@ define(function(require) {
   var ListGroup = ReactBootstrap.ListGroup;
   var ListGroupItem = ReactBootstrap.ListGroupItem;
   var DeleteItem = require('jsx!common/delete');
-  var Pager = require('common/pager.min');
   var Modal = ReactBootstrap.Modal;
   var ButtonToolbar = ReactBootstrap.ButtonToolbar;
   var Button = ReactBootstrap.Button;
   var Input = ReactBootstrap.Input;
   var Expire = require('jsx!common/expirable');
-  var Pager = require('common/pager.min');  
+  var Pager = require('common/pager.min');
 
   var CreateSubRegionTrigger = React.createClass({
 
