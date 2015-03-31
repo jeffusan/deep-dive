@@ -28,20 +28,8 @@ class SheetActorSpec extends Specification {
         sheetActor.tell(message, probe.ref)
 
         val response = probe.receiveOne(Duration("10 seconds"))
-        println(response)
         response must not be null
-        response must beAnInstanceOf[JsArray]
-        val json = response.asInstanceOf[JsArray](0)
-        (json \ "name").toString() must beMatching("\"Transect1\"")
-        (json \ "major_categories") must beAnInstanceOf[JsArray]
-        val majorArr = (json \ "major_categories").asInstanceOf[JsArray]
-        majorArr.value.length must beGreaterThan(0)
-        val cat1 = majorArr(0)
-        cat1 must not be null
-        cat1 must beAnInstanceOf[JsValue]
-        (cat1 \ "subcategories") must beAnInstanceOf[JsArray]
-        val subcats = (cat1 \ "subcategories").asInstanceOf[JsArray]
-        subcats.value.length must beGreaterThan(0)
+        response must beAnInstanceOf[ValidSheetResponse]
 
       }
     }
