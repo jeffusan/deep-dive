@@ -9,6 +9,9 @@ define(function(require){
   var Regions = require('jsx!admin/regions');
   var SubRegions = require('jsx!admin/subregions');
   var ReefTypes = require('jsx!admin/reeftypes');
+  var Sites = require('jsx!admin/sites');
+  var BenthicUpload = require('jsx!admin/benthicuploadpage');
+  var SurveyEvents = require('jsx!admin/surveyevents');
 
   var Dashboard = React.createClass({
     mixins: [ Authentication, Router.State ],

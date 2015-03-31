@@ -272,17 +272,6 @@ define(function(require) {
 
     render: function() {
 
-      var su = this.props.data.map(function(subregion) {
-        return (
-        <SubRegion
-          onSubRegionDelete={this.itemDelete}
-          id={subregion.id}
-          key={subregion.id}
-          name={subregion.name}
-          regionName={subregion.region.name}/>
-        );
-      }.bind(this));
-
       var subregions = function() {
 
         var start = this.state.current * this.state.visiblePage;
