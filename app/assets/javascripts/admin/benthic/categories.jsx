@@ -1,18 +1,15 @@
 define(function(require){
 
   var React = require('react');
-  var ReactRouter = require('react-router');
 
-  var Empty = React.createClass({
-
-    mixins: [ReactRouter.State],
+  var Categories = React.createClass({
 
     render: function() {
       return (
         <div className="container-fluid">
           <div className="panel panel-default">
             <div className="panel-heading clearfix">
-              <h3 className="panel-title pull-left">Home Page</h3>
+              <h3 className="panel-title pull-left">Benthic Categories</h3>
             </div>
             <div className="panel-body">
             </div>
@@ -24,5 +21,5 @@ define(function(require){
     }
   });
 
-  return Empty;
+  return Categories;
 });

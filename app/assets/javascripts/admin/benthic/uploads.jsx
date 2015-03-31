@@ -2,7 +2,7 @@ define(function(require) {
 
   var React = require('react');
   var ReactBootstrap = require('react-bootstrap');
-  var BenthicUploadForm = require('jsx!admin/benthicuploadform');
+  var BenthicUploadForm = require('jsx!admin/benthic/uploadform');
   var Message = require('jsx!admin/common/message');
 
   var BenthicUpload = React.createClass({

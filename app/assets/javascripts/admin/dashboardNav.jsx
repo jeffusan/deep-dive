@@ -47,6 +47,9 @@ define(function(require){
               <a href="/dashboard"><i className="fa fa-fw fa-heartbeat"></i> Dashboard</a>
             </li>
             <li>
+              <a href="/dashboard/users"><i className="fa fa-fw fa-database"></i> Users</a>
+            </li>
+            <li>
               <a href="/dashboard/regions"><i className="fa fa-fw fa-database"></i> Regions</a>
             </li>
             <li>
@@ -68,10 +71,10 @@ define(function(require){
                     <a href="/dashboard/surveyevents"><i className="fa fa-fw fa-table"></i> Survey Events</a>
                   </li>
                   <li>
-                    <a href="#"><i className="fa fa-fw fa-table"></i> Categories</a>
+                    <a href="/dashboard/benthiccategories"><i className="fa fa-fw fa-table"></i> Categories</a>
                   </li>
                   <li>
-                    <a href="#"><i className="fa fa-fw fa-table"></i> Sub Categories</a>
+                    <a href="/dashboard/benthicsubcategories"><i className="fa fa-fw fa-table"></i> Sub Categories</a>
                   </li>
                 </ul>
            </li>
