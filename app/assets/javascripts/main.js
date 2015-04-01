@@ -17,7 +17,8 @@
       'text': ['../lib/requirejs-text/text'],
       'bootstrap': ['../lib/bootstrap/js/bootstrap'],
       'react-bootstrap': ['../lib/react-bootstrap/react-bootstrap'],
-      'bootstrap-editable': ['../lib/x-editable-bootstrap3/js/bootstrap-editable']
+      'bootstrap-editable': ['../lib/x-editable-bootstrap3/js/bootstrap-editable'],
+      'bootstrap-datepicker': ['../lib/bootstrap-datepicker/js/bootstrap-datepicker']
     },
     jsx: {
       fileExtension: '.jsx'

@@ -32,7 +32,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "font-awesome" % "4.3.0-1",
   "org.webjars" % "x-editable-bootstrap3" % "1.5.1",
   "org.webjars" % "jquery-file-upload" % "9.8.1",
-  "org.webjars" % "jsx-requirejs-plugin" % "0.5.2"
+  "org.webjars" % "jsx-requirejs-plugin" % "0.5.2",
+  "org.webjars" % "bootstrap-datepicker" % "1.4.0"
 )
 
 // Scala Compiler Options
@@ -49,6 +50,8 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code",
   "-language:postfixOps"
 )
+
+enablePlugins(SbtWeb)
 
 // heroku
 enablePlugins(HerokuPlugin)
