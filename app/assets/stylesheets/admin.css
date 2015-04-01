@@ -13,6 +13,21 @@
 *    margin-top: 50px;
 *}
 */
+.site-grid-row {
+    margin-bottom: 15px;
+}
+
+.add-site-panel .panel-heading {
+    background-color: #bbb;
+}
+
+.add-site-panel {
+    background-color: #ccc;
+}
+
+.spaced-toolbar {
+    margin-top: 20px;
+}
 
 .panel {
     margin-top: 20px;

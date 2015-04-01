@@ -2,35 +2,61 @@ define(function(require){
 
   var React = require('react');
   var ReactBootstrap = require('react-bootstrap');
-
-  var AddSite = React.createClass({
-    render: function() {
-      return (
-      <div>Hello</div>
-      );
-    }
-
-  });
+  var AdminPanel = require('jsx!admin/common/adminpanel');
+  var AddSite = require('jsx!admin/addsite');
+  var SiteList = require('jsx!admin/sitelist');
+  var auth = require('auth/auth');
 
   var Sites = React.createClass({
 
+    getInitialState: function() {
+      return {
+        data: [],
+        message: '',
+        hasMessage: false
+      };
+    },
+
+    componentDidMount: function() {
+
+      $.ajax({
+        'type': 'GET',
+        'url': '/sites',
+        'contentType': 'application/json',
+        'async': 'false',
+        'headers': {
+          'X-XSRF-TOKEN': auth.getToken()
+        },
+        'success' : function(data) {
+          if(this.isMounted()) {
+            this.setState({
+              data: data,
+              message: '',
+              hasMessage: false
+            });
+          }
+        }.bind(this),
+        'error': function(data) {
+          if(this.isMounted()) {
+            this.setState({
+              data: {},
+              message: 'Big Error',
+              hasMessage: true
+            });
+          }
+        }.bind(this)
+      });
+    },
+
     render: function() {
       return (
-        <div className="container-fluid">
-          <div className="panel panel-default">
-            <div className="panel-heading clearfix">
-              <h3 className="panel-title pull-left">Sites</h3>
-            </div>
-            <div className="panel-body">
-            <AddSite/>
-            </div>
-            <div className="panel-footer">
-            </div>
-          </div>
-        </div>
-
+        <AdminPanel name="Sites">
+          <AddSite/>
+          <SiteList data={this.state.data} />
+        </AdminPanel>
       );
     }
+
   });
 
   return Sites;

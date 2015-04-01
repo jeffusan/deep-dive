@@ -74,7 +74,7 @@ define(function(require) {
 
     render: function() {
       return (
-        <form className="commentForm" onSubmit={this.handleSubmit}>
+        <form className="benthicUploadForm" onSubmit={this.handleSubmit}>
          <div className="form-horizontal">
           {this.renderTextInput('depth', 'Transect Depth')}
           {this.renderTextInput('length', 'Transect Length')}
