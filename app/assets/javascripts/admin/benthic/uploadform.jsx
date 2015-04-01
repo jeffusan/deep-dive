@@ -26,6 +26,41 @@ define(function(require) {
 
   var BenthicUploadForm = React.createClass({
 
+    handleSubmit: function(e) {
+      e.preventDefault();
+      var depth = React.findDOMNode(this.refs.depth).value.trim();
+      var length = React.findDOMNode(this.refs.length).value.trim();
+      var photo = React.findDOMNode(this.refs.photographer).value.trim();
+      var monit = React.findDOMNode(this.refs.monitoring).value.trim();
+      var analy = React.findDOMNode(this.refs.analyzer).value.trim();
+      var evet = React.findDOMNode(this.refs.eventDate).value.trim();
+      var inputFile = React.findDOMNode(this.refs.inputFile).files[0];
+      var inputFileName = React.findDOMNode(this.refs.inputFile).value.trim();
+
+      if (!depth || !length) {
+        return;
+      }
+      this.props.onBenthicSubmit({
+        depth: depth,
+        length: length,
+        photographer: photo,
+        monitoring: monit,
+        analyzer: analy,
+        eventDate: evet,
+        inputFile: inputFile,
+        inputFileName: inputFileName
+      });
+      React.findDOMNode(this.refs.depth).value = '';
+      React.findDOMNode(this.refs.length).value = '';
+      React.findDOMNode(this.refs.photographer).value = '';
+      React.findDOMNode(this.refs.monitoring).value = '';
+      React.findDOMNode(this.refs.analyzer).value = '';
+      React.findDOMNode(this.refs.eventDate).value = '';
+      React.findDOMNode(this.refs.inputFile).value = '';
+
+      return;
+    },
+
     componentDidMount: function() {
       console.log("here");
       $('#sandbox-container input').datepicker({
@@ -37,57 +72,21 @@ define(function(require) {
       return {errors: {}};
     },
 
-    isValid: function() {
-      var fields = ['depth', 'photographer', 'analyzer', 'eventDate', 'inputFile'];
-      if (this.props.depth) fields.push('depth');
-      if (this.props.photographer) fields.push('photographer');
-      if (this.props.analyzer) fields.push('analyzer');
-      if (this.props.eventDate) fields.push('eventDate');
-
-      var errors = {};
-
-      fields.forEach(function(field) {
-        var value = trim(this.refs[field].getDOMNode().value);
-        if (!value) {
-          errors[field] = 'This field is required';
-        }
-      }.bind(this));
-
-      this.setState({errors: errors});
-
-      var isValid = true;
-
-      for (var error in errors) {
-        isValid = false;
-        break;
-      }
-
-      return isValid;
-    },
-
-    getFormData: function() {
-      var data = {
-        depth: this.refs.depth.getDOMNode().value,
-        photographer: this.refs.photographer.getDOMNode().value,
-        analyzer: this.refs.analyzer.getDOMNode().value,
-        eventDate: this.refs.eventDate.getDOMNode().value,
-        inputFile: this.refs.inputFile.getDOMNode().files[0],
-        inputFileName: this.refs.inputFile.getDOMNode().value
-      };
-      return data;
-    },
-
     render: function() {
       return (
+        <form className="commentForm" onSubmit={this.handleSubmit}>
          <div className="form-horizontal">
           {this.renderTextInput('depth', 'Transect Depth')}
-          {this.renderTextInput('height', 'Transect Height')}
+          {this.renderTextInput('length', 'Transect Length')}
           {this.renderTextInput('photographer', 'Photographer')}
-          {this.renderTextInput('monitoringteams', 'Monitoring Teams')}
+          {this.renderTextInput('monitoring', 'Monitoring Teams')}
           {this.renderTextInput('analyzer', 'Analyzer')}
-          {this.renderDateInput('eventDate', 'Event Date')}
-          {this.renderFileInput('inputFile', 'Input File')}
+        {this.renderDateInput('eventDate', 'Event Date')}
+
+        {this.renderFileInput('inputFile', 'Input File')}
+        <input type="submit" value="Post" />
         </div>
+          </form>
       );
     },
 
@@ -108,7 +107,7 @@ define(function(require) {
         label,
         <div className="row form-horizontal">
           <div id="sandbox-container" className="span5 col-md-5">
-          <input className="form-control" type="text"/>
+          <input className="form-control" id={id} ref={id} type="text"/>
           </div>
           </div>
       );

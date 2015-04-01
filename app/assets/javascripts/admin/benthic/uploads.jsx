@@ -10,29 +10,21 @@ define(function(require) {
     getInitialState: function() {
 
       return {
-        submitted: {},
-        loaded: false,
+        hasMessage: false,
         message: ''
       };
     },
 
-    onSubmit: function() {
-
-      if (this.refs.uploadForm.isValid()) {
-        this.setState({
-          submitted: this.refs.uploadForm.getFormData(),
-          loaded: false,
-          message: ''
-        });
-      }
+    onSubmit: function(data) {
 
       var formData = new FormData();
-      formData.append('depth', this.state.submitted.depth);
-      formData.append('photographer', this.state.submitted.photographer);
-      formData.append('analyzer', this.state.submitted.analyzer);
-      formData.append('eventDate', this.state.submitted.eventDate);
-      formData.append('inputFile', this.state.submitted.inputFile, this.state.submitted.inputFileName);
-
+      formData.append('depth', data.depth);
+      formData.append('length', data.length);
+      formData.append('photographer', data.photographer);
+      formData.append('monitoring', data.monitoring);
+      formData.append('analyzer', data.analyzer);
+      formData.append('eventDate', data.eventDate);
+      formData.append('inputFile', data.inputFile, data.inputFileName);
       $.ajax({
         type: 'POST',
         url: '/benthic',
@@ -44,18 +36,18 @@ define(function(require) {
           if(typeof data.error === 'undefined') {
             // Success so call function to process the form
             //submitForm(event, data);
-            console.log("SUCCESS");
-            this.setState({submitted: {}, loaded: true, message: data.message});
+            console.log("SUCCESS: - " + data.message);
+            this.setState({hasMessage: true, message: data.message});
           } else {
             // Handle errors here
             console.log('ERRORS: ' + data.error);
-            this.setState({submitted: {}, loaded: true, message: data.error});
+            this.setState({hasMessage: true, message: data.error});
           }
         }.bind(this),
         error: function(jqXHR, textStatus, errorThrown) {
           // Handle errors here
           console.log('ERRORS: ' + textStatus);
-          this.setState({submitted: formData, loaded: true, message: data.error});
+          this.setState({hasMessage: true, message: data.error});
           // STOP LOADING SPINNER
         }.bind(this)
       });
@@ -63,16 +55,9 @@ define(function(require) {
 
     render: function() {
 
-      var submitted = function() {
-        if (this.state.submitted !== null) {
-          return <div className="alert alert-success">
-            <p>ContactForm data:</p>
-            <pre><code>{JSON.stringify(this.state.submitted, null, '  ')}</code></pre>
-            </div>;
-        } else {
-          return <div></div>;
-        }
-      };
+      var showMessage = this.state.hasMessage ?
+          <Message message={this.state.message}/> :
+          <span/>;
 
       return (
           <div className="container-fluid">
@@ -81,14 +66,12 @@ define(function(require) {
           <h3 className="panel-title pull-left">Submit Benthic Data</h3>
           </div>
           <div className="panel-body">
-          <Message message={this.state.message}/>
-          <BenthicUploadForm ref="uploadForm"/>
+          {showMessage}
+          <BenthicUploadForm ref="uploadForm" onBenthicSubmit={this.onSubmit}/>
         </div>
           <div className="panel-footer">
-          <button type="button" className="btn btn-primary btn-block" onClick={this.onSubmit}>Submit</button>
           </div>
           </div>
-          {submitted}
         </div>
       );
     }

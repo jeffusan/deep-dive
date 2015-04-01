@@ -40,11 +40,13 @@ trait SurveyEvents extends Controller with Security {
     Logger.warn("Request body: " + request.body)
     val dataParts = request.body.dataParts
     val photographer = dataParts("photographer")(0)
-    val depth = dataParts("depth")(0).asInstanceOf[Int]
-    val length = dataParts("length")(0).asInstanceOf[Int]
+    val depth = dataParts("depth")(0).toInt
+    val length = dataParts("length")(0).toInt
     val analyzer = dataParts("analyzer")(0)
     val monitoring = dataParts("monitoring")(0)
-    val eventDate = dataParts("eventDate")(0).asInstanceOf[Date]
+    val format = new java.text.SimpleDateFormat("MM/dd/yyyy")
+    val eventDate =format.parse(dataParts("eventDate")(0))
+//    val eventDate = dataParts("eventDate")a(0).asInstanceOf[Date]
 
     if(request.body.files.isEmpty) BadRequest("Invalid file!")
     else if (request.body.asFormUrlEncoded.isEmpty) BadRequest("Invalid Data!")

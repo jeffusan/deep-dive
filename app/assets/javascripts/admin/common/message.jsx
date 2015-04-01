@@ -1,29 +1,38 @@
 define(function(require) {
 
   var React = require('react');
+  var ReactBootstrap = require('react-bootstrap');
+  var Well = ReactBootstrap.Well;
 
   var Message = React.createClass({
-    getInitialState : function() {
-      return { message: ''};
+
+    getInitialState: function() {
+      return {visible: true};
+    },
+
+    getDefaultProps: function(){
+      return {delay: 8000};
+    },
+
+    componentDidMount: function() {
+      this.setTimer();
+    },
+
+    setTimer: function() {
+      // clear any existing timer
+      this._timer != null ? clearTimeout(this._timer) : null;
+
+      // hide after `delay` milliseconds
+      this._timer = setTimeout(function(){
+      this.setState({visible: false});
+      this._timer = null;
+      }.bind(this), this.props.delay);
     },
 
     render: function() {
-
-      var display = function() {
-        if(this.state.message !== '') {
-          if(!!this.state.message.error) {
-            return <div className="bg-success">{JSON.stringify(this.state.message.value, null, ' ')}</div>;
-          } else {
-            return <div className="bg-danger">{JSON.stringify(this.state.message.error.value, null, ' ')}</div>;
-          }
-        } else {
-          return <div></div>;
-        }
-      };
-
-      return (
-        <div>{display}</div>
-      );
+      return this.state.visible ?
+        <Well>{this.props.message}</Well> :
+        <span/>;
     }
   });
 

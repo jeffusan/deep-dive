@@ -21,9 +21,11 @@ define(function(require) {
         this.setState({visible: true});
       }
     },
+
     componentDidMount: function(){
       this.setTimer();
     },
+
     setTimer: function(){
       // clear any existing timer
       this._timer != null ? clearTimeout(this._timer) : null;
@@ -34,6 +36,7 @@ define(function(require) {
       this._timer = null;
       }.bind(this), this.props.delay);
     },
+
     render: function(){
       return this.state.visible
            ? <Well>{this.props.children}</Well>
