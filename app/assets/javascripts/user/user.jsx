@@ -3,8 +3,8 @@ define(function(require){
   var React = require('react');
   var Router = require('react-router');
   var Link = Router.Link;
-  var Authentication = require('auth/authentication');
-  var auth = require('auth/auth');
+  var Authentication = require('../auth/authentication');
+  var auth = require('../auth/auth');
 
   var User = React.createClass({
     mixins: [Authentication],

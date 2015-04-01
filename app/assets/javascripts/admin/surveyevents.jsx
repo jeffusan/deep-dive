@@ -3,9 +3,9 @@ define(function(require) {
   var ReactBootstrap = require('react-bootstrap');
   var ListGroup = ReactBootstrap.ListGroup;
   var ListGroupItem = ReactBootstrap.ListGroupItem;
-  var DeleteItem = require('jsx!common/delete');
+  var DeleteItem = require('jsx!admin/common/delete');
   var auth = require('auth/auth');
-  var Pager = require('common/pager.min');
+  var Pager = require('admin/common/pager.min');
 
   var SurveyEvent = React.createClass({
 

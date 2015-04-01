@@ -2,18 +2,18 @@ define(function(require) {
 
   var React = require('react');
   var ReactBootstrap = require('react-bootstrap');
-  var Expire = require('jsx!common/expirable');
+  var Expire = require('jsx!admin/common/expirable');
   var ModalTrigger = ReactBootstrap.ModalTrigger;
   var ListGroup = ReactBootstrap.ListGroup;
   var ListGroupItem = ReactBootstrap.ListGroupItem;
   var auth = require('auth/auth');
-  var EditableTextInput = require('jsx!common/editable');
-  var DeleteItem = require('jsx!common/delete');
+  var EditableTextInput = require('jsx!admin/common/editable');
+  var DeleteItem = require('jsx!admin/common/delete');
   var Modal = ReactBootstrap.Modal;
   var ButtonToolbar = ReactBootstrap.ButtonToolbar;
   var Button = ReactBootstrap.Button;
   var Input = ReactBootstrap.Input;
-  var Pager = require('common/pager.min');
+  var Pager = require('admin/common/pager.min');
 
   var CreateReefTypeTrigger = React.createClass({
 

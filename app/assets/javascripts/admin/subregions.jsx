@@ -6,13 +6,13 @@ define(function(require) {
   var ModalTrigger = ReactBootstrap.ModalTrigger;
   var ListGroup = ReactBootstrap.ListGroup;
   var ListGroupItem = ReactBootstrap.ListGroupItem;
-  var DeleteItem = require('jsx!common/delete');
+  var DeleteItem = require('jsx!admin/common/delete');
   var Modal = ReactBootstrap.Modal;
   var ButtonToolbar = ReactBootstrap.ButtonToolbar;
   var Button = ReactBootstrap.Button;
   var Input = ReactBootstrap.Input;
-  var Expire = require('jsx!common/expirable');
-  var Pager = require('common/pager.min');
+  var Expire = require('jsx!admin/common/expirable');
+  var Pager = require('admin/common/pager.min');
 
   var CreateSubRegionTrigger = React.createClass({
 
