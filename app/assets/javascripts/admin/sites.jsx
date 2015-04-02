@@ -30,6 +30,7 @@ define(function(require){
           'X-XSRF-TOKEN': auth.getToken()
         },
         'success' : function(data) {
+          console.log("GREAT");
           if(this.isMounted()) {
             var sites = this.state.data;
             var remainingSites = sites.filter(function (reg) {
@@ -43,6 +44,7 @@ define(function(require){
           }
         }.bind(this),
         'error': function(data) {
+          console.log("ERR");
           if(this.isMounted()) {
             this.setState({
               data: {},
@@ -52,7 +54,6 @@ define(function(require){
           }
         }.bind(this)
       });
-
     },
 
     componentDidMount: function() {

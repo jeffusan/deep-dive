@@ -54,6 +54,7 @@ object AnormSiteRepository extends SiteRepository with JSONParsers {
         with data as (
           select
             s.id,
+            s.site_id,
             s.name,
             s.latitude,
             s.longitude,
@@ -84,6 +85,7 @@ object AnormSiteRepository extends SiteRepository with JSONParsers {
         with data as (
           select
             s.id,
+            s.site_id,
             s.name,
             s.latitude,
             s.longitude,
@@ -117,6 +119,7 @@ object AnormSiteRepository extends SiteRepository with JSONParsers {
          with data as (
           select
             s.id,
+            s.site_id,
             s.name,
             s.latitude,
             s.longitude,

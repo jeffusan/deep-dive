@@ -19,7 +19,7 @@ define( function(require) {
     render: function() {
       return (
         <ListGroupItem bsStyle="info">
-          <h4><a href="#" id={this.props.key} ref="input">{this.props.id} - {this.props.name}</a>
+          <h4><a href="#" id={this.props.key} ref="input">{this.props.site_id} - {this.props.name}</a>
         <span className="pull-right">
         <DeleteItem
           title="Delete this Site?"
@@ -72,8 +72,8 @@ define( function(require) {
           <Site
           onSiteDelete={this.itemDelete}
             id={site.id}
-            key={site.id}
-          name={site.name}/>
+            site_id={site.site_id}
+            name={site.name}/>
           );
         }
         return siteSlice;
