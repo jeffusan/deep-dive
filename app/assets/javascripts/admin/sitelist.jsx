@@ -13,12 +13,13 @@ define( function(require) {
 
     itemDelete: function(event) {
       var id = this.props.id;
+      this.props.onSiteDelete({id:id});
     },
 
     render: function() {
       return (
         <ListGroupItem bsStyle="info">
-        <h4><a href="#" id={this.props.key} ref="input">{this.props.name}</a>
+          <h4><a href="#" id={this.props.key} ref="input">{this.props.id} - {this.props.name}</a>
         <span className="pull-right">
         <DeleteItem
           title="Delete this Site?"
@@ -33,6 +34,10 @@ define( function(require) {
   });
 
   var SiteList = React.createClass({
+
+    itemDelete: function(event) {
+      this.props.delete({id: event.id});
+    },
 
     getInitialState: function() {
       return {
@@ -66,7 +71,8 @@ define( function(require) {
           siteSlice.push(
           <Site
           onSiteDelete={this.itemDelete}
-          key={site.id}
+            id={site.id}
+            key={site.id}
           name={site.name}/>
           );
         }

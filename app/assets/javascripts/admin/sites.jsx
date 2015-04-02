@@ -17,6 +17,44 @@ define(function(require){
       };
     },
 
+    delete: function(value) {
+      console.log("value: " + value.id);
+      $.ajax({
+        'type': 'DELETE',
+        'url': '/sites/' + value.id,
+        'contentType': 'application/json',
+        'data': JSON.stringify({'id': value.id}),
+        'dataType': 'json',
+        'async': false,
+        'headers': {
+          'X-XSRF-TOKEN': auth.getToken()
+        },
+        'success' : function(data) {
+          if(this.isMounted()) {
+            var sites = this.state.data;
+            var remainingSites = sites.filter(function (reg) {
+              return reg.id !== value.id;
+            });
+            this.setState({
+              data: remainingSites,
+              message: 'Gone!',
+              hasMessage: true
+            });
+          }
+        }.bind(this),
+        'error': function(data) {
+          if(this.isMounted()) {
+            this.setState({
+              data: {},
+              message: 'Um, yeah. About those sites you wanted canceled...',
+              hasMessage: true
+            });
+          }
+        }.bind(this)
+      });
+
+    },
+
     componentDidMount: function() {
 
       $.ajax({
@@ -52,7 +90,7 @@ define(function(require){
       return (
         <AdminPanel name="Sites">
           <AddSite/>
-          <SiteList data={this.state.data} />
+          <SiteList data={this.state.data} delete={this.delete} />
         </AdminPanel>
       );
     }
