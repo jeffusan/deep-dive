@@ -1,4 +1,5 @@
 define(function(require){
+  'use strict';
 
   var Login = require('jsx!auth/login');
   var auth = require('auth/auth');

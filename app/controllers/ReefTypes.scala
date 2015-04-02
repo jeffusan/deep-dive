@@ -13,7 +13,7 @@ case class ReefTypeUpdateData(pl: Int, name: String, value: String)
 trait ReefTypes extends Controller with Security {
 
 
-  /** Delete a subregion */
+  /** Delete a reeftype */
   def remove(id: Int) =HasAdminToken() { token => userId => implicit request =>
 
     try {

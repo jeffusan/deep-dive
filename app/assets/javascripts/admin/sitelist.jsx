@@ -72,6 +72,7 @@ define( function(require) {
           <Site
           onSiteDelete={this.itemDelete}
             id={site.id}
+            key={site.id}
             site_id={site.site_id}
             name={site.name}/>
           );

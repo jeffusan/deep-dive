@@ -1,5 +1,5 @@
 define(function(require) {
-
+  'use strict';
   var React = require('react');
   var auth = require('auth/auth');
 

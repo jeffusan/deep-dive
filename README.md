@@ -15,12 +15,7 @@ By default Deep-Dive has [Play Evolutions](https://www.playframework.com/documen
 database credentials to the [conf/application.conf configuration file](https://www.playframework.com/documentation/2.3.x/Configuration).
 Then start the app- evolutions will load the example data automatically.
 
-3. Install the JS dependencies with [Bower](http://bower.io/).
-
-bower install --save should do the trick. Default directory is public/javascripts/bower_components.
-This is configured [in the .bowerrc](https://github.com/atware/deep-dive/blob/development/.bowerrc) file.
-
-4. Install Activator
+3. Install Activator
 
 ## Starting
 

@@ -1,7 +1,6 @@
 define(function(require) {
-
+  'use strict';
   var React = require('react');
-  var ReactBootstrap = require('react-bootstrap');
   var BenthicUploadForm = require('jsx!admin/benthic/uploadform');
   var Message = require('jsx!admin/common/message');
 

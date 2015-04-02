@@ -3,47 +3,49 @@
 # ~~~~
 
 # Home page
-GET           /                    controllers.Application.index
-GET           /authuser            controllers.Application.ping()
+GET           /                      controllers.Application.index
+GET           /authuser              controllers.Application.ping()
 
 # Send (user,password) to receive token
-POST         /login                controllers.Application.login()
+POST          /login                 controllers.Application.login()
 
 # Invalidate token
-POST         /logout               controllers.Application.logout()
+POST          /logout                controllers.Application.logout()
 
 # Regions
-GET          /regions              controllers.Regions.show()
-PUT          /regions              controllers.Regions.create()
-DELETE       /regions/:id          controllers.Regions.remove(id: Int)
-POST         /regions              controllers.Regions.update()
+GET           /regions               controllers.Regions.show()
+PUT           /regions               controllers.Regions.create()
+DELETE        /regions/:id           controllers.Regions.remove(id: Int)
+POST          /regions               controllers.Regions.update()
 
 # SubRegions
-GET          /subregions              controllers.SubRegions.show()
-PUT          /subregions              controllers.SubRegions.create()
-DELETE       /subregions/:id          controllers.SubRegions.remove(id: Int)
-POST         /subregions              controllers.SubRegions.update()
+GET           /subregions            controllers.SubRegions.show()
+PUT           /subregions            controllers.SubRegions.create()
+DELETE        /subregions/:id        controllers.SubRegions.remove(id: Int)
+POST          /subregions            controllers.SubRegions.update()
 
 # ReefTypes
-GET          /reeftypes              controllers.ReefTypes.show()
-PUT          /reeftypes              controllers.ReefTypes.create()
-DELETE       /reeftypes/:id          controllers.ReefTypes.remove(id: Int)
-POST         /reeftypesname          controllers.ReefTypes.updateName()
-POST         /reeftypesdepth          controllers.ReefTypes.updateDepth()
+GET           /reeftypes             controllers.ReefTypes.show()
+PUT           /reeftypes             controllers.ReefTypes.create()
+DELETE        /reeftypes/:id         controllers.ReefTypes.remove(id: Int)
+POST          /reeftypesname         controllers.ReefTypes.updateName()
+POST          /reeftypesdepth        controllers.ReefTypes.updateDepth()
 
 # Sites
-GET          /sites                  controllers.Sites.show()
+GET           /sites                 controllers.Sites.show()
+DELETE        /sites/:id             controllers.Sites.remove(id: Int)
+
 
 # SurveyEvents
-GET          /surveyevents           controllers.SurveyEvents.show()
+GET           /surveyevents          controllers.SurveyEvents.show()
 
-POST         /benthic                controllers.SurveyEvents.benthicUploadHandler
+POST          /benthic               controllers.SurveyEvents.benthicUploadHandler
 
 # Static
 # ~~~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file           controllers.Assets.versioned(path="/public", file: Asset)
+GET           /assets/*file          controllers.Assets.versioned(path="/public", file: Asset)
 
 # JavaScript routes object
-GET     /jsroutes.js            controllers.Application.jsRoutes()
+GET           /jsroutes.js           controllers.Application.jsRoutes()

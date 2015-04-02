@@ -29,6 +29,8 @@ trait SiteRepository {
    * @return site or null
    */
   def findOneById(siteId: Int): JsValue
+
+  def remove(id: Int)
 }
 
 
@@ -135,6 +137,16 @@ object AnormSiteRepository extends SiteRepository with JSONParsers {
         )
         select to_json(data) from data;
         """).on('id -> id).as(simple.single)
+    }
+  }
+
+  override def remove(id: Int) {
+    DB.withConnection { implicit c =>
+      SQL(
+        """
+        delete from site where id={id}
+        """
+      ).on('id -> id).execute
     }
   }
 }

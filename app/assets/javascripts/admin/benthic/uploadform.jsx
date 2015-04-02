@@ -1,6 +1,7 @@
 define(function(require) {
+  'use strict';
+
   var React = require('react');
-  var ReactBootstrap = require('react-bootstrap');
 
   var trim = function() {
     var TRIM_RE = /^\s+|\s+$/g;

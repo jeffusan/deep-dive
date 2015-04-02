@@ -64,6 +64,10 @@ define(function(require) {
 
   var CreateRegion = React.createClass({
 
+    propTypes: {
+      onRequestHide: React.PropTypes.func
+    },
+
     getInitialState: function() {
       return {
         value: ''
@@ -82,8 +86,10 @@ define(function(require) {
     },
 
     render: function() {
+      var onRequestHide = this.props.onRequestHide || nop;
+
       return (
-        <Modal title="Add A Region" animation={true}>
+        <Modal title="Add A Region" animation={true} onRequestHide={onRequestHide} >
           <div className="modal-body">
             <CreateRegionInput onHandleChange={this.updateName} />
              <div className="modal-footer">
@@ -118,7 +124,6 @@ define(function(require) {
 
     onRegionDelete: function(event) {
       var id = this.props.id;
-      console.log("Value: " + id);
       this.props.onRegionDelete({id: id});
     },
 

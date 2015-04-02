@@ -180,7 +180,7 @@ var CreateReefType = React.createClass({
           <span className="pull-right">
            <DeleteItem
              title="Delete this ReefType?"
-             message="Deleting this reeftype may be constained by it's associations with Sites."
+             message="Deleting this reeftype may be constrained by its association with Sites."
              delete={this.itemDelete} />
         </span>
         </h4>

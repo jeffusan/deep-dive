@@ -1,4 +1,6 @@
 define(function(require){
+  'use strict';
+
   var React = require('react');
   var Router = require('react-router');
   var Login = require('jsx!auth/login');

@@ -1,4 +1,6 @@
 define(function(require){
+  'use strict';
+
   var React = require('react');
   var Authentication = require('auth/authentication');
   var auth = require('auth/auth');
