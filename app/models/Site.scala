@@ -1,5 +1,8 @@
 package models
 
+import java.util.NoSuchElementException
+
+import controllers.SiteData
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -31,6 +34,8 @@ trait SiteRepository {
   def findOneById(siteId: Int): JsValue
 
   def remove(id: Int)
+
+  def add(data: SiteData): JsValue
 }
 
 
@@ -147,6 +152,31 @@ object AnormSiteRepository extends SiteRepository with JSONParsers {
         delete from site where id={id}
         """
       ).on('id -> id).execute
+    }
+  }
+
+  override def add(data: SiteData): JsValue = {
+    try {
+      DB.withConnection { implicit c =>
+        SQL(
+          """
+          with data(id, subregion_id, reef_type_id, name, latitude, longitude, map_datum, site_id) as (
+            insert into site(id, subregion_id, reef_type_id, name, latitude, longitude, map_datum, site_id) values
+            (DEFAULT, {subregion}, {reef_type}, {local_name}, {latitude}, {longitude}, {map_datum},
+            (select code from subregion where id={subregion})
+            returning id, subregion_id, reef_type_id, name, latitude, longitude, map_datum, site_id
+          ) select row_to_json(data) from data;
+          """
+        ).on('local_name -> data.localName,
+            'subregion -> data.subregion,
+            'reef_type -> data.reefType,
+            'latitude -> data.latitude,
+            'longitude -> data.longitude,
+            'map_datum -> data.mapDatum).as(simple.single)
+      }
+    } catch {
+      case nse: NoSuchElementException =>
+        Json.parse("")
     }
   }
 }
